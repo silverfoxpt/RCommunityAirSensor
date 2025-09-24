@@ -1,0 +1,289 @@
+---
+params:
+  title: "My title"
+  myData: "`r list()`"
+  debugTurnOn: TRUE
+title: "`r params$title`" 
+author: "Hillsborough County CAMN Network" 
+output: pdf_document
+geometry: margin=1.5cm
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{threeparttable}
+  - \usepackage{colortbl}
+---
+# 1. Descriptive Statistics
+**Note**: 
+
+* The colors *Yellow*, *Blue*, and *Red* in the below tables represent the **gradient** of the respective columns, *Minimum*, *Median*, and *Maximum*.
+
+* Reference sites' values are always considered **calibrated**. Hence, reference sites **will not appear** on any raw-type graphs & charts.
+
+## 1.1 Statistics of raw daily PM2.5 levels
+```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
+set_flextable_defaults(
+  theme_fun = "theme_vanilla"
+)
+
+generate_descriptive_stats_table(
+  params$myData[["CombinedDayNoRef"]], 
+  "pm2_5ConcMass24HourMean.raw", 
+  "PM 2.5 Raw, Daily", 
+  monitorInfo = params$myData[["CombinedInfoNoRef"]],
+  title = "Cumulative distributions of raw PM2.5 levels"
+)
+```
+
+##  1.2 Statistics of calibrated daily PM2.5 levels
+```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
+generate_descriptive_stats_table(
+  params$myData[["CombinedDay"]], 
+  "pm2_5ConcMass24HourMean.value", 
+  "PM 2.5 Calibrated, Daily", 
+  monitorInfo = params$myData[["CombinedInfo"]],
+  title = "Cumulative distributions of calibrated PM2.5 levels"
+)
+```
+
+## 1.3. Boxplots of the cumulative distributions of daily PM2.5 levels
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=5, eval = params$debugTurnOn}
+generate_double_box_plot(
+  datafiles = params$myData[["CombinedDay"]],
+  columnName1 = "pm2_5ConcMass24HourMean.raw",
+  columnName2 = "pm2_5ConcMass24HourMean.value",
+  renameName = expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
+  newLabel = expression("Boxplots of PM"[2.5] * " Raw & Calibrated Concentrations"),
+  dataInfo = params$myData[["CombinedInfo"]],
+  renameLegend1 = "Raw",
+  renameLegend2 = "Calibrated"
+)
+```
+
+# 2. Average daily data trends - Raw & Calibrated PM2.5 - Grouped by **sites**
+```{r, echo = FALSE, warning  = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+uniqueSites <- unique(params$myData$Info$ShortCode)
+uniqueNames <- purrr::map(
+  .x = uniqueSites,
+  .f = \(x) { params$myData$Info %>% dplyr::filter(ShortCode == x) %>% 
+              dplyr::slice(1) %>% dplyr::pull(SiteName)}
+)
+
+# Generate the graphs
+trends_graph <- purrr::map2(
+  .x = uniqueSites,
+  .y = uniqueNames,
+  .f = function(x, y) {
+    plot <- generate_sitebase_scatter_plot_data(
+     c(params$myData[["Day"]],
+       params$myData[["DayReference"]],
+       params$myData[["PurpleAirDay"]]
+    ),
+     bind_rows(params$myData[["Info"]], params$myData[["PurpleAirInfo"]], params$myData$ReferenceInfo),
+     x,
+     "pm2_5ConcMass24HourMean.value",
+     expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
+     paste(x, " - ", y, sep = "")
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(trends_graph)
+```
+
+# 3. Average daily data trends - Raw & Calibrated PM2.5 - grouped by **sensors**
+## 3.1. Reference & co-located sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+trends_graph <- purrr::map(
+  .x = names(params$myData[["CombinedDayRefCo"]]),
+  .f = function(x) {
+    plot <- generate_scatter_plot_data(params$myData[["CombinedDayRefCo"]][[x]] , 
+                                   "pm2_5ConcMass24HourMean.raw", 
+                                   "pm2_5ConcMass24HourMean.value",
+                                   expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
+                                   paste(x, " - ", params$myData[["CombinedInfoRefCo"]] %>% 
+                                                   filter(DeviceID == !!x) %>% pull(SiteName)
+                                         , sep = "")
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(trends_graph)
+```
+
+## 3.2. Park sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+trends_graph <- purrr::map(
+  .x = names(params$myData[["CombinedDayPark"]]),
+  .f = function(x) {
+    plot <- generate_scatter_plot_data(params$myData[["CombinedDayPark"]][[x]] , 
+                                   "pm2_5ConcMass24HourMean.raw", 
+                                   "pm2_5ConcMass24HourMean.value",
+                                   expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
+                                   paste(x, " - ", params$myData[["CombinedInfoPark"]] %>% 
+                                                   filter(DeviceID == !!x) %>% pull(SiteName)
+                                         , sep = "")
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(trends_graph)
+```
+
+## 3.3. Non-park sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+trends_graph <- purrr::map(
+  .x = names(params$myData[["CombinedDayNonPark"]]),
+  .f = function(x) {
+    plot <- generate_scatter_plot_data(params$myData[["CombinedDayNonPark"]][[x]] , 
+                                   "pm2_5ConcMass24HourMean.raw", 
+                                   "pm2_5ConcMass24HourMean.value",
+                                   expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
+                                   paste(x, " - ", params$myData[["CombinedInfoNonPark"]] %>% 
+                                                   filter(DeviceID == !!x) %>% pull(SiteName)
+                                         , sep = "")
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(trends_graph)
+```
+
+# 4. Diurnal Cycles -  Calibrated PM2.5 Hourly Average
+## 4.1. Reference & co-located sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn} 
+# Generate the graphs
+diurnal_graph <- purrr::map(
+  .x = names(params$myData[["CombinedHourRefCo"]]),
+  .f = function(x) {
+    plot <- generate_diurnal_boxplot_data(
+      params$myData[["CombinedHourRefCo"]][[x]] , 
+      "pm2_5ConcMass1HourMean.value",
+      expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
+      paste(x, " - ", params$myData[["CombinedInfoRefCo"]] %>% 
+               filter(DeviceID == !!x) %>% 
+               pull(SiteName), sep = "")
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(diurnal_graph)
+```
+
+## 4.2. Park sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+diurnal_graph <- purrr::map(
+  .x = names(params$myData[["CombinedHourPark"]]),
+  .f = function(x) {
+    plot <- generate_diurnal_boxplot_data(
+      params$myData[["CombinedHourPark"]][[x]] , 
+      "pm2_5ConcMass1HourMean.value",
+      expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
+      paste(x, " - ", params$myData[["CombinedInfoPark"]] %>% 
+               filter(DeviceID == !!x) %>% 
+               pull(SiteName), sep = "")
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(diurnal_graph)
+```
+
+## 4.3. Non-park sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+diurnal_graph <- purrr::map(
+  .x = names(params$myData[["CombinedHourNonPark"]]),
+  .f = function(x) {
+    plot <- generate_diurnal_boxplot_data(
+      params$myData[["CombinedHourNonPark"]][[x]] , 
+      "pm2_5ConcMass1HourMean.value",
+      expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
+      paste(x, " - ", params$myData[["CombinedInfoNonPark"]] %>% 
+               filter(DeviceID == !!x) %>% 
+               pull(SiteName), sep = "")
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(diurnal_graph)
+```
+
+# 5. Weekly Cycles -  Calibrated PM2.5 Hourly Average
+## 5.1. Reference & co-located sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+weekly_graph <- purrr::map(
+  .x = names(params$myData[["CombinedHourRefCo"]]),
+  .f = function(x) {
+    plot <- generate_weekly_boxplot_data(params$myData[["CombinedHourRefCo"]][[x]] , 
+                                   "pm2_5ConcMass1HourMean.value",
+                                   expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
+                                   paste(x, " - ", params$myData[["CombinedInfoRefCo"]] %>% 
+                                            filter(DeviceID == !!x) %>% 
+                                            pull(SiteName), sep = "")
+    )
+    return(plot)
+  }
+)
+
+PrintGraphsTwoColumns(weekly_graph)
+```
+
+## 5.2. Park sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+weekly_graph <- purrr::map(
+  .x = names(params$myData[["CombinedHourPark"]]),
+  .f = function(x) {
+    plot <- generate_weekly_boxplot_data(params$myData[["CombinedHourPark"]][[x]] , 
+                                   "pm2_5ConcMass1HourMean.value",
+                                   expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
+                                   paste(x, " - ", params$myData[["CombinedInfoPark"]] %>% 
+                                            filter(DeviceID == !!x) %>% 
+                                            pull(SiteName), sep = "")
+    )
+    return(plot)
+  }
+)
+
+PrintGraphsTwoColumns(weekly_graph)
+```
+
+## 5.3. Non-park sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+weekly_graph <- purrr::map(
+  .x = names(params$myData[["CombinedHourNonPark"]]),
+  .f = function(x) {
+    plot <- generate_weekly_boxplot_data(params$myData[["CombinedHourNonPark"]][[x]] , 
+                                   "pm2_5ConcMass1HourMean.value",
+                                   expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
+                                   paste(x, " - ", params$myData[["CombinedInfoNonPark"]] %>% 
+                                            filter(DeviceID == !!x) %>% 
+                                            pull(SiteName), sep = "")
+    )
+    return(plot)
+  }
+)
+
+PrintGraphsTwoColumns(weekly_graph)
+```
+

@@ -1,0 +1,323 @@
+---
+params:
+  title: "My title"
+  subtitle: "My subtitle"
+  myData: "`r list()`"
+title: "`r params$title`" 
+subtitle: "`r params$subtitle`"
+author: "Hillsborough County CAMN Network" 
+output: pdf_document
+geometry: margin=1.5cm
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{threeparttable}
+  - \usepackage{colortbl}
+---
+
+```{r echo = FALSE}
+# Hack-y function for autofitting tables - Hopefully RMarkdown fix it in the future :'D
+FitFlextableToPage <- function(ft, pgwidth = 6.5){
+  ft_out <- ft %>% autofit()
+  ft_out <- width(ft_out, width = dim(ft_out)$widths*pgwidth /(flextable_dim(ft_out)$widths))
+  ft_out <- ft_out %>% paginate(init = FALSE, hdr_ftr = TRUE)
+  return(ft_out)
+}
+
+CheckNotEmptyString <- function(x) {
+  return(!is.null(x) && !is.na(x) && x != "" && length(x) > 0)
+}
+
+CreateMonthlyDisplayTable <- function(QuestionMainCode, SensorMainCode, isNoteTable = F) {
+  pReplacementColumnName <- params$myData$QuestionOtherInfo %>%
+    dplyr::filter(grepl(QuestionMainCode, QuestionTag)) %>% 
+    dplyr::select(QuestionTag, QuestionColumnName)
+
+  pColumnName <- pReplacementColumnName %>% dplyr::pull("QuestionColumnName")
+  pQuestionTag <- pReplacementColumnName %>% dplyr::pull("QuestionTag")
+  
+  pInfo <- params$myData$Monitors %>%
+    dplyr::filter(grepl(SensorMainCode, Label)) %>%
+    dplyr::select(all_of(c("DeviceID", "ShortCode", pQuestionTag))) %>%
+    dplyr::rename(ID = DeviceID, Code = ShortCode)
+  
+  # modify name
+  purrr::walk2(
+    .x = pReplacementColumnName %>% dplyr::pull("QuestionTag"),
+    .y = pReplacementColumnName %>% dplyr::pull("QuestionColumnName"),
+    .f = (\(x, y) {pInfo <<- pInfo %>% dplyr::rename(!!y := !!x)} )
+  )
+  
+  # Modify any columns with "Notes" in it. If value empty, don't show
+  if (isNoteTable) {
+    pInfo <- pInfo %>%
+      dplyr::filter(!if_any(contains("Notes"), ~ (is.na(.) | . == ""))) 
+  }
+  
+  tb <- flextable(pInfo) %>%
+    #set_table_properties(layout = "autofit") %>%
+    #border_inner_h(part = "all", border = small_border) %>%
+    border_inner_v(part = "all", border = small_border) 
+  
+  #tb <- tb %>% fontsize(j = 1, size = 10)
+  
+  for (col in pColumnName) {
+    highlight_rows <- grepl("\\*", pInfo[[col]])
+    tb <- tb %>% bg(i = which(highlight_rows), j = col, bg = "#FBEC5D")
+  }
+  
+  # Based on Dr. Stuart modifications
+  if ("Tracking Summary" %in% names(pInfo)) {
+    tb <- tb %>% set_header_labels(`Tracking Summary` = "Tracking Follow-up Needed")
+  }
+  
+  tb <- FitFlextableToPage(tb)
+  
+  # Change font sizes & widths
+  tb <- tb %>% width(j = 1, width = 1)
+  if (isNoteTable) {
+    tb <- tb %>% width(j = 2, width = 1)
+    tb <- tb %>% width(j = 3, width = 4)
+  }
+  
+  tb
+}
+```
+
+## 1.1. Submission Status
+
+```{r echo = FALSE}
+pInfo <- params$myData$PersonnelInfo %>%
+  dplyr::select(FirstName, LastName, Email, Submitted, Role) 
+
+set_flextable_defaults(
+  fonts_ignore = T,
+  font.size = 10, 
+  theme_fun = theme_vanilla,
+  padding = 20,
+  background.color = "white",
+  opts_pdf = list(
+    float = list(
+      "wrap-r"
+    )
+  )
+)
+
+small_border <- fp_border(color="gray", width = 1)
+flextable(pInfo) %>%
+  set_table_properties(layout = "autofit") %>%
+  bg(i = ~ Submitted == "Yes", j = "Submitted", bg = "lightgreen") %>%
+  bg(i = ~ Submitted == "No", j = "Submitted", bg = "#fb6768") %>%
+  #border_inner_h(part = "all", border = small_border) %>%
+  border_inner_v(part = "all", border = small_border) 
+```
+
+## 1.2.1. Summary of Purple Air sensor check
+
+**Note: This is a summary of Purple Air sensors that need repair/checking or data records that need verification. For a detailed record, please refer to section 2.**
+
+```{r echo = FALSE}
+purpleTrackingSummary <- params$myData$Monitors %>%
+  dplyr::filter(grepl("PA", Label)) %>%
+  dplyr::select(DeviceID, SiteName, PATQuestion1) %>%
+  dplyr::rename(`Tracking Summary` = PATQuestion1)
+
+purpleHealthSummary <- params$myData$Monitors %>%
+  dplyr::filter(grepl("PA", Label)) %>%
+  dplyr::mutate(`Maintenance Needed` = if_else(
+    rowSums(across(starts_with("PAH"), ~ grepl("\\*", .))) > 0, 
+    "Needs follow-up (*)", 
+    "No"
+  )) %>%
+  dplyr::select(DeviceID, SiteName, `Maintenance Needed`)
+
+purpleDataSummary <- params$myData$Monitors %>%
+  dplyr::filter(grepl("PA", Label)) %>%
+  dplyr::mutate(`Data Follow-up Needed` = if_else(
+    rowSums(across(starts_with("PAD"), ~ grepl("\\*", .))) > 0, 
+    "Needs follow-up (*)", 
+    "No"
+  )) %>%
+  dplyr::select(DeviceID, SiteName, `Data Follow-up Needed`)
+
+paMerger <- purpleTrackingSummary %>%
+  dplyr::full_join(purpleHealthSummary, by = c("DeviceID", "SiteName")) %>%
+  dplyr::full_join(purpleDataSummary, by = c("DeviceID", "SiteName")) %>%
+  dplyr::rename(ID = DeviceID, Site = SiteName) %>%
+  dplyr::rename(`Tracking Follow-up Needed` = `Tracking Summary`) # Based on Dr. Stuart modifications
+
+tb <- flextable(paMerger) %>%
+  #set_table_properties(layout = "autofit") %>%
+  #border_inner_h(part = "all", border = small_border) %>%
+  FitFlextableToPage() %>%
+  border_inner_v(part = "all", border = small_border) %>%
+  width(j = 2, width = 1.5)
+
+for (col in colnames(paMerger)) {
+  highlight_rows <- grepl("\\*", paMerger[[col]])
+  tb <- tb %>% bg(i = which(highlight_rows), j = col, bg = "#fb6768")
+}
+tb
+```
+
+## 1.2.2. Summary of Clarity sensor check
+
+**Note: This is a summary of Clarity sensors that need repair/checking or data records that need verification. For a detailed record, please refer to section 3.**
+
+```{r echo = FALSE}
+clarityTrackingSummary <- params$myData$Monitors %>%
+  dplyr::filter(grepl("CN", Label)) %>%
+  dplyr::select(DeviceID, SiteName, CTQuestion1) %>%
+  dplyr::rename(`Tracking Summary` = CTQuestion1)
+
+clarityHealthSummary <- params$myData$Monitors %>%
+  dplyr::filter(grepl("CN", Label)) %>%
+  dplyr::mutate(`Maintenance Needed` = if_else(
+    rowSums(across(starts_with("CH"), ~ grepl("\\*", .))) > 0, 
+    "Needs follow-up (*)", 
+    "No"
+  )) %>%
+  dplyr::select(DeviceID, SiteName, `Maintenance Needed`)
+
+clarityDataSummary <- params$myData$Monitors %>%
+  dplyr::filter(grepl("CN", Label)) %>%
+  dplyr::mutate(`Data Follow-up Needed` = if_else(
+    rowSums(across(starts_with("CD"), ~ grepl("\\*", .))) > 0, 
+    "Needs follow-up (*)", 
+    "No"
+  )) %>%
+  dplyr::select(DeviceID, SiteName, `Data Follow-up Needed`)
+
+clMerger <- clarityTrackingSummary %>%
+  dplyr::full_join(clarityHealthSummary, by = c("DeviceID", "SiteName")) %>%
+  dplyr::full_join(clarityDataSummary, by = c("DeviceID", "SiteName")) %>%
+  dplyr::rename(ID = DeviceID, Site = SiteName) %>%
+  dplyr::rename(`Tracking Follow-up Needed` = `Tracking Summary`) # Based on Dr. Stuart modifications
+
+tb <- flextable(clMerger) %>%
+  #set_table_properties(layout = "autofit") %>%
+  #border_inner_h(part = "all", border = small_border) %>%
+  FitFlextableToPage() %>%
+  border_inner_v(part = "all", border = small_border) %>%
+  width(j = 2, width = 1.5)
+
+for (col in colnames(clMerger)) {
+  highlight_rows <- grepl("\\*", clMerger[[col]])
+  tb <- tb %>% bg(i = which(highlight_rows), j = col, bg = "#fb6768")
+}
+tb
+```
+
+## 2.1. Purple Air sensors: Tracking status
+
+```{r echo = FALSE}
+CreateMonthlyDisplayTable(QuestionMainCode = "^PAT.*[1-1]$", SensorMainCode = "PA")
+```
+
+## 2.1.1 Purple Air sensors: Tracking status notes
+
+```{r echo = FALSE}
+CreateMonthlyDisplayTable(QuestionMainCode = "^PAT.*[2-9][0-9]*$", SensorMainCode = "PA", isNoteTable = T)
+```
+
+## 2.2. Purple Air sensors: Health status
+
+```{r echo = FALSE}
+CreateMonthlyDisplayTable(QuestionMainCode = "^PAH.*[1-5]$", SensorMainCode = "PA")
+```
+
+## 2.2.1. Purple Air sensors: Health status notes
+
+```{r echo = FALSE}
+CreateMonthlyDisplayTable(QuestionMainCode = "^PAH.*[6-9][0-9]*$", SensorMainCode = "PA", isNoteTable = T)
+```
+
+## 2.3. Purple Air sensors: Data Archive status
+
+```{r echo = FALSE}
+CreateMonthlyDisplayTable(QuestionMainCode = "^PAD.*[1-4]$", SensorMainCode = "PA")
+```
+
+## 2.3.1. Purple Air sensors: Data Archive status
+
+```{r echo = FALSE}
+CreateMonthlyDisplayTable(QuestionMainCode = "^PAD.*[5-9][0-9]*$", SensorMainCode = "PA", isNoteTable = T)
+```
+
+## 3.1. Clarity sensors: Tracking status
+
+```{r echo = FALSE}
+CreateMonthlyDisplayTable(QuestionMainCode = "^CT.*[1-1]$", SensorMainCode = "CN")
+```
+
+## 3.1.1. Clarity sensors: Tracking status notes
+
+```{r echo = FALSE}
+CreateMonthlyDisplayTable(QuestionMainCode = "^CT.*[2-9][0-9]*$", SensorMainCode = "CN",
+isNoteTable = T)
+```
+
+## 3.2. Clarity sensors: Health status
+
+```{r echo = FALSE}
+CreateMonthlyDisplayTable(QuestionMainCode = "^CH.*[1-7]$", SensorMainCode = "CN")
+```
+
+## 3.2.1. Clarity sensors: Health status notes
+
+```{r echo = FALSE}
+CreateMonthlyDisplayTable(QuestionMainCode = "^CH.*[8-9][0-9]*$", SensorMainCode = "CN",
+isNoteTable = T)
+```
+
+## 3.3. Clarity sensors: Data Archive status
+
+```{r echo = FALSE}
+CreateMonthlyDisplayTable(QuestionMainCode = "^CD.*[1-4]$", SensorMainCode = "CN")
+```
+
+## 3.3.1. Clarity sensors: Data Archive status notes
+
+```{r echo = FALSE}
+CreateMonthlyDisplayTable(QuestionMainCode = "^CD.*[5-9][0-9]*$", SensorMainCode = "CN",
+isNoteTable = T)
+```
+
+## 4. Unresolved Monitors Status
+
+```{r echo = FALSE}
+pInfo <- params$myData$UnresolvedNotes %>%
+  dplyr::mutate(OriginDate = paste(month(OriginDate), year(OriginDate), sep = "-")) %>% 
+  dplyr::rename(Date = OriginDate, ID = DeviceID, Site = SiteName) # Move to RMD for formatting
+
+set_flextable_defaults(
+  fonts_ignore = T,
+  font.size = 10, 
+  theme_fun = theme_vanilla,
+  padding = 20,
+  background.color = "white",
+  opts_pdf = list(
+    float = list(
+      "wrap-r"
+    )
+  )
+)
+
+small_border <- fp_border(color="gray", width = 1)
+tb <- flextable(pInfo) %>%
+  #set_table_properties(layout = "autofit") %>%
+  bg(i = ~ Resolved == "Yes", j = "Resolved", bg = "lightgreen") %>%
+  bg(i = ~ Resolved == "No", j = "Resolved", bg = "#fb6768") %>%
+  #border_inner_h(part = "all", border = small_border) %>%
+  border_inner_v(part = "all", border = small_border) 
+
+tb <- tb %>%
+  width(j = 1, width = 0.6) %>%
+  width(j = 2, width = 1) %>%
+  width(j = 3, width = 0.75) %>%
+  width(j = 4, width = 1.3) %>%
+  width(j = 5, width = 0.65) %>%
+  width(j = 6, width = 2.6)
+
+tb
+```
+

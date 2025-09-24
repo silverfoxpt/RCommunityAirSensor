@@ -1,0 +1,334 @@
+---
+params:
+  title: "My title"
+  myData: "`r list()`"
+  debugTurnOn: TRUE
+title: "`r params$title`" 
+author: "Hillsborough County CAMN Network" 
+output: pdf_document
+geometry: margin=1.5cm
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{threeparttable}
+  - \usepackage{colortbl}
+---
+
+```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
+FitFlextableToPage <- function(ft, pgwidth = 6.5){
+  ft_out <- ft %>% autofit()
+  ft_out <- width(ft_out, width = dim(ft_out)$widths*pgwidth /(flextable_dim(ft_out)$widths))
+  ft_out <- ft_out %>% paginate(init = FALSE, hdr_ftr = TRUE)
+  return(ft_out)
+}
+
+CheckNotEmptyString <- function(x) {
+  return(!is.null(x) && !is.na(x) && x != "" && length(x) > 0)
+}
+
+set_flextable_defaults(
+  theme_fun = "theme_vanilla"
+)
+
+get_lineplot_info <- function(type) {
+  if (type == "pm2.5_alt") {
+    return(list(
+      Color = "darkgreen",
+      MaxYValue = 110
+    ))
+  }
+  else if (type == "temperature") {
+    return(list(
+      Color = "#e4211f",
+      MaxYValue = 135
+    ))
+  } 
+  else if (type == "humidity") {
+    return(list(
+      Color = "lightblue",
+      MaxYValue = 101
+    ))
+  }
+}
+
+check_yellow_highlight_condition <- function(value, missing_prefix = "Timestamps missing:", no_problem_text = "No problem") {
+  if (!is.character(value)) value <- as.character(value)  # Ensure it's a string
+  
+  # Check if it starts with the missing_prefix
+  if (!grepl(paste0("^", missing_prefix), value)) {
+    return(FALSE)
+  }
+  
+  # Extract numeric percentage
+  percentage <- sub(paste0(".*", missing_prefix, " ([0-9]+(?:\\.[0-9]+)?).*%.*"), "\\1", value)
+  percentage <- as.numeric(percentage)
+  
+  # Check if percentage is less than or equal to 75
+  return(!is.na(percentage) && percentage <= 25)
+}
+
+check_red_highlight_condition <- function(value, missing_prefix = "Timestamps missing:", no_problem_text = "No problem") {
+  if (!is.character(value)) value <- as.character(value)  # Ensure it's a string
+  
+  # If the value matches the no_problem_text, return FALSE
+  if (value == no_problem_text) return(FALSE)
+  
+  # If value does not contain the missing_prefix, return TRUE
+  if (!grepl(paste0("^", missing_prefix), value)) {
+    return(TRUE)
+  }
+  
+  # Extract numeric percentage
+  percentage <- sub(paste0(".*", missing_prefix, " ([0-9]+(?:\\.[0-9]+)?).*%.*"), "\\1", value)
+  
+  # If regex extraction fails (percentage is empty or unchanged), return TRUE
+  if (percentage == value) {
+    return(TRUE)
+  }
+  
+  percentage <- as.numeric(percentage)
+  
+  # If the extracted percentage is NA (conversion failed) or >= 75, return TRUE
+  return(is.na(percentage) || percentage >= 25)
+}
+
+colorColumn <- function(ft, colName, missing_prefix = "Timestamps missing:", no_problem_text = "No problem") {
+  # 1) Mark "No problem" cells green
+  ft <- ft %>% bg(
+    x = ft,
+    j = colName,
+    bg = "#80EF80",
+    i = as.formula(paste0("~ `", colName, "` == '", no_problem_text,"'")),
+    part = "body"
+  )
+  
+  # 2) Mark "Missing timestamp: X%" (X <= 75) cells yellow
+  ft <- ft %>% bg(
+    x = ft,
+    j = colName,
+    bg = "#FFEE8C",
+    i = which(vapply(ft$body$dataset[[colName]], check_yellow_highlight_condition, logical(1), 
+                     missing_prefix = missing_prefix, no_problem_text = no_problem_text)),
+    part = "body"
+  )
+  
+  # 3) Mark all remaining cells (not "No problem" and not matched above) red
+  ft <- ft %>% bg(
+    x = ft,
+    j = colName,
+    bg = '#FAA0A0',
+    i = which(vapply(ft$body$dataset[[colName]], check_red_highlight_condition, logical(1), 
+                     missing_prefix = missing_prefix, no_problem_text = no_problem_text)),
+    part = "body"
+  )
+  
+  return(ft)
+}
+
+generate_scatter_plot_data <- function(data, columnName, renameName, newLabel) {
+  if (is.null(columnName) || !(columnName %in% names(data))) {
+    warning("Invalid column name provided. Returning an empty plot.")
+    return(ggplot() + theme_void() + ggtitle(paste("No Data Available", "-\n", newLabel)))
+  }
+  
+  data <- data %>% 
+    dplyr::mutate(y_value = !!rlang::sym(columnName)) %>%
+    dplyr::mutate(y_value = as.numeric(y_value)) %>%
+    dplyr::mutate(time_stamp = as.POSIXct(parse_date_time(time_stamp, orders = c("ymd_HMS", "ymd")), tz = "UTC"))
+  
+  # Extract min and max dates
+  startDate <- as.Date(min(data$time_stamp, na.rm = TRUE)) %>% lubridate::date()
+  endDate <- as.Date(max(data$time_stamp, na.rm = TRUE)) %>% lubridate::date()
+  sideValues <- get_lineplot_info(columnName)
+  
+  plot <- ggplot(data, aes(x = time_stamp, y = y_value)) +
+    geom_line(color = sideValues$Color) +
+    theme_classic() + 
+    labs(x = "Date", y = renameName, title = newLabel) +
+    ylim(0, sideValues$MaxYValue) + 
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) + 
+    scale_x_datetime(
+      breaks = seq.POSIXt(as.POSIXct(startDate, tz = "UTC"), as.POSIXct(endDate, tz = "UTC"), by = "2 days"),
+      date_labels = "%m / %d"
+    )
+  return(plot)
+}
+```
+
+# 1. Current sensors' status
+```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
+choosenData <- params$myData$StatusTest %>%
+  dplyr::select(sensor_index, last_seen, `Device Online`,
+                rssi, `Wi-Fi Bars`, 
+                confidence,
+                pm2.5, `Data Collected`) %>%
+  dplyr::rename(ID = sensor_index, `Last seen` = last_seen, 
+                RSSI = rssi, Confidence = confidence, `Current PM2.5` = pm2.5) %>%
+  #dplyr::mutate(`Last seen` = as.character(`Last seen`)) %>%
+  dplyr::mutate(`Last seen` = as.POSIXct(`Last seen`, origin = "1970-01-01", tz = "UTC") %>%
+                  with_tz("Etc/GMT+5") %>%
+                  as.character() %>% paste("GMT -5"))
+
+tb <- flextable(choosenData) %>%
+  FitFlextableToPage() %>%
+  # width(j = "Type", width = 0.5) %>%
+  # width(j = "Type", width = 0.6) %>%
+  set_table_properties(opts_pdf = list(tabcolsep = 4)) %>%
+  bg(j = "Device Online", bg = "#80EF80", i = ~ `Device Online` == "Yes") %>%
+  bg(j = "Device Online", bg = "#FAA0A0", i = ~ `Device Online` == "No") %>%
+  bg(j = "Wi-Fi Bars", bg = "#80EF80", i = ~ `Wi-Fi Bars` >= 1) %>%
+  bg(j = "Wi-Fi Bars", bg = "#FAA0A0", i = ~ `Wi-Fi Bars` <= 0) %>%
+  bg(j = "Confidence", bg = "#80EF80", i = ~ `Confidence` >= 70) %>%
+  bg(j = "Confidence", bg = "#FAA0A0", i = ~ `Confidence` < 70) %>%
+  bg(j = "Data Collected", bg = "#80EF80", i = ~ `Data Collected` == "Yes") %>%
+  bg(j = "Data Collected", bg = "#FAA0A0", i = ~ `Data Collected` == "No")
+  
+tb
+```
+
+# 2. Hourly data quality assessment - 2 weeks period
+
+**Notes: Please visit Appendix A below to investigate the 2-week graphs.**
+```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
+choosenData <- params$myData$GraphTest %>%
+  dplyr::select(sensor_index,
+                `PM2.5 Graph`,
+                `Temperature Graph`,
+                `Humidity Graph`) %>%
+  dplyr::rename(ID = sensor_index) %>%
+  dplyr::rename(
+    `PM2.5 Hourly` = `PM2.5 Graph`,
+    `Temperature Hourly` = `Temperature Graph`,
+    `Humidity Hourly` = `Humidity Graph`
+  )
+
+tb <- flextable(choosenData) %>%
+  FitFlextableToPage() %>%
+  # width(j = "Type", width = 0.5) %>%
+  # width(j = "Type", width = 0.6) %>%
+  set_table_properties(opts_pdf = list(tabcolsep = 4)) %>%
+  colorColumn("PM2.5 Hourly") %>%
+  colorColumn("Temperature Hourly") %>%
+  colorColumn("Humidity Hourly")
+  
+tb
+```
+
+# 3. Archived data assessment - previous month
+**Notes: Please visit Appendix B below to investigate specific rows in the archived data per the SOP.**
+```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
+choosenData <- params$myData$ArchiveTest %>%
+  dplyr::select(sensor_index, `Daily Label`, `Hourly Label`, `Daily Headers`, `Hourly Headers`) %>%
+  dplyr::rename(ID = sensor_index) 
+
+tb <- flextable(choosenData) %>%
+  FitFlextableToPage() %>%
+  # width(j = "Type", width = 0.5) %>%
+  # width(j = "Type", width = 0.6) %>%
+  set_table_properties(opts_pdf = list(tabcolsep = 4)) %>%
+  bg(j = "Daily Label", bg = "#80EF80", i = ~ `Daily Label` == "Exist") %>%
+  bg(j = "Daily Label", bg = "#FAA0A0", i = ~ `Daily Label` != "Exist") %>%
+  bg(j = "Hourly Label", bg = "#80EF80", i = ~ `Hourly Label` == "Exist") %>%
+  bg(j = "Hourly Label", bg = "#FAA0A0", i = ~ `Hourly Label` != "Exist") %>%
+  bg(j = "Daily Headers", bg = "#80EF80", i = ~ `Daily Headers` == "Normal") %>%
+  bg(j = "Daily Headers", bg = "#FAA0A0", i = ~ `Daily Headers` != "Normal") %>%
+  bg(j = "Hourly Headers", bg = "#80EF80", i = ~ `Hourly Headers` == "Normal") %>%
+  bg(j = "Hourly Headers", bg = "#FAA0A0", i = ~ `Hourly Headers` != "Normal") 
+  
+tb
+```
+
+## 3.1 Archived data assessment - completeness assessment
+```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
+choosenData <- params$myData$CompleteTest %>%
+  dplyr::select(sensor_index, `Timestamp`, `PM25 Raw`, `PM25 Value`, `Temperature`, Humidity) %>%
+  dplyr::rename(ID = sensor_index) 
+
+tb <- flextable(choosenData) %>%
+  FitFlextableToPage() %>%
+  # width(j = "Type", width = 0.5) %>%
+  # width(j = "Type", width = 0.6) %>%
+  set_table_properties(opts_pdf = list(tabcolsep = 4)) %>%
+  colorColumn("Timestamp", missing_prefix = "Miss:", no_problem_text = "Full") %>%
+  colorColumn("PM25 Raw", missing_prefix = "Miss:", no_problem_text = "Full") %>%
+  colorColumn("PM25 Value", missing_prefix = "Miss:", no_problem_text = "Full") %>%
+  colorColumn("Temperature", missing_prefix = "Miss:", no_problem_text = "Full") %>%
+  colorColumn("Humidity", missing_prefix = "Miss:", no_problem_text = "Full") 
+  
+tb
+```
+
+# Appendix A - PM2.5, Temperature and Humidity graphs
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+pm25graph <- purrr::map2(
+  .x = params$myData$RecentSensorData,
+  .y = names(params$myData$RecentSensorData),
+  .f = ~ generate_scatter_plot_data(
+    .x, "pm2.5_alt", 
+    expression("PM 2.5 (µg/m"^{3}*")"),
+    paste("PM2.5 graph - ", .y, sep = "")
+  )
+)
+
+tempGraph <- purrr::map2(
+  .x = params$myData$RecentSensorData,
+  .y = names(params$myData$RecentSensorData),
+  .f = ~ generate_scatter_plot_data(
+    .x, "temperature", 
+    expression("Temperature ("*degree*"F)"),
+    paste("Temperature graph - ", .y, sep = "")
+  )
+)
+
+humidgraph <- purrr::map2(
+  .x = params$myData$RecentSensorData,
+  .y = names(params$myData$RecentSensorData),
+  .f = ~ generate_scatter_plot_data(
+    .x, "humidity", 
+    "Humidity (%)",
+    paste("Humidity graph - ", .y, sep = "")
+  )
+)
+
+for (i in c(1:length(pm25graph))) {
+  combinedGraph <- pm25graph[[i]] + tempGraph[[i]] + humidgraph[[i]] + plot_layout(ncol = 3, nrow = 1)
+  print(combinedGraph)
+}
+```
+
+# Appendix B - PM2.5, Temperature and Humidity - Randomly selected rows from archive
+```{r, echo = FALSE, warning = FALSE, results='asis', eval = params$debugTurnOn}
+# Store tables in a list
+archive_data_sample <- purrr::map2(
+  .x = params$myData$ArchivedData$Hourly,
+  .y = names(params$myData$ArchivedData$Hourly),
+  .f = \(x, y) {
+    
+    # Check if 'startOfPeriod' column exists
+    if (!"time_stamp" %in% colnames(x)) return()
+    
+    # Select 10 random rows or all rows if less than 10
+    sampled_x <- x %>%
+      sample_n(size = min(5, nrow(x))) %>%
+      select(
+        ID = sensor_index,
+        Time = time_stamp,
+        `PM25 Raw` = `pm2.5_atm`,
+        `PM25 Value` = `pm2.5_alt`,
+        `Temp Value` = `temperature`,
+        `Humid. Value` = `humidity`
+      ) %>%
+      mutate(ID = as.character(ID))
+    
+    return(sampled_x)
+  }
+) %>%
+purrr::compact() %>%
+dplyr::bind_rows()
+
+# Print table
+flextable(archive_data_sample) %>%
+  FitFlextableToPage() %>%
+  width(j = "ID", width = 1) %>%
+  set_table_properties(opts_pdf = list(tabcolsep = 2)) %>%
+  bg(i = which(((seq_len(nrow(archive_data_sample)) - 1) %% 10) >= 5), bg = "#F0F0F0") 
+```

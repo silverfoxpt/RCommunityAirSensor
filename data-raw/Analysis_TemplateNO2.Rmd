@@ -1,0 +1,316 @@
+---
+params:
+  title: "My title"
+  myData: "`r list()`"
+  debugTurnOn: TRUE
+title: "`r params$title`" 
+author: "Hillsborough County CAMN Network" 
+output: pdf_document
+geometry: margin=1.5cm
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{threeparttable}
+  - \usepackage{colortbl}
+---
+
+# 1. Descriptive Statistics
+**Note**: 
+
+* The colors *Yellow*, *Blue*, and *Red* in the below tables represent the **gradient** of the respective columns, *Minimum*, *Median*, and *Maximum*.
+
+* Reference sites' values are always considered **calibrated**. Hence, reference sites **will not appear** on any raw-type graphs & charts.
+
+## 1.1 Statistics of raw hourly NO2 levels
+```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
+set_flextable_defaults(
+  theme_fun = "theme_vanilla"
+)
+
+generate_descriptive_stats_table(
+  params$myData[["CombinedHourNoPPARef"]], 
+  "no2Conc1HourMean.raw", 
+  "NO2 Raw, Daily", 
+  monitorInfo = params$myData[["CombinedInfoNoPPARef"]],
+  title = "Cumulative distributions of raw NO2 levels"
+)
+```
+
+## 1.2 Statistics of calibrated hourly NO2 levels
+```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
+generate_descriptive_stats_table(
+  params$myData[["CombinedHourNoPPA"]], 
+  "no2Conc1HourMean.value", 
+  "NO2 Calibrated, Daily", 
+  monitorInfo = params$myData[["CombinedInfoNoPPA"]],
+  title = "Cumulative distributions of calibrated NO2 levels"
+)
+```
+
+## 1.3. Boxplots of the cumulative distributions of hourly NO2 levels
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=5, eval = params$debugTurnOn}
+generate_double_box_plot(
+  datafiles = params$myData[["CombinedHourNoPPA"]],
+  columnName1 = "no2Conc1HourMean.raw",
+  columnName2 = "no2Conc1HourMean.value",
+  renameName = expression("NO"[2] * " Concentrations (ppb)"),
+  newLabel = expression("Boxplots of NO"[2] * " Raw & Calibrated Concentrations"),
+  dataInfo = params$myData[["CombinedInfoNoPPA"]],
+  renameLegend1 = "Raw",
+  renameLegend2 = "Calibrated"
+)
+```
+
+# 2. Average daily data trends - Raw & Calibrated NO2 - Grouped by **sites**
+```{r, echo = FALSE, warning  = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+uniqueSites <- unique(params$myData$Info$ShortCode)
+uniqueNames <- purrr::map(
+  .x = uniqueSites,
+  .f = \(x) { params$myData$Info %>% dplyr::filter(ShortCode == x) %>% 
+              dplyr::slice(1) %>% dplyr::pull(SiteName)}
+)
+
+# Generate the graphs
+trends_graph <- purrr::map2(
+  .x = uniqueSites,
+  .y = uniqueNames,
+  .f = function(x, y) {
+    plot <- generate_sitebase_scatter_plot_data(
+      c(params$myData[["Day"]], 
+       params$myData[["DayReference"]] 
+      ), 
+      bind_rows(params$myData[["Info"]], params$myData$ReferenceInfo),
+      x,
+      "no2Conc24HourMean.value", 
+      expression("NO"[2] * " Concentrations (ppb)"),
+      paste(x, " - ", y, sep = ""),
+      type = "NO2"
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(trends_graph)
+```
+
+# 3. Average daily data trends - Raw & Calibrated NO2 - Grouped by **sensors**
+## 3.1. Reference & co-located sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+trends_graph <- purrr::map(
+  .x = names(params$myData[["CombinedDayRefCoNoPA"]]),
+  .f = function(x) {
+    sub <- params$myData[["CombinedInfoRefCoNoPA"]] %>% filter(DeviceID == !!x) %>% pull(Subtype)
+    if (sub != "Reference") { sub <- "" }
+    else { sub <- " - Reference"}
+    
+    plot <- generate_scatter_plot_data(params$myData[["CombinedDayRefCoNoPA"]][[x]] , 
+                                   "no2Conc24HourMean.raw", 
+                                   "no2Conc24HourMean.value",
+                                   expression("NO"[2] * " Concentrations (ppb)"),
+                                   paste(x, " - ", params$myData[["CombinedInfoRefCoNoPA"]] %>% 
+                                                   filter(DeviceID == !!x) %>% pull(SiteName)
+                                         ,sub , sep = ""),
+                                   type = "NO2"
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(trends_graph)
+```
+
+## 3.2. Park sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+trends_graph <- purrr::map(
+  .x = names(params$myData[["CombinedDayParkNoPA"]]),
+  .f = function(x) {
+    plot <- generate_scatter_plot_data(params$myData[["CombinedDayParkNoPA"]][[x]] , 
+                                   "no2Conc24HourMean.raw", 
+                                   "no2Conc24HourMean.value",
+                                   expression("NO"[2] * " Concentrations (ppb)"),
+                                   paste(x, " - ", params$myData[["CombinedInfoParkNoPA"]] %>% 
+                                                   filter(DeviceID == !!x) %>% pull(SiteName)
+                                         , sep = ""),
+                                   type = "NO2"
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(trends_graph)
+```
+
+## 3.3. Non-park sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+trends_graph <- purrr::map(
+  .x = names(params$myData[["CombinedDayNonParkNoPA"]]),
+  .f = function(x) {
+    plot <- generate_scatter_plot_data(params$myData[["CombinedDayNonParkNoPA"]][[x]] , 
+                                   "no2Conc24HourMean.raw", 
+                                   "no2Conc24HourMean.value",
+                                   expression("NO"[2] * " Concentrations (ppb)"),
+                                   paste(x, " - ", params$myData[["CombinedInfoNonParkNoPA"]] %>% 
+                                                   filter(DeviceID == !!x) %>% pull(SiteName)
+                                         , sep = ""),
+                                   type = "NO2"
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(trends_graph)
+```
+
+# 4. Diurnal Cycles -  Calibrated NO2 Hourly Average
+## 4.1. Reference & co-located sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+diurnal_graph <- purrr::map(
+  .x = names(params$myData[["CombinedHourRefCoNoPA"]]),
+  .f = function(x) {
+    sub <- params$myData[["CombinedInfoRefCoNoPA"]] %>% filter(DeviceID == !!x) %>% pull(Subtype)
+    if (sub != "Reference") { sub <- "" }
+    else { sub <- " - Reference"}
+    
+    plot <- generate_diurnal_boxplot_data(
+      params$myData[["CombinedHourRefCoNoPA"]][[x]] , 
+      "no2Conc1HourMean.value",
+      expression("NO"[2] * " Concentrations (ppb)"),
+      paste(x, " - ", 
+                     params$myData[["CombinedInfoRefCoNoPA"]] %>% 
+                     filter(DeviceID == !!x) %>% 
+                     pull(SiteName), sub, sep = ""),
+      type = "NO2"
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(diurnal_graph)
+```
+
+## 4.2. Park sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+diurnal_graph <- purrr::map(
+  .x = names(params$myData[["CombinedHourParkNoPA"]]),
+  .f = function(x) {
+    plot <- generate_diurnal_boxplot_data(
+      params$myData[["CombinedHourParkNoPA"]][[x]] , 
+      "no2Conc1HourMean.value",
+      expression("NO"[2] * " Concentrations (ppb)"),
+      paste(x, " - ", 
+                     params$myData[["CombinedInfoParkNoPA"]] %>% 
+                     filter(DeviceID == !!x) %>% 
+                     pull(SiteName), sep = ""),
+      type = "NO2"
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(diurnal_graph)
+```
+
+## 4.3. Non-park sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+diurnal_graph <- purrr::map(
+  .x = names(params$myData[["CombinedHourNonParkNoPA"]]),
+  .f = function(x) {
+    plot <- generate_diurnal_boxplot_data(
+      params$myData[["CombinedHourNonParkNoPA"]][[x]] , 
+      "no2Conc1HourMean.value",
+      expression("NO"[2] * " Concentrations (ppb)"),
+      paste(x, " - ", 
+                     params$myData[["CombinedInfoNonParkNoPA"]] %>% 
+                     filter(DeviceID == !!x) %>% 
+                     pull(SiteName), sep = ""),
+      type = "NO2"
+    )
+    return(plot)
+  }
+)
+
+# Print the graphs
+PrintGraphsTwoColumns(diurnal_graph)
+```
+
+# 5. Weekly Cycles -  Calibrated NO2 Hourly Average
+## 5.1. Reference & co-located sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+weekly_graph <- purrr::map(
+  .x = names(params$myData[["CombinedHourRefCoNoPA"]]),
+  .f = function(x) {
+    sub <- params$myData[["CombinedInfoRefCoNoPA"]] %>% filter(DeviceID == !!x) %>% pull(Subtype)
+    if (sub != "Reference") { sub <- "" }
+    else { sub <- " - Reference"}
+    
+    plot <- generate_weekly_boxplot_data(params$myData[["CombinedHourRefCoNoPA"]][[x]], 
+                                   "no2Conc1HourMean.value",
+                                   expression("NO"[2] * " Concentrations (ppb)"),
+                                   paste(x, " - ", 
+                                                   params$myData[["CombinedInfoRefCoNoPA"]] %>% 
+                                                   filter(DeviceID == !!x) %>% 
+                                                   pull(SiteName), sub, sep = ""),
+                                   type = "NO2"
+    )
+    return(plot)
+  }
+)
+
+PrintGraphsTwoColumns(weekly_graph)
+```
+
+## 5.2. Park sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+weekly_graph <- purrr::map(
+  .x = names(params$myData[["CombinedHourParkNoPA"]]),
+  .f = function(x) {
+    plot <- generate_weekly_boxplot_data(params$myData[["CombinedHourParkNoPA"]][[x]], 
+                                   "no2Conc1HourMean.value",
+                                   expression("NO"[2] * " Concentrations (ppb)"),
+                                   paste(x, " - ", 
+                                                   params$myData[["CombinedInfoParkNoPA"]] %>% 
+                                                   filter(DeviceID == !!x) %>% 
+                                                   pull(SiteName), sep = ""),
+                                   type = "NO2"
+    )
+    return(plot)
+  }
+)
+
+PrintGraphsTwoColumns(weekly_graph)
+```
+
+## 5.3. Non-park sites
+```{r, echo = FALSE, warning = FALSE, fig.width=10, fig.height=3, eval = params$debugTurnOn}
+# Generate the graphs
+weekly_graph <- purrr::map(
+  .x = names(params$myData[["CombinedHourNonParkNoPA"]]),
+  .f = function(x) {
+    plot <- generate_weekly_boxplot_data(params$myData[["CombinedHourNonParkNoPA"]][[x]], 
+                                   "no2Conc1HourMean.value",
+                                   expression("NO"[2] * " Concentrations (ppb)"),
+                                   paste(x, " - ", 
+                                                   params$myData[["CombinedInfoNonParkNoPA"]] %>% 
+                                                   filter(DeviceID == !!x) %>% 
+                                                   pull(SiteName), sep = ""),
+                                   type = "NO2"
+    )
+    return(plot)
+  }
+)
+
+PrintGraphsTwoColumns(weekly_graph)
+```
