@@ -1,3 +1,18 @@
+#' Download from PurpleAir API, process, and save to CSV files
+#' @param current_date Date to determine the previous month for data extraction
+#' @return None. Saves processed data to CSV files in specified directories.
+#' @examples
+#' Example usage:
+#' myDate <- Sys.Date()
+#' save_purpleAir_to_csv(myDate)
+#' @export
+#' @concept role:download
+#' @concept removedDependencies:false
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:false
+#' @concept cleanupComments:false
+#' @concept addRoxygenComments:true
 save_purpleAir_to_csv <- function(current_date) {
   # Installation and loading
   if (!require("pacman")) install.packages("pacman")

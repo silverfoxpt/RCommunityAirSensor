@@ -1,4 +1,16 @@
-qualtrics_concentrate_data_from_responses <- function() {
+#' @title Qualtrics Weekly - concentrate data from responses
+#' @description This function concentrates data from survey responses for weekly report generation.
+#' It checks if the report has already been sent for the current week, retrieves response data,
+#' merges it with personnel information, and prepares the data for report generation.
+#' @param None
+#' @concept role:qualtrics_weekly_helper
+#' @concept removedDependencies:false
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:false
+#' @concept cleanupComments:false
+#' @concept addRoxygenComments:true
+qualtrics_concentrate_data_from_responses_weekly <- function() {
   # Installation and loading
   if (!require("pacman")) install.packages("pacman")
   pacman::p_load(tidyverse, glue, httr2, jsonlite, lubridate, here, rmarkdown,
@@ -6,14 +18,14 @@ qualtrics_concentrate_data_from_responses <- function() {
                  tinytex, flextable, officer, stringr, rlang, mailR, geometry,
                  readr, readxl)
 
-  sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsUtil.R")
-  source(file = sourcePath, echo = FALSE)
-
-  sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsSecondaryUtils.R")
-  source(file = sourcePath, echo = FALSE)
-
-  sourcePath <- file.path(getwd(), "Code", "EmailUtil.R")
-  source(file = sourcePath, echo = FALSE)
+  # sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsUtil.R")
+  # source(file = sourcePath, echo = FALSE)
+  #
+  # sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsSecondaryUtils.R")
+  # source(file = sourcePath, echo = FALSE)
+  #
+  # sourcePath <- file.path(getwd(), "Code", "EmailUtil.R")
+  # source(file = sourcePath, echo = FALSE)
 
   # get date of this week
   current_date <- Sys.Date()
@@ -99,16 +111,28 @@ qualtrics_concentrate_data_from_responses <- function() {
     WeeklyShortlist = weeklyShortcode
   ))
 }
-#test <- qualtrics_concentrate_data_from_responses()
 
 #TODO: Install tinytex beforehand manually
+#' @title Qualtrics Weekly - concentrate data from responses
+#' @description This function concentrates data from survey responses for weekly report generation.
+#' It checks if the report has already been sent for the current week, retrieves response data,
+#' merges it with personnel information, and prepares the data for report generation.
+#' @param None
+#' @export
+#' @concept role:qualtrics_weekly
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:false
+#' @concept cleanupComments:false
+#' @concept addRoxygenComments:true
 qualtrics_generate_weekly_report <- function() {
   # get date of this week
   current_date <- Sys.Date()
   start_of_current_week <- floor_date(current_date, unit = "week")
 
   # get data
-  data <- qualtrics_concentrate_data_from_responses()
+  data <- qualtrics_concentrate_data_from_responses_weekly()
   if (is.null(data)) {
     return()
   }
@@ -146,7 +170,7 @@ qualtrics_generate_weekly_report <- function() {
     paste("Qualtrics Weekly Sensor Health Report - week of ", start_of_current_week, ".pdf", sep = "")
   )
 }
-qualtrics_generate_weekly_report()
+#qualtrics_generate_weekly_report()
 
 # Tested: 20 Jan 2025
 

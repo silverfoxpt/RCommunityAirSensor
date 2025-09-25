@@ -1,7 +1,12 @@
+# Uninstall
+remove.packages("testPackage")
+
 src <- "D:/R/RCommunityAirSensor/"
+library(pkgnet)
+library(usethis)
+library(devtools)
 
 # Reinstalls
-remove.packages("testPackage")
 devtools::install(src, upgrade = "never")
 
 # Load and generate pkgnet graph
@@ -11,8 +16,13 @@ report <- CreatePackageReport(
   pkg_reporters = DefaultReporters()
 )
 
+# Write FunctionGenerator to graph
+
+# Generate documentation based off of Roxygen2 comments
+devtools::document()
+
 # Check package okay
-check()
+devtools::check()
 
 # List all functions
 lsf.str("package:testPackage")

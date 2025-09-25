@@ -1,16 +1,26 @@
+#' @title Qualtrics Weekly - Update weekly template survey through Qualtrics API
+#' @param None
+#' @export
+#' @concept role:qualtrics_weekly
+#' @concept removedDependencies:false
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:false
+#' @concept cleanupComments:false
+#' @concept addRoxygenComments:true
 qualtrics_update_weekly_template_survey <- function() {
   # Installation and loading
   if (!require("pacman")) install.packages("pacman")
   pacman::p_load(tidyverse, glue, httr2, jsonlite, lubridate, qualtRics)
 
-  sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsUtil.R")
-  source(file = sourcePath, echo = FALSE)
-
-  sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsSecondaryUtils.R")
-  source(file = sourcePath, echo = FALSE)
-
-  sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsFlowNLogicUtils.R")
-  source(file = sourcePath, echo = FALSE)
+  # sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsUtil.R")
+  # source(file = sourcePath, echo = FALSE)
+  #
+  # sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsSecondaryUtils.R")
+  # source(file = sourcePath, echo = FALSE)
+  #
+  # sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsFlowNLogicUtils.R")
+  # source(file = sourcePath, echo = FALSE)
 
   # import env vars
   qualtKey <- Sys.getenv("QUALTRICS_API_KEY")
@@ -79,6 +89,6 @@ qualtrics_update_weekly_template_survey <- function() {
 }
 
 #readRenviron(file.path(getwd(), ".Rqualtrics"))
-qualtrics_update_weekly_template_survey()
+#qualtrics_update_weekly_template_survey()
 
 # Tested: 20 Jan 2025

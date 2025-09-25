@@ -1,3 +1,14 @@
+#' @title Qualtrics monthly - concentrate data from survey responses
+#' @param None
+#' @return None
+#' @export
+#' @concept role:qualtrics_monthly
+#' @concept removedDependencies:false
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:false
+#' @concept cleanupComments:false
+#' @concept addRoxygenComments:true
 qualtrics_concentrate_monthly_data_from_responses <- function() {
   # Installation and loading
   if (!require("pacman")) install.packages("pacman")
@@ -6,14 +17,14 @@ qualtrics_concentrate_monthly_data_from_responses <- function() {
                  tinytex, flextable, officer, stringr, rlang, mailR, geometry,
                  readr, readxl)
 
-  sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsUtil.R")
-  source(file = sourcePath, echo = FALSE)
-
-  sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsSecondaryUtils.R")
-  source(file = sourcePath, echo = FALSE)
-
-  sourcePath <- file.path(getwd(), "Code", "EmailUtil.R")
-  source(file = sourcePath, echo = FALSE)
+  # sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsUtil.R")
+  # source(file = sourcePath, echo = FALSE)
+  #
+  # sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsSecondaryUtils.R")
+  # source(file = sourcePath, echo = FALSE)
+  #
+  # sourcePath <- file.path(getwd(), "Code", "EmailUtil.R")
+  # source(file = sourcePath, echo = FALSE)
 
   # get date of this month
   current_date <- Sys.Date()
@@ -138,6 +149,17 @@ qualtrics_concentrate_monthly_data_from_responses <- function() {
 #tmp <- qualtrics_concentrate_monthly_data_from_responses()
 
 #TODO: Install tinytex beforehand manually
+#' @title Qualtrics monthly - generate report
+#' @param None
+#' @return None
+#' @export
+#' @concept role:qualtrics_monthly
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:false
+#' @concept cleanupComments:false
+#' @concept addRoxygenComments:true
 qualtrics_generate_monthly_report <- function() {
   # get data
   data <- qualtrics_concentrate_monthly_data_from_responses()
@@ -201,7 +223,7 @@ qualtrics_generate_monthly_report <- function() {
     paste("Qualtrics Monthly Data Assurance Report - month of ", start_of_current_month, ".pdf", sep = "")
   )
 }
-qualtrics_generate_monthly_report()
+#qualtrics_generate_monthly_report()
 
 # Finish testing: 17 Mar 2024
 
