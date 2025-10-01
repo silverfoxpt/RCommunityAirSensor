@@ -106,11 +106,12 @@
 #'
 #' @export
 #' @concept role:download
-#' @concept removedDependencies:false
+#' @concept removedDependencies:true
 #' @concept removedRawFunctionCalls:true
 #' @concept removedSensitiveInfo:true
 #' @concept cleanupParameters:true
-#' @concept cleanupComments:false
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
 #' @concept addRoxygenComments:true
 save_clarity_to_csv <- function(current_date,
                                 root_folder = Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
@@ -129,10 +130,6 @@ save_clarity_to_csv <- function(current_date,
   if (is.null(clarity_api_key) || clarity_api_key == "") {
     stop("clarity_api_key parameter is required. Set CLARITYAPI environment variable or provide explicit key.")
   }
-
-  # Downloading and installation
-  if (!require("pacman")) install.packages("pacman")
-  pacman::p_load(tidyverse, ggplot2, dplyr, httr2, glue, stats, readr, readxl, tools)
 
   # Get timestamp from start of month
   calc_time <- previous_month_bounds(current_date)
@@ -242,4 +239,14 @@ save_clarity_to_csv <- function(current_date,
 # myDate <- as.Date("2025-07-02")
 # tmp <- save_clarity_to_csv(myDate)
 
-# Development notes: Finish testing: 30 Sep 2025
+# Development notes: Finish testing: 30 Sep 2025 x 2
+# Updates:
+# - Parameterized hardcoded variables
+# - Add more error handling
+# - Add more documentation
+# - Eliminated code redundancy by a for-loop for both hourly and daily data
+# - Update naming for consistency
+# - Update comments
+# - Test out goodpractice::gp()
+# - Explore ways of cleaning up dependencies namespace
+

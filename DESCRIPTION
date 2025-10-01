@@ -16,6 +16,15 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
+Imports:
+    ggplot2,
+    dplyr,
+    httr2,
+    glue,
+    readr,
+    readxl,
+    stringr,
+    lubridate
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
