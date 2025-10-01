@@ -4,26 +4,149 @@
 \alias{save_clarity_to_csv}
 \title{Download from Clarity API, process, and save to CSV files}
 \usage{
-save_clarity_to_csv(current_date)
+save_clarity_to_csv(
+  current_date,
+  root_folder = Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+  clarity_api_key = Sys.getenv("CLARITYAPI"),
+  log_file_path = "CSV/Exports/ClarityLog.csv",
+  csv_base_path = "CSV",
+  clarity_folder_name = "Clarity",
+  clarity_reference_folder_name = "Clarity-Reference",
+  sensor_type_filter = "Clarity",
+  aggregation_periods = c("day", "hour")
+)
 }
 \arguments{
-\item{current_date}{Date to determine the previous month for data extraction}
+\item{current_date}{Date object to determine the previous month for data extraction.
+The function calculates the previous month's boundaries from this date.}
+
+\item{root_folder}{Character string specifying the root folder path for all file operations.
+Defaults to the BOX_UPLOAD_ROOT_FOLDER environment variable. Must be a valid directory path.}
+
+\item{clarity_api_key}{Character string containing the Clarity API key for authentication.
+Defaults to the CLARITYAPI environment variable. Required for API access.}
+
+\item{log_file_path}{Character string specifying the relative path to the processing log file.
+Defaults to "CSV/Exports/ClarityLog.csv". Used to track completed processing runs.}
+
+\item{csv_base_path}{Character string specifying the base path for CSV file storage.
+Defaults to "CSV". All sensor and reference data folders are created under this path.}
+
+\item{clarity_folder_name}{Character string specifying the folder name for sensor data.
+Defaults to "Clarity". Creates organized storage for main sensor measurements.}
+
+\item{clarity_reference_folder_name}{Character string specifying the folder name for reference station data.
+Defaults to "Clarity-Reference". Separates reference station data from sensor data.}
+
+\item{sensor_type_filter}{Character string used to filter monitor information by sensor type.
+Defaults to "Clarity". Must match entries in the monitor tracking spreadsheet.}
+
+\item{aggregation_periods}{Character vector specifying time aggregation periods for data download.
+Defaults to c("day", "hour"). Accepts "day" (24-hour averages) and "hour" (hourly data).
+Each period generates separate API requests and output files.}
 }
 \value{
-None. Saves processed data to CSV files in specified directories.
+NULL.
 }
 \description{
-Download from Clarity API, process, and save to CSV files
+This function downloads air quality data from the Clarity API for the previous month,
+processes it into organized datasets, and saves both sensor and reference station data
+to CSV files. It includes duplicate detection to prevent re-processing of data.
 }
+\details{
+\strong{Run:}
+\enumerate{
+\item \strong{Validation}: Checks required parameters and environment variables
+\item \strong{Log check}: Verifies if data for the target month has already been processed
+\item \strong{Time calculation}: Determines the previous month's date range for data extraction
+\item \strong{Retrieve monitor info}: Retrieves sensor information from CAMNMonitorTracking.xlsx
+\item \strong{API requests}: Downloads data from Clarity API for each organization ID
+\item \strong{Data processing}: Splits and formats data by sensor and reference stations
+\item \strong{File operations}: Creates folder structure and saves CSV files
+\item \strong{Logging}: Records completion status to prevent duplicate processing
+}
+
+\strong{Data processing details:}
+\itemize{
+\item Retrieves unique organization IDs from monitor tracking data
+\item Downloads data for each aggregation period (daily and hourly by default)
+\item Formats timestamps using \code{format_timestamp()}
+\item Separates sensor data from reference station data
+\item Splits data by individual sensor/datasource IDs
+\item Removes duplicated reference stations by name
+}
+
+\strong{File structure:}
+\preformatted{
+root_folder/
+├── CSV/
+│   ├── Clarity/
+│   │   └── Clarity.YYYY-MM-DD.YYYY-MM-DD/
+│   │       ├── [sensor files with Daily/Hourly data]
+│   └── Clarity-Reference/
+│       └── Clarity.YYYY-MM-DD.YYYY-MM-DD/
+│           ├── [reference station files with Daily/Hourly data]
+└── CSV/Exports/ClarityLog.csv (processing log)
+}
+
+**Required dependencies:**
+- tidyverse, ggplot2, dplyr: Data manipulation and visualization
+\itemize{
+\item httr2: HTTP requests to Clarity API
+\item glue: String interpolation
+\item stats, readr, readxl: Data I/O operations
+\item tools: Utility functions (toTitleCase)
+}
+}
+\section{Error handling}{
+
+The function will stop execution with error messages if:
+\itemize{
+\item \code{root_folder} is NULL, empty, or the environment variable is not set
+\item \code{clarity_api_key} is NULL, empty, or the environment variable is not set
+\item Log file cannot be read (file doesn't exist or permission issues)
+\item Monitor tracking file is not accessible
+\item API requests fail or return invalid data
+\item Directory creation fails due to permissions
+}
+}
+
 \examples{
-Example usage:
-myDate <- Sys.Date()
-save_clarity_to_csv(myDate)
+\dontrun{
+# Basic usage with current system date
+save_clarity_to_csv(Sys.Date())
+
+# Process data for a specific month
+save_clarity_to_csv(as.Date("2025-07-15"))
+
+# Custom configuration for different environment
+save_clarity_to_csv(
+  current_date = Sys.Date(),
+  root_folder = "/path/to/data/storage",
+  clarity_api_key = "your_api_key_here",
+  aggregation_periods = c("day")  # Only daily data
+)
+
+# Custom folder structure
+save_clarity_to_csv(
+  current_date = as.Date("2025-06-01"),
+  csv_base_path = "data",
+  clarity_folder_name = "sensors",
+  clarity_reference_folder_name = "reference_stations"
+)
+}
+
+}
+\seealso{
+\code{\link{previous_month_bounds}} for date range calculations,
+\code{\link{read_monitor_info_from_monitor_tracking}} for sensor metadata,
+\code{\link{clarity_get_organization_data}} for API data retrieval
 }
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
-\concept{removedDependencies:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
 \concept{role:download}

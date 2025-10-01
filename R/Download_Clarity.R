@@ -36,13 +36,6 @@
 #' └── CSV/Exports/ClarityLog.csv (processing log)
 #' }
 #'
-#' **Required dependencies:**
-#' - tidyverse, ggplot2, dplyr: Data manipulation and visualization
-#' - httr2: HTTP requests to Clarity API
-#' - glue: String interpolation
-#' - stats, readr, readxl: Data I/O operations
-#' - tools: Utility functions (toTitleCase)
-#'
 #' @param current_date Date object to determine the previous month for data extraction.
 #'   The function calculates the previous month's boundaries from this date.
 #' @param root_folder Character string specifying the root folder path for all file operations.
@@ -249,4 +242,4 @@ save_clarity_to_csv <- function(current_date,
 # - Update comments
 # - Test out goodpractice::gp()
 # - Explore ways of cleaning up dependencies namespace
-
+# - Test pkgdown::build_site()
