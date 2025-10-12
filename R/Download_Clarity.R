@@ -50,11 +50,9 @@
 #'   Defaults to "Clarity". Creates organized storage for main sensor measurements.
 #' @param clarity_reference_folder_name Character string specifying the folder name for reference station data.
 #'   Defaults to "Clarity-Reference". Separates reference station data from sensor data.
-#' @param sensor_type_filter Character string used to filter monitor information by sensor type.
-#'   Defaults to "Clarity". Must match entries in the monitor tracking spreadsheet.
 #' @param aggregation_periods Character vector specifying time aggregation periods for data download.
-#'   Defaults to c("day", "hour"). Accepts "day" (24-hour averages) and "hour" (hourly data).
-#'   Each period generates separate API requests and output files.
+#'   Defaults to c("day", "hour"). Must contain one or both of: "day" (24-hour averages) and "hour" (hourly data).
+#'   Cannot be empty, contain duplicates, or have more than 2 periods. Each period generates separate API requests and output files.
 #'
 #' @return NULL.
 #'
@@ -62,6 +60,7 @@
 #' The function will stop execution with error messages if:
 #' - \code{root_folder} is NULL, empty, or the environment variable is not set
 #' - \code{clarity_api_key} is NULL, empty, or the environment variable is not set
+#' - \code{aggregation_periods} is NULL, empty, contains invalid values, duplicates, or more than 2 periods
 #' - Log file cannot be read (file doesn't exist or permission issues)
 #' - Monitor tracking file is not accessible
 #' - API requests fail or return invalid data
@@ -75,12 +74,24 @@
 #' # Process data for a specific month
 #' save_clarity_to_csv(as.Date("2025-07-15"))
 #'
-#' # Custom configuration for different environment
+#' # Custom configuration for different environment - daily data only
 #' save_clarity_to_csv(
 #'   current_date = Sys.Date(),
 #'   root_folder = "/path/to/data/storage",
 #'   clarity_api_key = "your_api_key_here",
 #'   aggregation_periods = c("day")  # Only daily data
+#' )
+#'
+#' # Download only hourly data
+#' save_clarity_to_csv(
+#'   current_date = Sys.Date(),
+#'   aggregation_periods = c("hour")  # Only hourly data
+#' )
+#'
+#' # Download both daily and hourly (default behavior)
+#' save_clarity_to_csv(
+#'   current_date = Sys.Date(),
+#'   aggregation_periods = c("day", "hour")  # Both periods
 #' )
 #'
 #' # Custom folder structure
@@ -113,7 +124,6 @@ save_clarity_to_csv <- function(current_date,
                                 csv_base_path = "CSV",
                                 clarity_folder_name = "Clarity",
                                 clarity_reference_folder_name = "Clarity-Reference",
-                                sensor_type_filter = "Clarity",
                                 aggregation_periods = c("day", "hour")
                         ) {
   # Validate required parameters
@@ -122,6 +132,23 @@ save_clarity_to_csv <- function(current_date,
   }
   if (is.null(clarity_api_key) || clarity_api_key == "") {
     stop("clarity_api_key parameter is required. Set CLARITYAPI environment variable or provide explicit key.")
+  }
+
+  # Validate aggregation periods
+  valid_periods <- c("day", "hour")
+  if (is.null(aggregation_periods) || length(aggregation_periods) == 0) {
+    stop("aggregation_periods parameter is required and cannot be empty.")
+  }
+  if (!all(aggregation_periods %in% valid_periods)) {
+    invalid_periods <- aggregation_periods[!aggregation_periods %in% valid_periods]
+    stop(paste("Invalid aggregation periods:", paste(invalid_periods, collapse = ", "),
+               ". Valid options are:", paste(valid_periods, collapse = ", ")))
+  }
+  if (length(aggregation_periods) > 2) {
+    stop("aggregation_periods can contain at most 2 periods: 'day' and/or 'hour'.")
+  }
+  if (length(unique(aggregation_periods)) != length(aggregation_periods)) {
+    stop("aggregation_periods cannot contain duplicate values.")
   }
 
   # Get timestamp from start of month
@@ -144,7 +171,7 @@ save_clarity_to_csv <- function(current_date,
   }
 
   # Get DeviceID from CAMNMonitorTracking.xlsx file - synced to Box
-  sitesInfo <- read_monitor_info_from_monitor_tracking(sensor_type_filter)
+  sitesInfo <- read_monitor_info_from_monitor_tracking("Clarity")
 
   # Extract information
   deviceId <- sitesInfo[['DeviceID']]
@@ -156,7 +183,7 @@ save_clarity_to_csv <- function(current_date,
   uniqueOrgID <- unique(orgID)
 
   # Create folder name
-  newFolderName <- paste(sensor_type_filter,
+  newFolderName <- paste("Clarity",
                          as.character(start_of_last_month),
                          as.character(start_of_current_month),
                          sep = ".")

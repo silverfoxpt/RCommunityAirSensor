@@ -14,8 +14,8 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
   readMonitorTracking <-
     readxl::read_xlsx(
       path = file.path(Sys.getenv("BOX_RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx"),
-      sheet = "MonitorStatus", # IN TESTING, THIS WILL CHANGE TO TESTINGONLY
-      range = "A10:J100"
+      sheet = "MonitorStatus", 
+      range = "A10:K100"
     ) %>%
     as_tibble() %>%
     dplyr::rename("DeviceID" = "API ID") %>%
@@ -205,4 +205,8 @@ load_clarity_data_from_archive <- function(startDateOfMonth) {
 
 # Need update from above function for Qualtrics! Refactor it!
 # Finish testing: 03 November 2024
+
+# Update - 11/Sep/2025
+# - Temp. fix read_monitor_info_from_monitor_tracking() - columns range from A -> K instead of J.
+# - Need to update through parameter.
 
