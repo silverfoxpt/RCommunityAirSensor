@@ -139,7 +139,7 @@ qualtrics_generate_weekly_report <- function() {
 
   # generate markdown report - PDF
   # TODO: Consider HTML in the future?
-  pdfFilePath <- file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Qualtrics", "Weekly", "Reports",
+  pdfFilePath <- file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Qualtrics", "Weekly", "Reports",
                            paste("WeeklyCommunitySensorReport - ", start_of_current_week, ".pdf", sep = ""))
 
   rmarkdown::render(

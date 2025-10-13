@@ -39,17 +39,11 @@
 #' @param current_date Date object to determine the previous month for data extraction.
 #'   The function calculates the previous month's boundaries from this date.
 #' @param root_folder Character string specifying the root folder path for all file operations.
-#'   Defaults to the BOX_UPLOAD_ROOT_FOLDER environment variable. Must be a valid directory path.
+#'   Defaults to the UPLOAD_ROOT_FOLDER environment variable. Must be a valid directory path.
+#' @param records_folder Character string specifying the folder path where CAMNMonitorTracking.xlsx is located.
+#'   Defaults to the RECORDS_ROOT_FOLDER environment variable. Must be a valid directory path
 #' @param clarity_api_key Character string containing the Clarity API key for authentication.
 #'   Defaults to the CLARITYAPI environment variable. Required for API access.
-#' @param log_file_path Character string specifying the relative path to the processing log file.
-#'   Defaults to "CSV/Exports/ClarityLog.csv". Used to track completed processing runs.
-#' @param csv_base_path Character string specifying the base path for CSV file storage.
-#'   Defaults to "CSV". All sensor and reference data folders are created under this path.
-#' @param clarity_folder_name Character string specifying the folder name for sensor data.
-#'   Defaults to "Clarity". Creates organized storage for main sensor measurements.
-#' @param clarity_reference_folder_name Character string specifying the folder name for reference station data.
-#'   Defaults to "Clarity-Reference". Separates reference station data from sensor data.
 #' @param aggregation_periods Character vector specifying time aggregation periods for data download.
 #'   Defaults to c("day", "hour"). Must contain one or both of: "day" (24-hour averages) and "hour" (hourly data).
 #'   Cannot be empty, contain duplicates, or have more than 2 periods. Each period generates separate API requests and output files.
@@ -93,14 +87,6 @@
 #'   current_date = Sys.Date(),
 #'   aggregation_periods = c("day", "hour")  # Both periods
 #' )
-#'
-#' # Custom folder structure
-#' save_clarity_to_csv(
-#'   current_date = as.Date("2025-06-01"),
-#'   csv_base_path = "data",
-#'   clarity_folder_name = "sensors",
-#'   clarity_reference_folder_name = "reference_stations"
-#' )
 #' }
 #'
 #' @seealso
@@ -119,20 +105,25 @@
 #' @concept addRoxygenComments:true
 #' @concept addCheckSetupFolder:false
 save_clarity_to_csv <- function(current_date,
-                                root_folder = Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+                                root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"),
+                                records_folder = Sys.getenv("RECORDS_ROOT_FOLDER"),
                                 clarity_api_key = Sys.getenv("CLARITYAPI"),
-                                log_file_path = "CSV/Exports/ClarityLog.csv",
-                                csv_base_path = "CSV",
-                                clarity_folder_name = "Clarity",
-                                clarity_reference_folder_name = "Clarity-Reference",
                                 aggregation_periods = c("day", "hour")
                         ) {
   # Validate required parameters
   if (is.null(root_folder) || root_folder == "") {
-    stop("root_folder parameter is required. Set BOX_UPLOAD_ROOT_FOLDER environment variable or provide explicit path.")
+    stop("root_folder parameter is required. Set UPLOAD_ROOT_FOLDER environment variable or provide explicit path.")
   }
   if (is.null(clarity_api_key) || clarity_api_key == "") {
     stop("clarity_api_key parameter is required. Set CLARITYAPI environment variable or provide explicit key.")
+  }
+
+  # Check folder structure and Excel file
+  if (!check_folder_and_file_structure(root_folder)) {
+    stop("Required folder structure not found. Please run setup_folder_and_file_structure() first.")
+  }
+  if (!check_excel_file(records_folder, testing = TRUE)) {
+    stop("Required Excel file (CAMNMonitorTracking.xlsx) not found or has incorrect structure. Please run setup_excel_file() first.")
   }
 
   # Validate aggregation periods
@@ -163,7 +154,7 @@ save_clarity_to_csv <- function(current_date,
   end_time_ISO <- calc_time$end
 
   # Check if Log has already been collected
-  log_file_full_path <- file.path(root_folder, log_file_path)
+  log_file_full_path <- file.path(root_folder, "CSV/Exports/ClarityLog.csv")
   logfile <- read.csv(log_file_full_path) %>% as_tibble()
 
   if (logfile %>% dplyr::filter(OriginDate == start_of_last_month) %>% nrow > 0) {
@@ -190,8 +181,8 @@ save_clarity_to_csv <- function(current_date,
                          sep = ".")
 
   # Create folder paths
-  folderPath <- file.path(csv_base_path, clarity_folder_name, newFolderName)
-  referenceFolderPath <- file.path(csv_base_path, clarity_reference_folder_name, newFolderName)
+  folderPath <- file.path("CSV", "Clarity", newFolderName)
+  referenceFolderPath <- file.path("CSV", "Clarity-Reference", newFolderName)
 
   # Create folders
   create_new_folder(folderPath, root_path = root_folder)
@@ -274,4 +265,11 @@ save_clarity_to_csv <- function(current_date,
 
 # Update: 12 Oct 2025
 # - addCheckSetupFolder as a flag in roxygen @concept
-
+# - Removed log_file_path, csv_base_path, clarity_folder_name, clarity_reference_folder_name from parameter lists
+# - Added folder structure and Excel file validation checks after initial null checks
+# - Replaced removed parameter references with hardcoded default values
+# - Update typo: MainPersonel.csv to MainPersonnel.csv in setupFolderStructure.R
+# - Update QualtricsUpdateLog.csv in setupFolderStructure.R to correct column names.
+# - Replace all BOX_UPLOAD_ROOT_FOLDER with UPLOAD_ROOT_FOLDER
+# - Replace all BOX_RECORDS_ROOT_FOLDER with RECORDS_ROOT_FOLDER
+# - Add records_folder parameter to specify location of CAMNMonitorTracking.xlsx, update documentation

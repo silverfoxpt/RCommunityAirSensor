@@ -20,7 +20,7 @@ load_data_from_month_clarity <- function(startDateOfMonth) {
   endDate <- (startDate + months(1)) - days(1)
 
   folderName <- file.path(
-    Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+    Sys.getenv("UPLOAD_ROOT_FOLDER"),
     "CSV", as.character(sensorType),
     paste(sensorType, startDate, endDate, sep = ".")
 
@@ -72,7 +72,7 @@ load_data_from_month_clarity <- function(startDateOfMonth) {
   endDate <- (startDate + months(1)) - days(1)
 
   folderName <- file.path(
-    Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+    Sys.getenv("UPLOAD_ROOT_FOLDER"),
     "CSV", as.character("Clarity-Reference"),
     paste(sensorType, startDate, endDate, sep = ".")
 
@@ -143,7 +143,7 @@ load_data_from_month_purpleAir <- function(startDateOfMonth) {
   endDate <- (startDate + months(1)) - days(1)
 
   folderName <- file.path(
-    Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+    Sys.getenv("UPLOAD_ROOT_FOLDER"),
     "CSV", as.character(sensorType),
     paste(sensorType, startDate, endDate, sep = ".")
 

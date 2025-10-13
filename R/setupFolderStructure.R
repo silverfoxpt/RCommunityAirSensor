@@ -46,7 +46,7 @@ setup_folder_and_file_structure <- function(directory) {
     list(directory = file.path(directory, "CSV/Exports"), filename = "ClarityLog.csv", columns = "OriginDate,Complete"),
     list(directory = file.path(directory, "CSV/Exports"), filename = "PurpleAirLog.csv", columns = "OriginDate,Complete"),
     list(directory = file.path(directory, "CSV/Exports"), filename = "QualtricsMonthlyLog.csv", columns = "OriginDate,Action,SaveData"),
-    list(directory = file.path(directory, "CSV/Exports"), filename = "QualtricsUpdateLog.csv", columns = "OriginDate,Action,SaveData"),
+    list(directory = file.path(directory, "CSV/Exports"), filename = "QualtricsUpdateLog.csv", columns = "OriginDate,Action"),
     list(directory = file.path(directory, "CSV/Exports"), filename = "QualtricsWeeklyLog.csv", columns = "OriginDate,Action,SaveData"),
     list(directory = file.path(directory, "CSV/Imports"), filename = "MainPersonnel.csv", columns = "FirstName,LastName,Email,Role"),
     list(directory = file.path(directory, "CSV/Imports"), filename = "MonthlyUpdateQuestion.csv", columns = "QuestionID,SensorType,QuestionTag,QuestionColumnName,NotNormalAnswer"),
@@ -123,7 +123,7 @@ check_folder_and_file_structure <- function(directory) {
     "CSV/Exports/ClarityLog.csv" = c("OriginDate", "Complete"),
     "CSV/Exports/PurpleAirLog.csv" = c("OriginDate", "Complete"),
     "CSV/Exports/QualtricsMonthlyLog.csv" = c("OriginDate", "Action", "SaveData"),
-    "CSV/Exports/QualtricsUpdateLog.csv" = c("OriginDate", "Action", "SaveData"),
+    "CSV/Exports/QualtricsUpdateLog.csv" = c("OriginDate", "Action"),
     "CSV/Exports/QualtricsWeeklyLog.csv" = c("OriginDate", "Action", "SaveData"),
     "CSV/Imports/MainPersonnel.csv" = c("FirstName", "LastName", "Email", "Role"),
     "CSV/Imports/MonthlyUpdateQuestion.csv" = c("QuestionID", "SensorType", "QuestionTag", "QuestionColumnName", "NotNormalAnswer"),
@@ -193,7 +193,7 @@ setup_excel_file <- function(directory) {
   add_excel_new_sheet(excel_file_path, "ReferenceSiteData", reference_site_columns)
 
   # Add SitesAndHosts sheet
-  sites_hosts_columns <- "Long Name of Location,Standard Dashboard/map location name,Short code,Host contact person,Host title,Email,Cellphone"
+  sites_hosts_columns <- "Long Name of Location,Standard Dashboard/map location name,files& tracking sheet,Host contact person,Host title,Email,Cellphone"
   add_excel_new_sheet(excel_file_path, "SitesAndHosts", sites_hosts_columns)
 
   message("CAMN Monitor Tracking Excel file setup complete: ", excel_file_path)
@@ -212,7 +212,7 @@ setup_excel_file <- function(directory) {
 #' \dontrun{
 #' check_excel_file("C:/MyProject")
 #' }
-check_excel_file <- function(directory) {
+check_excel_file <- function(directory, testing = FALSE) {
   # Check if openxlsx package is available
   if (!requireNamespace("openxlsx", quietly = TRUE)) {
     stop("Package 'openxlsx' is required but not installed. Please install it using: install.packages('openxlsx')")
@@ -240,7 +240,7 @@ check_excel_file <- function(directory) {
   expected_sheets <- list(
     "MonitorStatus" = c("Label", "Type", "API ID", "Dashboard/API Organization ID", "Location short code", "Deployed Site Location", "Data sharing setting"),
     "ReferenceSiteData" = c("Datasource ID", "Site Name", "Short Code", "Collect PM2.5", "Collect NO2"),
-    "SitesAndHosts" = c("Long Name of Location", "Standard Dashboard/map location name", "Short code", "Host contact person", "Host title", "Email", "Cellphone")
+    "SitesAndHosts" = c("Long Name of Location", "Standard Dashboard/map location name", "files& tracking sheet", "Host contact person", "Host title", "Email", "Cellphone")
   )
 
   # Load and validate the Excel file structure
@@ -251,6 +251,13 @@ check_excel_file <- function(directory) {
     # Get all sheet names in the workbook
     actual_sheets <- names(wb)
 
+    # For testing only
+    if (testing) {
+        myStartRow <- 10
+    } else {
+        myStartRow <- 2
+    }
+
     # Check if all expected sheets exist
     for (sheet_name in names(expected_sheets)) {
       if (!sheet_name %in% actual_sheets) {
@@ -259,11 +266,13 @@ check_excel_file <- function(directory) {
 
       # Read the sheet to check column structure
       # Since columns start from row 2, we need to read from row 2
-      sheet_data <- openxlsx::read.xlsx(wb, sheet = sheet_name, startRow = 2, colNames = TRUE, rows = 2:3)
+      sheet_data <- openxlsx::read.xlsx(wb, sheet = sheet_name, startRow = myStartRow, colNames = TRUE, rows = startRow:(startRow + 1))
 
       # Get actual column names (read.xlsx converts spaces to dots)
       actual_columns <- names(sheet_data)
+      print(actual_columns)
       expected_columns <- expected_sheets[[sheet_name]]
+      print(expected_columns)
 
       # Convert expected column names to match read.xlsx behavior (spaces to dots)
       expected_columns_converted <- gsub(" ", ".", expected_columns)

@@ -11,8 +11,8 @@
 #' @concept addRoxygenComments:true
 copy_original_QAMonitorFile <- function() {
   # Define the file path and subfolder
-  base_file <- file.path(Sys.getenv("BOX_RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx")
-  new_folder <- file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "QATimeshift")
+  base_file <- file.path(Sys.getenv("RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx")
+  new_folder <- file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "QATimeshift")
 
   # Create the subfolder if it doesn't exist
   if (!dir.exists(new_folder)) {

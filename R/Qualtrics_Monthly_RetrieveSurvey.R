@@ -68,7 +68,7 @@ qualtrics_retrieve_monthly_response <- function() {
   mainFilename <- paste("Qualtrics_Monthly_Response_monthOf_", start_of_current_month, ".csv", sep = "")
   write.csv(
     mySurveyResponse,
-    file = file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+    file = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"),
                      "CSV", "Qualtrics", "Monthly", mainFilename)
   )
 
@@ -76,7 +76,7 @@ qualtrics_retrieve_monthly_response <- function() {
   subFilename <- paste("QuestionDescription_monthOf_", start_of_current_month, ".csv", sep = "")
   write.csv(
     surveyQuestionDescription,
-    file = file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+    file = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"),
                      "CSV", "Qualtrics", "Monthly", subFilename)
   )
 

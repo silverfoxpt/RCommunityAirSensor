@@ -6,7 +6,7 @@
 \usage{
 save_clarity_to_csv(
   current_date,
-  root_folder = Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+  root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"),
   clarity_api_key = Sys.getenv("CLARITYAPI"),
   log_file_path = "CSV/Exports/ClarityLog.csv",
   csv_base_path = "CSV",
@@ -21,7 +21,7 @@ save_clarity_to_csv(
 The function calculates the previous month's boundaries from this date.}
 
 \item{root_folder}{Character string specifying the root folder path for all file operations.
-Defaults to the BOX_UPLOAD_ROOT_FOLDER environment variable. Must be a valid directory path.}
+Defaults to the UPLOAD_ROOT_FOLDER environment variable. Must be a valid directory path.}
 
 \item{clarity_api_key}{Character string containing the Clarity API key for authentication.
 Defaults to the CLARITYAPI environment variable. Required for API access.}

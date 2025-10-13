@@ -187,7 +187,7 @@
 #
 # # Generate report and save to file
 # folderPath <- file.path("CSV", "Instant-Report", format(now(), "%Y-%m"))
-# create_new_folder(folderPath, root_path = Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"))
+# create_new_folder(folderPath, root_path = Sys.getenv("UPLOAD_ROOT_FOLDER"))
 #
 # rmarkdown::render(
 #   file.path("Code", "Report", "PurpleAirInstantReport.Rmd"),
@@ -196,6 +196,6 @@
 #     myData = processed_report,
 #     debugTurnOn = T
 #   ),
-#   output_file = file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), folderPath,
+#   output_file = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), folderPath,
 #                           paste("Status of Purple Air sensors - ", format(now(), "%Y-%m-%d"), ".pdf", sep = ""))
 # )

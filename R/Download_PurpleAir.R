@@ -40,7 +40,7 @@ save_purpleAir_to_csv <- function(current_date) {
 
   # Check if Log has already been collected
   logfile <-
-    read.csv(file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "PurpleAirLog.csv")) %>%
+    read.csv(file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "PurpleAirLog.csv")) %>%
     as_tibble()
 
   if (logfile %>% dplyr::filter(OriginDate == start_of_last_month) %>% nrow > 0) {
@@ -79,13 +79,13 @@ save_purpleAir_to_csv <- function(current_date) {
 
   # creating folder
   folderPath <- file.path("CSV", "PurpleAir", newFolderName)
-  create_new_folder(folderPath, root_path = Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"))
+  create_new_folder(folderPath, root_path = Sys.getenv("UPLOAD_ROOT_FOLDER"))
 
   # save to file - daily
   purrr::pwalk(.l = list(sensor_ids, temp_list_sensors_data, sensor_owners, sensor_shortcode),
                .f = save_aq_to_csv,
                average = "Daily",
-               foldername = file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), folderPath),
+               foldername = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), folderPath),
                current_date = current_date
   )
 
@@ -103,7 +103,7 @@ save_purpleAir_to_csv <- function(current_date) {
   purrr::pwalk(.l = list(sensor_ids, temp_list_sensors_data, sensor_owners, sensor_shortcode),
                .f = save_aq_to_csv,
                average = "Hourly",
-               foldername = file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), folderPath),
+               foldername = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), folderPath),
                current_date = current_date
   )
 
@@ -113,7 +113,7 @@ save_purpleAir_to_csv <- function(current_date) {
       OriginDate = c(start_of_last_month),
       Complete = c('COMPLETED')
     ),
-    file = file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "PurpleAirLog.csv"),
+    file = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "PurpleAirLog.csv"),
     sep = ",",
     col.names = FALSE,
     row.names = FALSE,

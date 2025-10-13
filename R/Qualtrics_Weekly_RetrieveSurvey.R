@@ -65,7 +65,7 @@ qualtrics_retrieve_weekly_response <- function() {
   mainFilename <- paste("Qualtrics_Weekly_Response_weekOf_", start_of_current_week, ".csv", sep = "")
   write.csv(
     mySurveyResponse,
-    file = file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+    file = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"),
                      "CSV", "Qualtrics", "Weekly", mainFilename)
   )
 
@@ -73,7 +73,7 @@ qualtrics_retrieve_weekly_response <- function() {
   subFilename <- paste("QuestionDescription_weekOf_", start_of_current_week, ".csv", sep = "")
   write.csv(
     surveyQuestionDescription,
-    file = file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+    file = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"),
                      "CSV", "Qualtrics", "Weekly", subFilename)
   )
 

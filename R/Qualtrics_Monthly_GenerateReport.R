@@ -173,7 +173,7 @@ qualtrics_generate_monthly_report <- function() {
 
   # generate markdown report - PDF
   # TODO: Consider HTML in the future?
-  pdfFilePath <- file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Qualtrics", "Monthly", "Reports",
+  pdfFilePath <- file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Qualtrics", "Monthly", "Reports",
                            paste("DataQAReport - ", start_of_current_month, ".pdf", sep = ""))
   rmarkdown::render(
     file.path("Code", "QualtricsCode", "QualtricsMonthly", "QualtricsMonthlyReportTemplate.Rmd"),
@@ -192,7 +192,7 @@ qualtrics_generate_monthly_report <- function() {
                                                               dplyr::mutate(Resolved = as.character(Resolved))
                                                             )
   write.csv(newUnresolved,
-            file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Imports", "UnresolvedMonitor.csv"),
+            file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Imports", "UnresolvedMonitor.csv"),
             row.names = FALSE
   )
 

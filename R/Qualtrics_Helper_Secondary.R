@@ -3,13 +3,13 @@
 
 # Weekly CSV files' functions ####
 get_weekly_log <- function() {
-  logfile <- read.csv(file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "QualtricsWeeklyLog.csv")) %>%
+  logfile <- read.csv(file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "QualtricsWeeklyLog.csv")) %>%
     as_tibble()
   return(logfile)
 }
 
 get_update_log <- function() {
-  logfile <- read.csv(file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "QualtricsUpdateLog.csv")) %>%
+  logfile <- read.csv(file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "QualtricsUpdateLog.csv")) %>%
     as_tibble()
   return(logfile)
 }
@@ -18,7 +18,7 @@ get_weekly_personnel_list <- function() {
   # Deduct full path
   date_suffix <- lubridate::floor_date(Sys.Date(), unit = "month")
   timeshift_filename <- sprintf("CAMNMonitorTracking_%s.xlsx", date_suffix)
-  timeshift_file <- file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+  timeshift_file <- file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"),
                               "CSV", "QATimeshift",
                               timeshift_filename)
 
@@ -47,7 +47,7 @@ get_weekly_personnel_list <- function() {
 }
 
 get_main_personnel_list <- function(role = NULL) {
-  participants <- read.csv(file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Imports", "MainPersonel.csv")) %>%
+  participants <- read.csv(file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Imports", "MainPersonnel.csv")) %>%
     as_tibble()
 
   if (is.null(role)) {
@@ -65,21 +65,21 @@ get_main_personnel_list <- function(role = NULL) {
 
 # Monthly CSV files' functions ####
 get_monthly_log <- function() {
-  logfile <- read.csv(file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "QualtricsMonthlyLog.csv")) %>%
+  logfile <- read.csv(file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "QualtricsMonthlyLog.csv")) %>%
     as_tibble()
   return(logfile)
 }
 #tmp <- get_monthly_log()
 
 get_monthly_question_shortlist <- function() {
-  logfile <- read.csv(file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Imports", "MonthlyUpdateQuestion.csv")) %>%
+  logfile <- read.csv(file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Imports", "MonthlyUpdateQuestion.csv")) %>%
     as_tibble()
   return(logfile)
 }
 #tmp <- get_monthly_question_shortlist()
 
 get_weekly_question_shortlist <- function() {
-  logfile <- read.csv(file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Imports", "WeeklyUpdateQuestion.csv")) %>%
+  logfile <- read.csv(file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Imports", "WeeklyUpdateQuestion.csv")) %>%
     as_tibble()
   return(logfile)
 }
@@ -116,7 +116,7 @@ write_to_weekly_log <- function(originDate, neededAction, saveData) {
       Action = c(neededAction),
       SaveData = c(saveData)
     ),
-    file = file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "QualtricsWeeklyLog.csv"),
+    file = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "QualtricsWeeklyLog.csv"),
     sep = ",",
     col.names = FALSE,
     row.names = FALSE,
@@ -131,7 +131,7 @@ write_to_monthly_log <- function(originDate, neededAction, saveData) {
       Action = c(neededAction),
       SaveData = c(saveData)
     ),
-    file = file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "QualtricsMonthlyLog.csv"),
+    file = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "QualtricsMonthlyLog.csv"),
     sep = ",",
     col.names = FALSE,
     row.names = FALSE,
@@ -145,7 +145,7 @@ write_to_weekly_template_update_log <- function(originDate, neededAction) {
       OriginDate = c(originDate),
       Action = c(neededAction)
     ),
-    file = file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "QualtricsUpdateLog.csv"),
+    file = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "QualtricsUpdateLog.csv"),
     sep = ",",
     col.names = FALSE,
     row.names = FALSE,
@@ -159,7 +159,7 @@ write_to_monthly_template_update_log <- function(originDate, neededAction) {
 
 ## For unresolved monitor only ####
 get_unresolved_monitor_log <- function() {
-  logfile <- read.csv(file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Imports", "UnresolvedMonitor.csv"),
+  logfile <- read.csv(file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Imports", "UnresolvedMonitor.csv"),
                       colClasses = "character") %>%
     as_tibble()
   return(logfile)
@@ -293,7 +293,7 @@ get_monitor_sites <- function() {
   # Deduct full path
   date_suffix <- lubridate::floor_date(Sys.Date(), unit = "month")
   timeshift_filename <- sprintf("CAMNMonitorTracking_%s.xlsx", date_suffix)
-  timeshift_file <- file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+  timeshift_file <- file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"),
                               "CSV", "QATimeshift",
                               timeshift_filename)
 
@@ -320,7 +320,7 @@ get_monitor_sites <- function() {
 }
 
 get_monthly_question_info <- function() {
-  questionInfo <- file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Imports", "MonthlyUpdateQuestion.csv") %>%
+  questionInfo <- file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Imports", "MonthlyUpdateQuestion.csv") %>%
     read.csv()
 
   return(questionInfo)
@@ -350,7 +350,7 @@ get_merge_personnel_sensor_list <- function(sensorType = NULL) {
 # Updated: 20 Jan 2025
 get_processed_responses_list <- function(responseFileName) {
   fullresData <-
-    read.csv(file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Qualtrics", "Weekly", responseFileName)) %>%
+    read.csv(file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Qualtrics", "Weekly", responseFileName)) %>%
     as_tibble()
 
   return(fullresData)
@@ -360,7 +360,7 @@ get_processed_responses_list <- function(responseFileName) {
 get_question_descriptions <- function(questionDescFileName) {
   # get desc
   questionDescData <-
-    read.csv(file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Qualtrics", "Weekly", questionDescFileName)) %>%
+    read.csv(file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Qualtrics", "Weekly", questionDescFileName)) %>%
     as_tibble()
 
   # split the sub-question into Device ID, Device Type and Site
@@ -405,7 +405,7 @@ get_responsed_personnel_list <- function(responseFileName) {
 ## For monthly personnel ####
 get_monthly_responses_list <- function(responseFileName) {
   fullresData <-
-    read.csv(file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Qualtrics", "Monthly", responseFileName)) %>%
+    read.csv(file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Qualtrics", "Monthly", responseFileName)) %>%
     as_tibble()
 
   return(fullresData)
@@ -445,7 +445,7 @@ get_responsed_analyst_list <- function(responseFileName) {
 get_monthly_question_descriptions <- function(questionDescFileName, splitLikeUnresponsed = F) {
   # get desc
   questionDescData <-
-    read.csv(file.path(Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"), "CSV", "Qualtrics", "Monthly", questionDescFileName)) %>%
+    read.csv(file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Qualtrics", "Monthly", questionDescFileName)) %>%
     as_tibble()
 
   # split the sub-question into Device ID, Device Type and Site

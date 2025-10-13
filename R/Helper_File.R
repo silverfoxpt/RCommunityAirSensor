@@ -13,7 +13,7 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
   # Read from XLSX
   readMonitorTracking <-
     readxl::read_xlsx(
-      path = file.path(Sys.getenv("BOX_RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx"),
+      path = file.path(Sys.getenv("RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx"),
       sheet = "MonitorStatus", 
       range = "A10:K100"
     ) %>%
@@ -66,7 +66,7 @@ read_reference_info_from_monitor_tracking <- function() {
   # Read from XLSX
   readReferenceTracking <-
     readxl::read_xlsx(
-      path = file.path(Sys.getenv("BOX_RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx"),
+      path = file.path(Sys.getenv("RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx"),
       sheet = "ReferenceSiteData",
       range = "A3:E100"
     ) %>%
@@ -91,7 +91,7 @@ load_purple_air_data_from_archive <- function(startDateOfMonth) {
   endDate <- (startDate + months(1)) - days(1)
 
   folderName <- file.path(
-    Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+    Sys.getenv("UPLOAD_ROOT_FOLDER"),
     "CSV", as.character(sensorType),
     paste(sensorType, startDate, endDate, sep = ".")
   )
@@ -150,7 +150,7 @@ load_clarity_data_from_archive <- function(startDateOfMonth) {
   endDate <- (startDate + months(1)) - days(1)
 
   folderName <- file.path(
-    Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
+    Sys.getenv("UPLOAD_ROOT_FOLDER"),
     "CSV", as.character(sensorType),
     paste(sensorType, startDate, endDate, sep = ".")
   )
