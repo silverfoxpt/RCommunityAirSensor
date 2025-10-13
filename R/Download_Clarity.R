@@ -117,6 +117,7 @@
 #' @concept cleanupComments:true
 #' @concept cleanupDependenciesNamespace:true
 #' @concept addRoxygenComments:true
+#' @concept addCheckSetupFolder:false
 save_clarity_to_csv <- function(current_date,
                                 root_folder = Sys.getenv("BOX_UPLOAD_ROOT_FOLDER"),
                                 clarity_api_key = Sys.getenv("CLARITYAPI"),
@@ -270,3 +271,7 @@ save_clarity_to_csv <- function(current_date,
 # - Test out goodpractice::gp()
 # - Explore ways of cleaning up dependencies namespace
 # - Test pkgdown::build_site()
+
+# Update: 12 Oct 2025
+# - addCheckSetupFolder as a flag in roxygen @concept
+
