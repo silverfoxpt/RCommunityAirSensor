@@ -122,7 +122,7 @@ save_clarity_to_csv <- function(current_date,
   if (!check_folder_and_file_structure(root_folder)) {
     stop("Required folder structure not found. Please run setup_folder_and_file_structure() first.")
   }
-  if (!check_excel_file(records_folder, testing = TRUE)) {
+  if (!check_excel_file(records_folder, testing = FALSE)) {
     stop("Required Excel file (CAMNMonitorTracking.xlsx) not found or has incorrect structure. Please run setup_excel_file() first.")
   }
 
@@ -263,7 +263,7 @@ save_clarity_to_csv <- function(current_date,
 # - Explore ways of cleaning up dependencies namespace
 # - Test pkgdown::build_site()
 
-# Update: 12 Oct 2025
+# Update
 # - addCheckSetupFolder as a flag in roxygen @concept
 # - Removed log_file_path, csv_base_path, clarity_folder_name, clarity_reference_folder_name from parameter lists
 # - Added folder structure and Excel file validation checks after initial null checks
@@ -273,3 +273,12 @@ save_clarity_to_csv <- function(current_date,
 # - Replace all BOX_UPLOAD_ROOT_FOLDER with UPLOAD_ROOT_FOLDER
 # - Replace all BOX_RECORDS_ROOT_FOLDER with RECORDS_ROOT_FOLDER
 # - Add records_folder parameter to specify location of CAMNMonitorTracking.xlsx, update documentation
+# -
+# - Add tibble package
+# - Add dplyr package
+# - Add stringr package
+# - Add glue package
+# - Remove calls to lubridate::months in Download_HelperClarity.R
+# - Update Helper_File.R starting row to 2 instead of 10/3
+# - Update Helper_File.R read_monitor_info_from_monitor_tracking with new column names
+# - Add "Owner" field to MonitorStatus

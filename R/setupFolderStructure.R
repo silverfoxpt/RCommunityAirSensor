@@ -179,7 +179,7 @@ setup_excel_file <- function(directory) {
   }
 
   # Create the main Excel file with MonitorStatus sheet
-  monitor_status_columns <- "Label,Type,API ID,Dashboard/API Organization ID,Location short code,Deployed Site Location,Data sharing setting"
+  monitor_status_columns <- "Label,Type,API ID,Dashboard/API Organization ID,Location Short Code,Deployed Site Location,Data Sharing Setting,Owner"
 
   excel_file_path <- create_excel_with_columns(
     column_names_string = monitor_status_columns,
@@ -193,7 +193,7 @@ setup_excel_file <- function(directory) {
   add_excel_new_sheet(excel_file_path, "ReferenceSiteData", reference_site_columns)
 
   # Add SitesAndHosts sheet
-  sites_hosts_columns <- "Long Name of Location,Standard Dashboard/map location name,files& tracking sheet,Host contact person,Host title,Email,Cellphone"
+  sites_hosts_columns <- "Long Name of Location,Dashboard/Map Location Name,Short Code,Host Contact Person,Host Title,Email,Cellphone"
   add_excel_new_sheet(excel_file_path, "SitesAndHosts", sites_hosts_columns)
 
   message("CAMN Monitor Tracking Excel file setup complete: ", excel_file_path)
@@ -238,9 +238,9 @@ check_excel_file <- function(directory, testing = FALSE) {
 
   # Define expected sheets and their column structures
   expected_sheets <- list(
-    "MonitorStatus" = c("Label", "Type", "API ID", "Dashboard/API Organization ID", "Location short code", "Deployed Site Location", "Data sharing setting"),
+    "MonitorStatus" = c("Label", "Type", "API ID", "Dashboard/API Organization ID", "Location Short Code", "Deployed Site Location", "Data Sharing Setting", "Owner"),
     "ReferenceSiteData" = c("Datasource ID", "Site Name", "Short Code", "Collect PM2.5", "Collect NO2"),
-    "SitesAndHosts" = c("Long Name of Location", "Standard Dashboard/map location name", "files& tracking sheet", "Host contact person", "Host title", "Email", "Cellphone")
+    "SitesAndHosts" = c("Long Name of Location", "Dashboard/Map Location Name", "Short Code", "Host Contact Person", "Host Title", "Email", "Cellphone")
   )
 
   # Load and validate the Excel file structure
@@ -266,13 +266,13 @@ check_excel_file <- function(directory, testing = FALSE) {
 
       # Read the sheet to check column structure
       # Since columns start from row 2, we need to read from row 2
-      sheet_data <- openxlsx::read.xlsx(wb, sheet = sheet_name, startRow = myStartRow, colNames = TRUE, rows = startRow:(startRow + 1))
+      sheet_data <- openxlsx::read.xlsx(wb, sheet = sheet_name, startRow = myStartRow, colNames = TRUE, rows = myStartRow:(myStartRow + 1))
 
       # Get actual column names (read.xlsx converts spaces to dots)
       actual_columns <- names(sheet_data)
-      print(actual_columns)
+      #print(actual_columns)
       expected_columns <- expected_sheets[[sheet_name]]
-      print(expected_columns)
+      #print(expected_columns)
 
       # Convert expected column names to match read.xlsx behavior (spaces to dots)
       expected_columns_converted <- gsub(" ", ".", expected_columns)

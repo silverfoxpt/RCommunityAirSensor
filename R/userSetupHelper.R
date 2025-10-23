@@ -18,7 +18,7 @@ validate_input <- function(prompt, allow_empty = FALSE, variable_name = "") {
     if (allow_empty && (is.null(input) || input == "")) {
       return("")
     }
-
+ 
     return(input)
   }
 }

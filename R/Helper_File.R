@@ -14,13 +14,13 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
   readMonitorTracking <-
     readxl::read_xlsx(
       path = file.path(Sys.getenv("RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx"),
-      sheet = "MonitorStatus", 
-      range = "A10:K100"
+      sheet = "MonitorStatus",
+      range = "A2:K100"
     ) %>%
     as_tibble() %>%
     dplyr::rename("DeviceID" = "API ID") %>%
     dplyr::rename("OrgID" = "Dashboard/API Organization ID") %>%
-    dplyr::rename("ShortCode" = "Location short code") %>%
+    dplyr::rename("ShortCode" = "Location Short Code") %>%
     dplyr::rename("SiteName" = "Deployed Site Location")
 
   if (type == "Clarity") {
@@ -31,7 +31,7 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
       rename_with(~ ifelse(str_detect(., "ID Number"), "NodeID", .)) %>%
       dplyr::mutate(Type = "Clarity") %>%
       dplyr::mutate(Subtype = case_when(
-        ShortCode %in% c("MNR", "SYD") ~ "Co-located",
+        ShortCode %in% c("MNR", "SYD") ~ "Co-located", # needs to be changed
         grepl("park", SiteName, ignore.case = TRUE) ~ "Park",
         TRUE ~ "Non-park"
       ))
@@ -40,7 +40,7 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
     sitesInfo <- readMonitorTracking %>%
       dplyr::filter(substr(Label, 1, 2) == "PA")  %>%
       dplyr::filter(grepl("^\\d{5,}$", DeviceID)) %>%
-      dplyr::filter(grepl("public", `Data sharing setting`)) %>%
+      dplyr::filter(grepl("public", `Data Sharing Setting`)) %>%
       dplyr::mutate(Type = "PurpleAir") %>%
       dplyr::mutate(Subtype = case_when(
         ShortCode %in% c("MNR", "SYD") ~ "Co-located",
@@ -68,7 +68,7 @@ read_reference_info_from_monitor_tracking <- function() {
     readxl::read_xlsx(
       path = file.path(Sys.getenv("RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx"),
       sheet = "ReferenceSiteData",
-      range = "A3:E100"
+      range = "A2:E100"
     ) %>%
     as_tibble() %>%
     dplyr::rename("DatasourceID" = "Datasource ID") %>%
