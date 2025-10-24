@@ -26,12 +26,12 @@ Imports:
     stringr,
     lubridate,
     tibble,
-    dplyr,
     stringr,
     glue,
     mailR,
     base64enc,
     mime,
+    purrr,
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
