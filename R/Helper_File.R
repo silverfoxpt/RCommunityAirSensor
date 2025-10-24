@@ -85,6 +85,9 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
 
   # Filter and process data based on sensor type
   if (type == "Clarity") {
+    # Get reference site short codes for co-located identification
+    reference_shortcodes <- get_reference_site_shortcodes()
+    
     # Filter for Clarity sensors: CN prefix, device ID starts with D, valid org ID
     sitesInfo <- readMonitorTracking %>%
       dplyr::filter(substr(Label, 1, 2) == "CN")  %>%
@@ -92,23 +95,26 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
       dplyr::filter(OrgID != "", !is.na(OrgID), nchar(OrgID) >= 6) %>%
       dplyr::rename_with(~ ifelse(stringr::str_detect(., "ID Number"), "NodeID", .)) %>%
       dplyr::mutate(Type = "Clarity") %>%
-      # Classify sites by location type for analysis
+      # Classify sites by location type for analysis (using dynamic reference codes)
       dplyr::mutate(Subtype = case_when(
-        ShortCode %in% c("MNR", "SYD") ~ "Co-located", # needs to be changed
+        ShortCode %in% reference_shortcodes ~ "Co-located",
         grepl("park", SiteName, ignore.case = TRUE) ~ "Park",
         TRUE ~ "Non-park"
       ))
   }
   else if (type == "PurpleAir") {
+    # Get reference site short codes for co-located identification
+    reference_shortcodes <- get_reference_site_shortcodes()
+    
     # Filter for PurpleAir sensors: PA prefix, numeric device ID, public data sharing
     sitesInfo <- readMonitorTracking %>%
       dplyr::filter(substr(Label, 1, 2) == "PA")  %>%
       dplyr::filter(grepl("^\\d{5,}$", DeviceID)) %>%
       dplyr::filter(grepl("public", `Data Sharing Setting`)) %>%
       dplyr::mutate(Type = "PurpleAir") %>%
-      # Classify sites by location type for analysis
+      # Classify sites by location type for analysis (using dynamic reference codes)
       dplyr::mutate(Subtype = case_when(
-        ShortCode %in% c("MNR", "SYD") ~ "Co-located",
+        ShortCode %in% reference_shortcodes ~ "Co-located",
         grepl("park", SiteName, ignore.case = TRUE) ~ "Park",
         TRUE ~ "Non-park"
       ))
@@ -127,6 +133,44 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
     sitesInfo <- sitesInfo %>% dplyr::filter(DeviceID %in% listAvailableSensor)
   }
   return(sitesInfo)
+}
+
+#' Get Reference Site Short Codes
+#'
+#' Extracts short codes from reference sites for identifying co-located sensors.
+#' Used to dynamically determine which sensors are co-located with reference stations.
+#'
+#' @return Character vector of short codes from all reference sites
+#'
+#' @details
+#' Reads reference site data and extracts short codes to identify co-located sensors.
+#' This eliminates hardcoded values and ensures accuracy when reference sites change.
+#'
+#' @examples
+#' \dontrun{
+#' ref_codes <- get_reference_site_shortcodes()
+#' }
+#'
+#' @export
+#' @concept role:helper
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
+#' @concept addRoxygenComments:true
+get_reference_site_shortcodes <- function() {
+  # Read reference site data to get current short codes
+  reference_data <- read_reference_info_from_monitor_tracking()
+  
+  # Extract unique short codes and remove any empty/NA values
+  shortcodes <- reference_data %>%
+    dplyr::pull(ShortCode) %>%
+    unique() %>%
+    .[!is.na(.) & . != ""]
+  
+  return(shortcodes)
 }
 
 #' Read Reference Site Information from Tracking File
@@ -385,4 +429,7 @@ load_clarity_data_from_archive <- function(startDateOfMonth) {
 # - Added namespace prefixes for all non-base functions
 # - Cleaned up rouge comments and code structure
 # - Added concept tags for consistency
+# - Added helpful inline comments to explain code chunks
+# - Created get_reference_site_shortcodes() function for dynamic co-located site identification
+# - Replaced hardcoded reference short codes with dynamic lookup from Excel file
 
