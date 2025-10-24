@@ -103,7 +103,7 @@
 #' @concept cleanupComments:true
 #' @concept cleanupDependenciesNamespace:true
 #' @concept addRoxygenComments:true
-#' @concept addCheckSetupFolder:false
+#' @concept addCheckSetupFolder:true
 save_clarity_to_csv <- function(current_date,
                                 root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"),
                                 records_folder = Sys.getenv("RECORDS_ROOT_FOLDER"),
@@ -263,7 +263,7 @@ save_clarity_to_csv <- function(current_date,
 # - Explore ways of cleaning up dependencies namespace
 # - Test pkgdown::build_site()
 
-# Update
+# Update 12/10/2025:
 # - addCheckSetupFolder as a flag in roxygen @concept
 # - Removed log_file_path, csv_base_path, clarity_folder_name, clarity_reference_folder_name from parameter lists
 # - Added folder structure and Excel file validation checks after initial null checks
@@ -273,7 +273,7 @@ save_clarity_to_csv <- function(current_date,
 # - Replace all BOX_UPLOAD_ROOT_FOLDER with UPLOAD_ROOT_FOLDER
 # - Replace all BOX_RECORDS_ROOT_FOLDER with RECORDS_ROOT_FOLDER
 # - Add records_folder parameter to specify location of CAMNMonitorTracking.xlsx, update documentation
-# -
+# Update 20/10/2025:
 # - Add tibble package
 # - Add dplyr package
 # - Add stringr package
@@ -282,3 +282,6 @@ save_clarity_to_csv <- function(current_date,
 # - Update Helper_File.R starting row to 2 instead of 10/3
 # - Update Helper_File.R read_monitor_info_from_monitor_tracking with new column names
 # - Add "Owner" field to MonitorStatus
+# - Add mailR package
+# - Add base64enc package
+# - Add mime package
