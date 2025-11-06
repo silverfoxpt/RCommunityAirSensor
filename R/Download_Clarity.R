@@ -273,6 +273,7 @@ save_clarity_to_csv <- function(current_date,
 # - Replace all BOX_UPLOAD_ROOT_FOLDER with UPLOAD_ROOT_FOLDER
 # - Replace all BOX_RECORDS_ROOT_FOLDER with RECORDS_ROOT_FOLDER
 # - Add records_folder parameter to specify location of CAMNMonitorTracking.xlsx, update documentation
+
 # Update 20/10/2025:
 # - Add tibble package
 # - Add dplyr package

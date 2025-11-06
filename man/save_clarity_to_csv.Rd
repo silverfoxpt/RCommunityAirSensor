@@ -7,12 +7,8 @@
 save_clarity_to_csv(
   current_date,
   root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"),
+  records_folder = Sys.getenv("RECORDS_ROOT_FOLDER"),
   clarity_api_key = Sys.getenv("CLARITYAPI"),
-  log_file_path = "CSV/Exports/ClarityLog.csv",
-  csv_base_path = "CSV",
-  clarity_folder_name = "Clarity",
-  clarity_reference_folder_name = "Clarity-Reference",
-  sensor_type_filter = "Clarity",
   aggregation_periods = c("day", "hour")
 )
 }
@@ -23,27 +19,15 @@ The function calculates the previous month's boundaries from this date.}
 \item{root_folder}{Character string specifying the root folder path for all file operations.
 Defaults to the UPLOAD_ROOT_FOLDER environment variable. Must be a valid directory path.}
 
+\item{records_folder}{Character string specifying the folder path where CAMNMonitorTracking.xlsx is located.
+Defaults to the RECORDS_ROOT_FOLDER environment variable. Must be a valid directory path}
+
 \item{clarity_api_key}{Character string containing the Clarity API key for authentication.
 Defaults to the CLARITYAPI environment variable. Required for API access.}
 
-\item{log_file_path}{Character string specifying the relative path to the processing log file.
-Defaults to "CSV/Exports/ClarityLog.csv". Used to track completed processing runs.}
-
-\item{csv_base_path}{Character string specifying the base path for CSV file storage.
-Defaults to "CSV". All sensor and reference data folders are created under this path.}
-
-\item{clarity_folder_name}{Character string specifying the folder name for sensor data.
-Defaults to "Clarity". Creates organized storage for main sensor measurements.}
-
-\item{clarity_reference_folder_name}{Character string specifying the folder name for reference station data.
-Defaults to "Clarity-Reference". Separates reference station data from sensor data.}
-
-\item{sensor_type_filter}{Character string used to filter monitor information by sensor type.
-Defaults to "Clarity". Must match entries in the monitor tracking spreadsheet.}
-
 \item{aggregation_periods}{Character vector specifying time aggregation periods for data download.
-Defaults to c("day", "hour"). Accepts "day" (24-hour averages) and "hour" (hourly data).
-Each period generates separate API requests and output files.}
+Defaults to c("day", "hour"). Must contain one or both of: "day" (24-hour averages) and "hour" (hourly data).
+Cannot be empty, contain duplicates, or have more than 2 periods. Each period generates separate API requests and output files.}
 }
 \value{
 NULL.
@@ -88,15 +72,6 @@ root_folder/
 │           ├── [reference station files with Daily/Hourly data]
 └── CSV/Exports/ClarityLog.csv (processing log)
 }
-
-**Required dependencies:**
-- tidyverse, ggplot2, dplyr: Data manipulation and visualization
-\itemize{
-\item httr2: HTTP requests to Clarity API
-\item glue: String interpolation
-\item stats, readr, readxl: Data I/O operations
-\item tools: Utility functions (toTitleCase)
-}
 }
 \section{Error handling}{
 
@@ -104,6 +79,7 @@ The function will stop execution with error messages if:
 \itemize{
 \item \code{root_folder} is NULL, empty, or the environment variable is not set
 \item \code{clarity_api_key} is NULL, empty, or the environment variable is not set
+\item \code{aggregation_periods} is NULL, empty, contains invalid values, duplicates, or more than 2 periods
 \item Log file cannot be read (file doesn't exist or permission issues)
 \item Monitor tracking file is not accessible
 \item API requests fail or return invalid data
@@ -119,7 +95,7 @@ save_clarity_to_csv(Sys.Date())
 # Process data for a specific month
 save_clarity_to_csv(as.Date("2025-07-15"))
 
-# Custom configuration for different environment
+# Custom configuration for different environment - daily data only
 save_clarity_to_csv(
   current_date = Sys.Date(),
   root_folder = "/path/to/data/storage",
@@ -127,12 +103,16 @@ save_clarity_to_csv(
   aggregation_periods = c("day")  # Only daily data
 )
 
-# Custom folder structure
+# Download only hourly data
 save_clarity_to_csv(
-  current_date = as.Date("2025-06-01"),
-  csv_base_path = "data",
-  clarity_folder_name = "sensors",
-  clarity_reference_folder_name = "reference_stations"
+  current_date = Sys.Date(),
+  aggregation_periods = c("hour")  # Only hourly data
+)
+
+# Download both daily and hourly (default behavior)
+save_clarity_to_csv(
+  current_date = Sys.Date(),
+  aggregation_periods = c("day", "hour")  # Both periods
 )
 }
 
@@ -142,6 +122,7 @@ save_clarity_to_csv(
 \code{\link{read_monitor_info_from_monitor_tracking}} for sensor metadata,
 \code{\link{clarity_get_organization_data}} for API data retrieval
 }
+\concept{addCheckSetupFolder:true}
 \concept{addRoxygenComments:true}
 \concept{cleanupComments:true}
 \concept{cleanupDependenciesNamespace:true}
