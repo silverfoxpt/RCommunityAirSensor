@@ -200,7 +200,7 @@ distribute_qualtrics_survey <-
       ),
       surveyLink = list(
         surveyId = surveyID,
-        expirationDate = strftime(Sys.time() + lubridate::months(1), "%Y-%m-%dT%H:%M:%SZ", tz="UTC") %>% as.character(),
+        expirationDate = strftime(Sys.time() + months(1), "%Y-%m-%dT%H:%M:%SZ", tz="UTC") %>% as.character(),
         type = if (isMultiple) "Multiple" else "Individual"
       ),
       #safeguards

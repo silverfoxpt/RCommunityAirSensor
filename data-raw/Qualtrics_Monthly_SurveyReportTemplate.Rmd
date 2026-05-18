@@ -17,9 +17,9 @@ header-includes:
 ```{r echo = FALSE}
 # Hack-y function for autofitting tables - Hopefully RMarkdown fix it in the future :'D
 FitFlextableToPage <- function(ft, pgwidth = 6.5){
-  ft_out <- ft %>% autofit()
-  ft_out <- width(ft_out, width = dim(ft_out)$widths*pgwidth /(flextable_dim(ft_out)$widths))
-  ft_out <- ft_out %>% paginate(init = FALSE, hdr_ftr = TRUE)
+  ft_out <- ft %>% flextable::autofit()
+  ft_out <- flextable::width(ft_out, width = dim(ft_out)$widths * pgwidth /(flextable::flextable_dim(ft_out)$widths))
+  ft_out <- ft_out %>% flextable::paginate(init = FALSE, hdr_ftr = TRUE)
   return(ft_out)
 }
 
@@ -50,33 +50,33 @@ CreateMonthlyDisplayTable <- function(QuestionMainCode, SensorMainCode, isNoteTa
   # Modify any columns with "Notes" in it. If value empty, don't show
   if (isNoteTable) {
     pInfo <- pInfo %>%
-      dplyr::filter(!if_any(contains("Notes"), ~ (is.na(.) | . == ""))) 
+      dplyr::filter(!dplyr::if_any(dplyr::contains("Notes"), ~ (is.na(.) | . == ""))) 
   }
   
-  tb <- flextable(pInfo) %>%
-    #set_table_properties(layout = "autofit") %>%
-    #border_inner_h(part = "all", border = small_border) %>%
-    border_inner_v(part = "all", border = small_border) 
+  tb <- flextable::flextable(pInfo) %>%
+    #flextable::set_table_properties(layout = "autofit") %>%
+    #flextable::border_inner_h(part = "all", border = small_border) %>%
+    flextable::border_inner_v(part = "all", border = small_border) 
   
   #tb <- tb %>% fontsize(j = 1, size = 10)
   
   for (col in pColumnName) {
     highlight_rows <- grepl("\\*", pInfo[[col]])
-    tb <- tb %>% bg(i = which(highlight_rows), j = col, bg = "#FBEC5D")
+    tb <- tb %>% flextable::bg(i = which(highlight_rows), j = col, bg = "#FBEC5D")
   }
   
   # Based on Dr. Stuart modifications
   if ("Tracking Summary" %in% names(pInfo)) {
-    tb <- tb %>% set_header_labels(`Tracking Summary` = "Tracking Follow-up Needed")
+    tb <- tb %>% flextable::set_header_labels(`Tracking Summary` = "Tracking Follow-up Needed")
   }
   
   tb <- FitFlextableToPage(tb)
-  
+
   # Change font sizes & widths
-  tb <- tb %>% width(j = 1, width = 1)
+  tb <- tb %>% flextable::width(j = 1, width = 1)
   if (isNoteTable) {
-    tb <- tb %>% width(j = 2, width = 1)
-    tb <- tb %>% width(j = 3, width = 4)
+    tb <- tb %>% flextable::width(j = 2, width = 1)
+    tb <- tb %>% flextable::width(j = 3, width = 4)
   }
   
   tb
@@ -89,10 +89,10 @@ CreateMonthlyDisplayTable <- function(QuestionMainCode, SensorMainCode, isNoteTa
 pInfo <- params$myData$PersonnelInfo %>%
   dplyr::select(FirstName, LastName, Email, Submitted, Role) 
 
-set_flextable_defaults(
+flextable::set_flextable_defaults(
   fonts_ignore = T,
   font.size = 10, 
-  theme_fun = theme_vanilla,
+  theme_fun = flextable::theme_vanilla,
   padding = 20,
   background.color = "white",
   opts_pdf = list(
@@ -102,13 +102,13 @@ set_flextable_defaults(
   )
 )
 
-small_border <- fp_border(color="gray", width = 1)
-flextable(pInfo) %>%
-  set_table_properties(layout = "autofit") %>%
-  bg(i = ~ Submitted == "Yes", j = "Submitted", bg = "lightgreen") %>%
-  bg(i = ~ Submitted == "No", j = "Submitted", bg = "#fb6768") %>%
-  #border_inner_h(part = "all", border = small_border) %>%
-  border_inner_v(part = "all", border = small_border) 
+small_border <- officer::fp_border(color="gray", width = 1)
+flextable::flextable(pInfo) %>%
+  flextable::set_table_properties(layout = "autofit") %>%
+  flextable::bg(i = ~ Submitted == "Yes", j = "Submitted", bg = "lightgreen") %>%
+  flextable::bg(i = ~ Submitted == "No", j = "Submitted", bg = "#fb6768") %>%
+  #flextable::border_inner_h(part = "all", border = small_border) %>%
+  flextable::border_inner_v(part = "all", border = small_border) 
 ```
 
 ## 1.2.1. Summary of Purple Air sensor check
@@ -123,8 +123,8 @@ purpleTrackingSummary <- params$myData$Monitors %>%
 
 purpleHealthSummary <- params$myData$Monitors %>%
   dplyr::filter(grepl("PA", Label)) %>%
-  dplyr::mutate(`Maintenance Needed` = if_else(
-    rowSums(across(starts_with("PAH"), ~ grepl("\\*", .))) > 0, 
+  dplyr::mutate(`Maintenance Needed` = dplyr::if_else(
+    rowSums(dplyr::across(dplyr::starts_with("PAH"), ~ grepl("\\*", .))) > 0, 
     "Needs follow-up (*)", 
     "No"
   )) %>%
@@ -132,8 +132,8 @@ purpleHealthSummary <- params$myData$Monitors %>%
 
 purpleDataSummary <- params$myData$Monitors %>%
   dplyr::filter(grepl("PA", Label)) %>%
-  dplyr::mutate(`Data Follow-up Needed` = if_else(
-    rowSums(across(starts_with("PAD"), ~ grepl("\\*", .))) > 0, 
+  dplyr::mutate(`Data Follow-up Needed` = dplyr::if_else(
+    rowSums(dplyr::across(dplyr::starts_with("PAD"), ~ grepl("\\*", .))) > 0, 
     "Needs follow-up (*)", 
     "No"
   )) %>%
@@ -145,16 +145,16 @@ paMerger <- purpleTrackingSummary %>%
   dplyr::rename(ID = DeviceID, Site = SiteName) %>%
   dplyr::rename(`Tracking Follow-up Needed` = `Tracking Summary`) # Based on Dr. Stuart modifications
 
-tb <- flextable(paMerger) %>%
-  #set_table_properties(layout = "autofit") %>%
-  #border_inner_h(part = "all", border = small_border) %>%
+tb <- flextable::flextable(paMerger) %>%
+  #flextable::set_table_properties(layout = "autofit") %>%
+  #flextable::border_inner_h(part = "all", border = small_border) %>%
   FitFlextableToPage() %>%
-  border_inner_v(part = "all", border = small_border) %>%
-  width(j = 2, width = 1.5)
+  flextable::border_inner_v(part = "all", border = small_border) %>%
+  flextable::width(j = 2, width = 1.5)
 
 for (col in colnames(paMerger)) {
   highlight_rows <- grepl("\\*", paMerger[[col]])
-  tb <- tb %>% bg(i = which(highlight_rows), j = col, bg = "#fb6768")
+  tb <- tb %>% flextable::bg(i = which(highlight_rows), j = col, bg = "#fb6768")
 }
 tb
 ```
@@ -171,8 +171,8 @@ clarityTrackingSummary <- params$myData$Monitors %>%
 
 clarityHealthSummary <- params$myData$Monitors %>%
   dplyr::filter(grepl("CN", Label)) %>%
-  dplyr::mutate(`Maintenance Needed` = if_else(
-    rowSums(across(starts_with("CH"), ~ grepl("\\*", .))) > 0, 
+  dplyr::mutate(`Maintenance Needed` = dplyr::if_else(
+    rowSums(dplyr::across(dplyr::starts_with("CH"), ~ grepl("\\*", .))) > 0, 
     "Needs follow-up (*)", 
     "No"
   )) %>%
@@ -180,8 +180,8 @@ clarityHealthSummary <- params$myData$Monitors %>%
 
 clarityDataSummary <- params$myData$Monitors %>%
   dplyr::filter(grepl("CN", Label)) %>%
-  dplyr::mutate(`Data Follow-up Needed` = if_else(
-    rowSums(across(starts_with("CD"), ~ grepl("\\*", .))) > 0, 
+  dplyr::mutate(`Data Follow-up Needed` = dplyr::if_else(
+    rowSums(dplyr::across(dplyr::starts_with("CD"), ~ grepl("\\*", .))) > 0, 
     "Needs follow-up (*)", 
     "No"
   )) %>%
@@ -193,16 +193,16 @@ clMerger <- clarityTrackingSummary %>%
   dplyr::rename(ID = DeviceID, Site = SiteName) %>%
   dplyr::rename(`Tracking Follow-up Needed` = `Tracking Summary`) # Based on Dr. Stuart modifications
 
-tb <- flextable(clMerger) %>%
-  #set_table_properties(layout = "autofit") %>%
-  #border_inner_h(part = "all", border = small_border) %>%
+tb <- flextable::flextable(clMerger) %>%
+  #flextable::set_table_properties(layout = "autofit") %>%
+  #flextable::border_inner_h(part = "all", border = small_border) %>%
   FitFlextableToPage() %>%
-  border_inner_v(part = "all", border = small_border) %>%
-  width(j = 2, width = 1.5)
+  flextable::border_inner_v(part = "all", border = small_border) %>%
+  flextable::width(j = 2, width = 1.5)
 
 for (col in colnames(clMerger)) {
   highlight_rows <- grepl("\\*", clMerger[[col]])
-  tb <- tb %>% bg(i = which(highlight_rows), j = col, bg = "#fb6768")
+  tb <- tb %>% flextable::bg(i = which(highlight_rows), j = col, bg = "#fb6768")
 }
 tb
 ```
@@ -286,13 +286,13 @@ isNoteTable = T)
 
 ```{r echo = FALSE}
 pInfo <- params$myData$UnresolvedNotes %>%
-  dplyr::mutate(OriginDate = paste(month(OriginDate), year(OriginDate), sep = "-")) %>% 
+  dplyr::mutate(OriginDate = paste(lubridate::month(OriginDate), lubridate::year(OriginDate), sep = "-")) %>% 
   dplyr::rename(Date = OriginDate, ID = DeviceID, Site = SiteName) # Move to RMD for formatting
 
-set_flextable_defaults(
+flextable::set_flextable_defaults(
   fonts_ignore = T,
   font.size = 10, 
-  theme_fun = theme_vanilla,
+  theme_fun = flextable::theme_vanilla,
   padding = 20,
   background.color = "white",
   opts_pdf = list(
@@ -302,21 +302,21 @@ set_flextable_defaults(
   )
 )
 
-small_border <- fp_border(color="gray", width = 1)
-tb <- flextable(pInfo) %>%
-  #set_table_properties(layout = "autofit") %>%
-  bg(i = ~ Resolved == "Yes", j = "Resolved", bg = "lightgreen") %>%
-  bg(i = ~ Resolved == "No", j = "Resolved", bg = "#fb6768") %>%
-  #border_inner_h(part = "all", border = small_border) %>%
-  border_inner_v(part = "all", border = small_border) 
+small_border <- officer::fp_border(color="gray", width = 1)
+tb <- flextable::flextable(pInfo) %>%
+  #flextable::set_table_properties(layout = "autofit") %>%
+  flextable::bg(i = ~ Resolved == "Yes", j = "Resolved", bg = "lightgreen") %>%
+  flextable::bg(i = ~ Resolved == "No", j = "Resolved", bg = "#fb6768") %>%
+  #flextable::border_inner_h(part = "all", border = small_border) %>%
+  flextable::border_inner_v(part = "all", border = small_border) 
 
 tb <- tb %>%
-  width(j = 1, width = 0.6) %>%
-  width(j = 2, width = 1) %>%
-  width(j = 3, width = 0.75) %>%
-  width(j = 4, width = 1.3) %>%
-  width(j = 5, width = 0.65) %>%
-  width(j = 6, width = 2.6)
+  flextable::width(j = 1, width = 0.6) %>%
+  flextable::width(j = 2, width = 1) %>%
+  flextable::width(j = 3, width = 0.75) %>%
+  flextable::width(j = 4, width = 1.3) %>%
+  flextable::width(j = 5, width = 0.65) %>%
+  flextable::width(j = 6, width = 2.6)
 
 tb
 ```

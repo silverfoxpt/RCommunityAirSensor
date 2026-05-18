@@ -39,13 +39,13 @@ get_weekly_personnel_list <- function(root_folder = Sys.getenv("UPLOAD_ROOT_FOLD
   readMonitorTracking <-
     readxl::read_xlsx(
       path = timeshift_file,
-      sheet = "SitesAndHosts-InDevelopment",
-      range = "A10:J26"
+      sheet = "SitesAndHosts",
+      range = "A2:G100"
     ) %>%
     tibble::as_tibble() %>%
     dplyr::rename("Name" = "Host contact person") %>%
     dplyr::rename("Email" = "Email") %>%
-    dplyr::rename("SiteShortCode" = "files, tracking sheet") %>%
+    dplyr::rename("SiteShortCode" = "Short code") %>%
     dplyr::select(Name, Email, SiteShortCode) %>%
     dplyr::rowwise() %>%
     dplyr::mutate(FirstName = strsplit(Name, split = " ")[[1]][1]) %>%
@@ -352,7 +352,7 @@ concentrate_unresolved_monitor_qualtrics <- function(myData, unresolvedList) {
 #' @concept role:helper
 create_and_add_contact_from_personnel_list <- function(qualtricsKey, directoryID, mailingListName, participantList) {
   # Filter by email
-  participantList <- participantList %>% distinct(Email, .keep_all = TRUE)
+  participantList <- participantList %>% dplyr::distinct(Email, .keep_all = TRUE)
 
   # create mailing list
   mailingId <- create_mailing_list(
@@ -393,7 +393,7 @@ get_monitor_sites <- function(root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER")) {
     readxl::read_xlsx(
       path = timeshift_file,
       sheet = "MonitorStatus",
-      range = "A10:J100"
+      range = "A2:J100"
     ) %>%
     tibble::as_tibble() %>%
     dplyr::rename("DeviceID" = "API ID") %>%

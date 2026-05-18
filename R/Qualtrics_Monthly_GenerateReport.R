@@ -63,7 +63,7 @@ qualtrics_concentrate_monthly_data_from_responses <- function(upload_root_folder
 
   # add info to personnelInfo
   personnelInfo <- get_main_personnel_list(role = "Analyst") %>%
-    dplyr::mutate(Submitted = if_else(Email %in% responsedPersonel$Email, "Yes", "No"))
+    dplyr::mutate(Submitted = dplyr::if_else(Email %in% responsedPersonel$Email, "Yes", "No"))
 
   # read question descriptions and responses via helper functions
   questionDesc <- get_monthly_question_descriptions(descriptionFileName)
@@ -160,7 +160,7 @@ qualtrics_concentrate_monthly_data_from_responses <- function(upload_root_folder
 #' @param upload_root_folder Character. Root folder used for saving the PDF and imports.
 #'   Defaults to `Sys.getenv("UPLOAD_ROOT_FOLDER")`.
 #' @param rmd_template Character. Path to the RMarkdown template to render.
-#'   Defaults to `Code/QualtricsCode/QualtricsMonthly/QualtricsMonthlyReportTemplate.Rmd`.
+#'   Defaults to `data-raw/Qualtrics_Monthly_SurveyReportTemplate.Rmd`.
 #' @param smtp_api Character. API key for SMTP provider. Defaults to
 #'   `Sys.getenv("SMTP_API")`.
 #' @param smtp_sender Character. Sender email address. Defaults to
@@ -190,7 +190,7 @@ qualtrics_concentrate_monthly_data_from_responses <- function(upload_root_folder
 #' @concept addCheckSetupFolder:true
 qualtrics_generate_monthly_report <- function(
   upload_root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"),
-  rmd_template = file.path("Code", "QualtricsCode", "QualtricsMonthly", "QualtricsMonthlyReportTemplate.Rmd"),
+  rmd_template = file.path("data-raw", "Qualtrics_Monthly_SurveyReportTemplate.Rmd"),
   smtp_api = Sys.getenv("SMTP_API"),
   smtp_sender = Sys.getenv("SMTP_SENDER"),
   send_email = FALSE

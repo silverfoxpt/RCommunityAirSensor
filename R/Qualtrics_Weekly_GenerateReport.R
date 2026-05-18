@@ -64,7 +64,7 @@ qualtrics_concentrate_data_from_responses_weekly <- function() {
 
   # add info to personnelInfo
   personnelInfo <- get_merge_personnel_sensor_list() %>%
-    dplyr::mutate(Submitted = if_else(DeviceID %in% responsedPersonel$DeviceID, "Yes", "No"))
+    dplyr::mutate(Submitted = dplyr::if_else(DeviceID %in% responsedPersonel$DeviceID, "Yes", "No"))
 
   # get question description file
   questionDesc <- get_question_descriptions(descriptionFileName)

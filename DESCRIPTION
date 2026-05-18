@@ -34,7 +34,7 @@ Imports:
     purrr,
     tidyr,
     qualtRics,
-    jsonLite,
+    jsonlite,
     fs,
     here,
     rmarkdown,

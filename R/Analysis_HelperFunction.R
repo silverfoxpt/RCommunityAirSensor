@@ -505,7 +505,7 @@ generate_sitebase_scatter_plot_data <-
     }
 
     sitesData <- sitesData %>%
-      dplyr::mutate(Label = if_else(grepl("^R", sourceId),
+      dplyr::mutate(Label = dplyr::if_else(grepl("^R", sourceId),
                                     paste(datasourceId, " (ref)", sep = ""),
                                     datasourceId
       )
