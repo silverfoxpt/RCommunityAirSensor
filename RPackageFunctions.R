@@ -7,8 +7,11 @@ library(usethis)
 library(devtools)
 
 # Reinstalls
-devtools::install(src, upgrade = "never")
+devtools::load_all(src)
+readRenviron("D:/R/RCommunityAirSensor/.RTestEnviron")
+#devtools::install(src, upgrade = "never")
 
+# -----------------------------------
 # Load and generate pkgnet graph
 library(pkgnet)
 report <- CreatePackageReport(

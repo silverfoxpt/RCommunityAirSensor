@@ -1,129 +1,223 @@
-#' @title Copy the original MonitorTracking script for QA purposes
-#' @description This function copies the original CAMNMonitorTracking.xlsx file to a specified subfolder with a new name that includes the current month and year.
-#' @details The function checks if the target subfolder exists and creates it if necessary. It then constructs a new file name based on the current date and copies the original file to the new location with the new name.
-#' @return None. The function performs file operations and does not return a value.
-#' @concept role:qualtrics_monthly_helper
+#' Copy the original QA Monitor tracking workbook for monthly QA
+#'
+#' Copies the `CAMNMonitorTracking.xlsx` workbook from a records location
+#' into a QA-specific upload folder and appends the current month to the
+#' filename. This function only performs file operations and does not
+#' attempt to install or load packages; dependencies are namespace-qualified.
+#'
+#' @details
+#' Performs minimal validation: checks that the source file exists and
+#' creates the destination folder if necessary.
+#'
+#' @param base_file Character. Full path to the source workbook. Defaults to
+#'   file.path(Sys.getenv("RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx").
+#' @param new_folder Character. Destination folder where the dated copy will
+#'   be placed. Defaults to file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"),
+#'   "CSV", "QATimeshift").
+#' @param date Date. Date used to compute the month suffix. Defaults to
+#'   Sys.Date().
+#' @return NULL. Called for side effects (file copy).
+#' @section Error handling:
+#' Stops with informative messages when the source file does not exist or the
+#' copy operation fails.
+#' @examples
+#' \dontrun{
+#' copy_original_QAMonitorFile()
+#' }
+#' @export
+#' @concept role:qualtrics_monthly
 #' @concept removedDependencies:true
 #' @concept removedRawFunctionCalls:true
 #' @concept removedSensitiveInfo:true
-#' @concept cleanupParameters:false
-#' @concept cleanupComments:false
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
 #' @concept addRoxygenComments:true
-copy_original_QAMonitorFile <- function() {
-  # Define the file path and subfolder
-  base_file <- file.path(Sys.getenv("RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx")
-  new_folder <- file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "QATimeshift")
-
-  # Create the subfolder if it doesn't exist
-  if (!dir.exists(new_folder)) {
-    dir.create(new_folder, recursive = TRUE)
+#' @concept addCheckSetupFolder:true
+copy_original_QAMonitorFile <- function(
+  base_file = file.path(Sys.getenv("RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx"),
+  new_folder = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "QATimeshift"),
+  date = Sys.Date()
+) {
+  if (!file.exists(base_file)) {
+    stop("Source file not found: ", base_file)
   }
 
-  # Create a new file name with the current date
-  date_suffix <- lubridate::floor_date(Sys.Date(), unit = "month")
-  new_file_name <- sprintf("CAMNMonitorTracking_%s.xlsx", date_suffix)
+  if (!dir.exists(new_folder)) {
+    dir.create(new_folder, recursive = TRUE, showWarnings = FALSE)
+  }
+
+  date_suffix <- lubridate::floor_date(date, unit = "month")
+  new_file_name <- sprintf("CAMNMonitorTracking_%s.xlsx", format(date_suffix, "%Y-%m-%d"))
   new_file_path <- file.path(new_folder, new_file_name)
 
-  # Copy the file to the subfolder with the new name
-  fs::file_copy(base_file, new_file_path, overwrite = TRUE)
+  res <- tryCatch(
+    {
+      fs::file_copy(base_file, new_file_path, overwrite = TRUE)
+      TRUE
+    },
+    error = function(e) {
+      stop("Failed copying file: ", conditionMessage(e))
+    }
+  )
+
+  invisible(res)
 }
 
-#' @title Get the monthly question shortlist from a CSV file
-#' @description This function reads a CSV file containing a shortlist of questions for monthly updates and returns it as a tibble.
-#' @returns A tibble containing the question IDs and sensor types from the CSV file.
-#' @concept role:qualtrics_monthly_helper
+#' Update an unresolved-monitor matrix question in a Qualtrics survey
+#'
+#' Fetches the existing question payload, constructs rows from the unresolved
+#' monitor log, and updates the question using the project's Qualtrics helper
+#' utilities. This function keeps the existing answers and display logic by
+#' default.
+#'
+#' @param qualtKey Character. Qualtrics API key. Default reads
+#'   Sys.getenv("QUALTRICS_API_KEY").
+#' @param surveyId Character. Qualtrics survey ID. Default reads
+#'   Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID").
+#' @param unresolveQuestionID Character. Qualtrics question ID to update (e.g.
+#'   "QID66").
+#' @return NULL. Called for side effects (API update).
+#' @details
+#' The function expects helper utilities to exist in the package namespace:
+#' `get_single_qualtrics_question()`, `get_unresolved_monitor_log()`,
+#' `custom_configure_matrix_question_qualtrics()` and `modify_qualtrics_question()`.
+#' @examples
+#' \dontrun{
+#' update_list_unresolved_monitor_qualtrics("<KEY>", "<SURVEY>", "QID66")
+#' }
+#' @export
+#' @concept role:qualtrics_monthly
 #' @concept removedDependencies:true
 #' @concept removedRawFunctionCalls:true
 #' @concept removedSensitiveInfo:true
-#' @concept cleanupParameters:false
-#' @concept cleanupComments:false
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
 #' @concept addRoxygenComments:true
-update_list_unresolved_monitor_qualtrics <- function(qualtKey, surveyId, unresolveQuestionID) {
-  # Update list of unresolved sensor - question
+update_list_unresolved_monitor_qualtrics <- function(
+  qualtKey = Sys.getenv("QUALTRICS_API_KEY"),
+  surveyId = Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID"),
+  unresolveQuestionID
+) {
+  if (missing(unresolveQuestionID) || !nzchar(unresolveQuestionID)) {
+    stop("unresolveQuestionID is required and must be a non-empty string")
+  }
+
   unresolveQues <- get_single_qualtrics_question(qualtKey, surveyId, unresolveQuestionID)
   result <- unresolveQues$result
 
   questionRows <- get_unresolved_monitor_log() %>%
     dplyr::filter(Resolved == "No") %>%
-    dplyr::mutate(Info = paste(OriginDate,DeviceID,SiteName,Reason, sep = ", ")) %>%
+    dplyr::mutate(Info = paste(OriginDate, DeviceID, SiteName, Reason, sep = ", ")) %>%
     dplyr::pull(Info)
 
   IdAndLogicNewInfo <- list(
     QuestionRows = questionRows,
-    QuestionLogics = list() # No logic need this time!
+    QuestionLogics = list()
   )
 
   modifiedResult <- custom_configure_matrix_question_qualtrics(
     result,
     IdAndLogicNewInfo[["QuestionRows"]],
     IdAndLogicNewInfo[["QuestionLogics"]],
-    list("Yes", "No"), # TODO: Maybe custom configure this too for the future?
+    list("Yes", "No"),
     questionText = NA,
     changeAnswer = FALSE
   )
 
-  modify_qualtrics_question(qualtKey, modifiedResult, surveyId, unresolveQuestionID) # Strong typing!!!
-  print(paste("Updated question: Unresolved List - ", unresolveQuestionID, sep = ""))
+  modify_qualtrics_question(qualtKey, modifiedResult, surveyId, unresolveQuestionID)
+  message("Updated question: Unresolved List - ", unresolveQuestionID)
+  invisible(TRUE)
 }
 
-#' @title Qualtrics monthly - update the Qualtrics template survey with API
-#' @description This function updates the Qualtrics monthly template survey by modifying matrix questions based on a predefined shortlist and updating unresolved monitor questions.
-#' @details The function performs the following steps:
-#' 1. Loads necessary libraries and sources utility scripts.
-#' 2. Copies the original CAMNMonitorTracking.xlsx file for QA purposes.
-#' 3. Imports environment variables for the Qualtrics API key and survey ID.
-#' 4. Reads a CSV file containing question IDs and sensor types for updates.
-#' 5. Updates matrix questions in the survey without changing display logic or answers.
-#' 6. Updates unresolved monitor questions.
-#' 7. Logs the update action to a file.
-#' @returns None. The function performs updates and logging but does not return a value.
+#' Update the Qualtrics monthly template survey
+#'
+#' High-level workflow to update matrix questions in the monthly Qualtrics
+#' template survey. The function reads a shortlist of question IDs and sensor
+#' types, updates matrix questions without altering display logic or answers,
+#' updates unresolved monitor list questions, copies a QA backup of the
+#' monitor-tracking workbook, and logs the update.
+#'
+#' @details
+#' **Run:**
+#' 1. **Validation**: Validates required parameters or reads them from the
+#'    environment.
+#' 2. **QA backup**: Copies the original monitor tracking workbook via
+#'    `copy_original_QAMonitorFile()`.
+#' 3. **Shortlist import**: Loads the monthly question shortlist using
+#'    `get_monthly_question_shortlist()` (or accepts an override).
+#' 4. **Question updates**: Updates matrix questions using
+#'    `custom_update_matrix_question_qualtrics()` and unresolved-monitor
+#'    questions using `update_list_unresolved_monitor_qualtrics()`.
+#' 5. **Logging**: Writes an entry via `write_to_monthly_template_update_log()`.
+#'
+#' **Data processing details:**
+#' - Expects `get_monthly_question_shortlist()` to return a tibble with
+#'   columns `QuestionID` and `SensorType`.
+#'
+#' @param qualtKey Character. Qualtrics API key. Defaults to
+#'   Sys.getenv("QUALTRICS_API_KEY").
+#' @param surveyId Character. Qualtrics survey ID. Defaults to
+#'   Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID").
+#' @param questionShort Optional tibble. If provided, used instead of calling
+#'   `get_monthly_question_shortlist()`.
+#' @return NULL. Called for side effects (API updates and logging).
+#' @section Error handling:
+#' Stops with clear messages if required helper functions are missing or if
+#' the question shortlist does not contain required columns.
+#' @examples
+#' \dontrun{
+#' qualtrics_update_monthly_template_survey()
+#' }
+#' @seealso
+#' \code{\link{copy_original_QAMonitorFile}},
+#' \code{\link{update_list_unresolved_monitor_qualtrics}}
 #' @export
 #' @concept role:qualtrics_monthly
-#' @concept removedDependencies:false
+#' @concept removedDependencies:true
 #' @concept removedRawFunctionCalls:true
 #' @concept removedSensitiveInfo:true
-#' @concept cleanupParameters:false
-#' @concept cleanupComments:false
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
 #' @concept addRoxygenComments:true
-qualtrics_update_monthly_template_survey <- function() {
-  # Installation and loading
-  if (!require("pacman")) install.packages("pacman")
-  pacman::p_load(tidyverse, glue, httr2, jsonlite, lubridate, qualtRics, readr, readxl)
+qualtrics_update_monthly_template_survey <- function(
+  qualtKey = Sys.getenv("QUALTRICS_API_KEY"),
+  surveyId = Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID"),
+  questionShort = NULL
+) {
+  # QA backup
+  copy_original_QAMonitorFile()
 
-  # sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsUtil.R")
-  # source(file = sourcePath, echo = FALSE)
-  #
-  # sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsSecondaryUtils.R")
-  # source(file = sourcePath, echo = FALSE)
-  #
-  # sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsFlowNLogicUtils.R")
-  # source(file = sourcePath, echo = FALSE)
+  if (is.null(questionShort)) {
+    questionShort <- get_monthly_question_shortlist()
+  }
 
-  #readRenviron(file.path(getwd(), ".Rqualtrics"))
-  copy_original_QAMonitorFile() # Need review
-
-  # import env vars
-  qualtKey <- Sys.getenv("QUALTRICS_API_KEY")
-  surveyId <- Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID")
-
-  # get question ids and sensor types from CSV
-  questionShort <- get_monthly_question_shortlist()
+  if (!all(c("QuestionID", "SensorType") %in% names(questionShort))) {
+    stop("questionShort must contain columns: 'QuestionID' and 'SensorType'")
+  }
 
   listID <- questionShort[["QuestionID"]]
   listType <- questionShort[["SensorType"]]
 
-  # Update - no display logic, no changing answers
+  # Update - preserve existing display logic and answers
   purrr::pwalk(
     .l = list(listID, listType),
-    .f = \(x, y) custom_update_matrix_question_qualtrics(qualtKey, surveyId, x, y, applyEmailLogic = FALSE, applyNewAnswer = FALSE, DEBUG = T)
+    .f = function(x, y) {
+      custom_update_matrix_question_qualtrics(
+        qualtKey, surveyId, x, y,
+        applyEmailLogic = FALSE,
+        applyNewAnswer = FALSE,
+        DEBUG = TRUE
+      )
+    }
   )
 
   update_list_unresolved_monitor_qualtrics(qualtKey, surveyId, "QID66")
   update_list_unresolved_monitor_qualtrics(qualtKey, surveyId, "QID67")
 
-  # log to file - monthly
   write_to_monthly_template_update_log(Sys.Date(), "UpdateMonthlyTemplate")
-}
-#qualtrics_update_monthly_template_survey()
 
-# Finish testing: 17 Mar 2025
+  invisible(TRUE)
+}

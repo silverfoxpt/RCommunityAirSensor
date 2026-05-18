@@ -4,18 +4,73 @@
 \alias{qualtrics_send_monthly_survey}
 \title{Send Monthly Survey via Qualtrics API}
 \usage{
-qualtrics_send_monthly_survey()
+qualtrics_send_monthly_survey(
+  current_date = Sys.Date(),
+  qualtrics_api_key = Sys.getenv("QUALTRICS_API_KEY"),
+  directory_id = Sys.getenv("QUALTRICS_DIRECTORY_ID"),
+  library_id = Sys.getenv("QUALTRICS_LIBRARY_ID"),
+  message_id = Sys.getenv("QUALTRICS_MESSAGE_ID")
+)
+}
+\arguments{
+\item{current_date}{Date used to determine the current month. Defaults to Sys.Date().}
+
+\item{qualtrics_api_key}{Qualtrics API key. Defaults to environment variable \code{QUALTRICS_API_KEY}.}
+
+\item{directory_id}{Qualtrics directory ID where contacts are created. Defaults to \code{QUALTRICS_DIRECTORY_ID} env var.}
+
+\item{library_id}{Qualtrics library ID containing the survey message. Defaults to \code{QUALTRICS_LIBRARY_ID} env var.}
+
+\item{message_id}{Qualtrics message ID to use for distribution. Defaults to \code{QUALTRICS_MESSAGE_ID} env var.}
 }
 \value{
-None
+NULL (invisibly). Side effects: creates mailing lists and triggers Qualtrics distribution; writes to monthly log.
 }
 \description{
-Send Monthly Survey via Qualtrics API
+Sends the monthly CAMN monitor Quality Assurance survey to the analyst mailing
+list using the Qualtrics API. This is a workflow wrapper that checks the
+monthly log, ensures the survey has been created, generates a mailing list
+from personnel, distributes the survey, and writes an entry to the monthly
+log to prevent duplicate sends.
 }
+\details{
+\strong{Run:}
+\enumerate{
+\item Validation: ensures required parameters or environment variables exist
+\item Log check: verifies that a "CreateSurvey" entry exists for the current month
+\item Duplicate check: skips if a "SendSurvey" entry already exists
+\item Generates a mailing list from the analyst personnel list
+\item Distributes the survey and records the send in the monthly log
+}
+
+\strong{Data processing details:}
+\itemize{
+\item Uses the package's monthly log functions to read and write state
+\item Delegates contact creation and distribution to helper functions
+}
+}
+\section{Error handling}{
+
+The function stops with a clear message when required parameters or environment
+variables are missing. It returns silently (invisibly) when the send is not
+applicable (survey not created yet or already sent for the month).
+}
+
+\examples{
+\dontrun{
+qualtrics_send_monthly_survey()
+}
+
+}
+\seealso{
+\code{\link{get_monthly_log}}, \code{\link{create_and_add_contact_from_personnel_list}}, \code{\link{distribute_qualtrics_survey}}
+}
+\concept{addCheckSetupFolder:true}
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
-\concept{removedDependencies:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
 \concept{role:qualtrics_monthly}

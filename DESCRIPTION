@@ -32,6 +32,22 @@ Imports:
     base64enc,
     mime,
     purrr,
+    tidyr,
+    qualtRics,
+    jsonLite,
+    fs,
+    here,
+    rmarkdown,
+    data.table,
+    formattable,
+    shiny,
+    DT,
+    knitr,
+    kableExtra,
+    tinytex,
+    flextable,
+    officer,
+    geometry,
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

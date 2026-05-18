@@ -2,20 +2,93 @@
 % Please edit documentation in R/Qualtrics_Monthly_CreateSurvey.R
 \name{qualtrics_create_monthly_survey}
 \alias{qualtrics_create_monthly_survey}
-\title{Create monthly QA surveys through Qualtrics API}
+\title{Create monthly QA survey in Qualtrics from a QSF template}
 \usage{
-qualtrics_create_monthly_survey()
+qualtrics_create_monthly_survey(
+  qualtrics_api_key = Sys.getenv("QUALTRICS_API_KEY"),
+  template_id = Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID"),
+  directory_id = Sys.getenv("QUALTRICS_DIRECTORY_ID"),
+  library_id = Sys.getenv("QUALTRICS_LIBRARY_ID"),
+  message_id = Sys.getenv("QUALTRICS_MESSAGE_ID"),
+  current_date = Sys.Date()
+)
+}
+\arguments{
+\item{qualtrics_api_key}{Character. Qualtrics API key. Defaults to
+\code{Sys.getenv("QUALTRICS_API_KEY")}.}
+
+\item{template_id}{Character. Qualtrics QSF template id. Defaults to
+\code{Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID")}.}
+
+\item{directory_id}{Character. (Optional) Qualtrics directory id. Defaults
+to \code{Sys.getenv("QUALTRICS_DIRECTORY_ID")}.}
+
+\item{library_id}{Character. (Optional) Qualtrics library id. Defaults to
+\code{Sys.getenv("QUALTRICS_LIBRARY_ID")}.}
+
+\item{message_id}{Character. (Optional) Qualtrics message id. Defaults to
+\code{Sys.getenv("QUALTRICS_MESSAGE_ID")}.}
+
+\item{current_date}{Date. Reference date to derive the target month. Defaults
+to \code{Sys.Date()}.}
 }
 \value{
-None
+Invisibly returns the new survey id (character) when a survey is
+created. Returns NULL invisibly if a survey for the target month already
+exists.
 }
 \description{
-Create monthly QA surveys through Qualtrics API
+Creates a new monthly Quality Assurance survey in Qualtrics using a stored
+QSF template, records the creation in the monthly log, activates the survey,
+and publishes it. This is a high-level workflow intended to be called by
+scheduled package tasks; it does not perform interactive package-level
+dependency loading.
 }
+\details{
+\strong{Run:}
+\enumerate{
+\item \strong{Validation}: Checks required API and template identifiers are provided
+\item \strong{Log check}: Verifies whether a survey for the target month already
+exists in the monthly log to avoid duplicate creation
+\item \strong{Template fetch}: Retrieves the QSF template from Qualtrics
+\item \strong{Survey creation}: Creates a new survey from the template
+\item \strong{Logging}: Writes the created survey ID to the monthly log
+\item \strong{Activation & publish}: Activates and publishes the newly created survey
+}
+
+\strong{Notes:} This function assumes helper functions such as
+\code{get_monthly_log()}, \code{check_exist_in_log()}, \code{get_survey_qsf()},
+\code{create_survey_qsf()}, \code{write_to_monthly_log()}, \code{set_qualtrics_survey_active()},
+and \code{publish_survey()} are available in the package.
+}
+\section{Error handling}{
+
+The function stops with a clear error message if required parameters such as
+\code{qualtrics_api_key} or \code{template_id} are missing or empty. It also assumes
+that the helper functions mentioned above handle their own API errors and
+raise informative errors on failure.
+}
+
+\examples{
+
+
+
+\dontrun{
+# Typical usage (requires QUALTRICS_* environment variables to be set):
+qualtrics_create_monthly_survey()
+}
+
+}
+\seealso{
+\\code{\link{get_survey_qsf}}, \\code{\link{create_survey_qsf}},
+\\code{\link{publish_survey}}
+}
+\concept{addCheckSetupFolder:true}
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
-\concept{removedDependencies:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
 \concept{role:qualtrics_monthly}

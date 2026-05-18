@@ -4,18 +4,79 @@
 \alias{qualtrics_retrieve_monthly_response}
 \title{Retrieve Monthly Survey Responses from Qualtrics API}
 \usage{
-qualtrics_retrieve_monthly_response()
+qualtrics_retrieve_monthly_response(
+  upload_root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"),
+  qualtrics_api_key = Sys.getenv("QUALTRICS_API_KEY"),
+  surveyId = NULL,
+  current_date = Sys.Date()
+)
+}
+\arguments{
+\item{upload_root_folder}{Character. Root folder where CSV files will be saved.
+Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+
+\item{qualtrics_api_key}{Character. API key for Qualtrics. Defaults to
+\code{Sys.getenv("QUALTRICS_API_KEY")}.}
+
+\item{surveyId}{Character or NULL. If provided, this survey id will be used
+instead of looking it up from the monthly log.}
+
+\item{current_date}{Date. Date used to determine the target month. Defaults
+to \code{Sys.Date()}.}
 }
 \value{
-None
+A named list with paths to the written files (invisibly). NULL is
+returned invisibly on early exit (e.g. when survey has not been sent).
 }
 \description{
-Retrieve Monthly Survey Responses from Qualtrics API
+Download the latest monthly responses for a Qualtrics survey, keep only the
+most recent response per recipient, and save both the response table and a
+question description file to the specified upload folder.
 }
+\details{
+\strong{Run:}
+\enumerate{
+\item Validates required parameters and environment values
+\item Determines the start of the current month from \code{current_date}
+\item Looks up the survey id from the monthly log unless \code{surveyId} is provided
+\item Retrieves survey responses via the \code{qualtRics} package
+\item Keeps only the latest response per \code{RecipientEmail}
+\item Writes response and question description CSVs to the upload folder
+}
+
+\strong{Data processing details:}
+\itemize{
+\item If multiple \verb{RecipientEmail*} columns are present, extra columns are removed
+and the first \code{RecipientEmail} column is used.
+}
+}
+\section{Error handling}{
+
+The function stops with a clear message if \code{upload_root_folder} or
+\code{qualtrics_api_key} is missing or empty. It assumes helper functions used
+below (e.g. \code{get_monthly_log}, \code{get_first_save_data_from_monthly_log},
+\code{check_not_exist_in_log}, \code{write_to_monthly_log}) exist in
+the package and will error if they are not available.
+}
+
+\examples{
+\dontrun{
+qualtrics_retrieve_monthly_response(
+  upload_root_folder = "C:/project/uploads",
+  qualtrics_api_key = Sys.getenv("QUALTRICS_API_KEY")
+)
+}
+
+}
+\seealso{
+\code{get_monthly_log}, \code{write_to_monthly_log}, \code{extract_colmap}
+}
+\concept{addCheckSetupFolder:true}
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
-\concept{removedDependencies:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
-\concept{role:qualtrics_monthly}
+\concept{role:download}
