@@ -257,7 +257,7 @@ load_purple_air_data_from_archive <- function(startDateOfMonth) {
   # Calculate date range for the specified month
   sensorType <- "PurpleAir"
   startDate <- lubridate::as_date(startDateOfMonth)
-  endDate <- (startDate + lubridate::months(1)) - lubridate::days(1)
+  endDate <- (startDate + months(1)) - lubridate::days(1)
 
   # Build folder path for archived CSV files
   folderName <- file.path(
@@ -355,7 +355,7 @@ load_clarity_data_from_archive <- function(startDateOfMonth) {
   # Calculate date range for the specified month  
   sensorType <- "Clarity"
   startDate <- lubridate::as_date(startDateOfMonth)
-  endDate <- (startDate + lubridate::months(1)) - lubridate::days(1)
+  endDate <- (startDate + months(1)) - lubridate::days(1)
 
   # Build folder path for archived CSV files
   folderName <- file.path(

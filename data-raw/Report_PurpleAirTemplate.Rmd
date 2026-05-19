@@ -15,9 +15,9 @@ header-includes:
 
 ```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
 FitFlextableToPage <- function(ft, pgwidth = 6.5){
-  ft_out <- ft %>% autofit()
-  ft_out <- width(ft_out, width = dim(ft_out)$widths*pgwidth /(flextable_dim(ft_out)$widths))
-  ft_out <- ft_out %>% paginate(init = FALSE, hdr_ftr = TRUE)
+  ft_out <- ft %>% flextable::autofit()
+  ft_out <- flextable::width(ft_out, width = dim(ft_out)$widths * pgwidth / (flextable::flextable_dim(ft_out)$widths))
+  ft_out <- ft_out %>% flextable::paginate(init = FALSE, hdr_ftr = TRUE)
   return(ft_out)
 }
 
@@ -25,9 +25,7 @@ CheckNotEmptyString <- function(x) {
   return(!is.null(x) && !is.na(x) && x != "" && length(x) > 0)
 }
 
-set_flextable_defaults(
-  theme_fun = "theme_vanilla"
-)
+flextable::set_flextable_defaults(theme_fun = "theme_vanilla")
 
 get_lineplot_info <- function(type) {
   if (type == "pm2.5_alt") {
@@ -93,7 +91,7 @@ check_red_highlight_condition <- function(value, missing_prefix = "Timestamps mi
 
 colorColumn <- function(ft, colName, missing_prefix = "Timestamps missing:", no_problem_text = "No problem") {
   # 1) Mark "No problem" cells green
-  ft <- ft %>% bg(
+  ft <- ft %>% flextable::bg(
     x = ft,
     j = colName,
     bg = "#80EF80",
@@ -102,7 +100,7 @@ colorColumn <- function(ft, colName, missing_prefix = "Timestamps missing:", no_
   )
   
   # 2) Mark "Missing timestamp: X%" (X <= 75) cells yellow
-  ft <- ft %>% bg(
+  ft <- ft %>% flextable::bg(
     x = ft,
     j = colName,
     bg = "#FFEE8C",
@@ -112,7 +110,7 @@ colorColumn <- function(ft, colName, missing_prefix = "Timestamps missing:", no_
   )
   
   # 3) Mark all remaining cells (not "No problem" and not matched above) red
-  ft <- ft %>% bg(
+  ft <- ft %>% flextable::bg(
     x = ft,
     j = colName,
     bg = '#FAA0A0',
@@ -130,23 +128,23 @@ generate_scatter_plot_data <- function(data, columnName, renameName, newLabel) {
     return(ggplot() + theme_void() + ggtitle(paste("No Data Available", "-\n", newLabel)))
   }
   
-  data <- data %>% 
+  data <- data %>%
     dplyr::mutate(y_value = !!rlang::sym(columnName)) %>%
     dplyr::mutate(y_value = as.numeric(y_value)) %>%
-    dplyr::mutate(time_stamp = as.POSIXct(parse_date_time(time_stamp, orders = c("ymd_HMS", "ymd")), tz = "UTC"))
+    dplyr::mutate(time_stamp = as.POSIXct(lubridate::parse_date_time(time_stamp, orders = c("ymd_HMS", "ymd")), tz = "UTC"))
   
   # Extract min and max dates
   startDate <- as.Date(min(data$time_stamp, na.rm = TRUE)) %>% lubridate::date()
   endDate <- as.Date(max(data$time_stamp, na.rm = TRUE)) %>% lubridate::date()
   sideValues <- get_lineplot_info(columnName)
   
-  plot <- ggplot(data, aes(x = time_stamp, y = y_value)) +
-    geom_line(color = sideValues$Color) +
-    theme_classic() + 
-    labs(x = "Date", y = renameName, title = newLabel) +
-    ylim(0, sideValues$MaxYValue) + 
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) + 
-    scale_x_datetime(
+  plot <- ggplot2::ggplot(data, ggplot2::aes(x = time_stamp, y = y_value)) +
+    ggplot2::geom_line(color = sideValues$Color) +
+    ggplot2::theme_classic() +
+    ggplot2::labs(x = "Date", y = renameName, title = newLabel) +
+    ggplot2::ylim(0, sideValues$MaxYValue) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5)) +
+    ggplot2::scale_x_datetime(
       breaks = seq.POSIXt(as.POSIXct(startDate, tz = "UTC"), as.POSIXct(endDate, tz = "UTC"), by = "2 days"),
       date_labels = "%m / %d"
     )
@@ -158,30 +156,27 @@ generate_scatter_plot_data <- function(data, columnName, renameName, newLabel) {
 ```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
 choosenData <- params$myData$StatusTest %>%
   dplyr::select(sensor_index, ShortCode, last_seen, `Device Online`,
-                rssi, `Wi-Fi Bars`, 
+                rssi, `Wi-Fi Bars`,
                 confidence,
                 pm2.5, `Data Collected`) %>%
-  dplyr::rename(ID = sensor_index, Code = ShortCode, `Last seen` = last_seen, 
+  dplyr::rename(ID = sensor_index, Code = ShortCode, `Last seen` = last_seen,
                 RSSI = rssi, Confidence = confidence, `Current PM2.5` = pm2.5) %>%
-  #dplyr::mutate(`Last seen` = as.character(`Last seen`)) %>%
   dplyr::mutate(`Last seen` = as.POSIXct(`Last seen`, origin = "1970-01-01", tz = "UTC") %>%
-                  with_tz("Etc/GMT+5") %>%
+                  lubridate::with_tz("Etc/GMT+5") %>%
                   as.character() %>% paste("GMT -5"))
 
-tb <- flextable(choosenData) %>%
+tb <- flextable::flextable(choosenData) %>%
   FitFlextableToPage() %>%
-  # width(j = "Type", width = 0.5) %>%
-  # width(j = "Type", width = 0.6) %>%
-  set_table_properties(opts_pdf = list(tabcolsep = 4)) %>%
-  bg(j = "Device Online", bg = "#80EF80", i = ~ `Device Online` == "Yes") %>%
-  bg(j = "Device Online", bg = "#FAA0A0", i = ~ `Device Online` == "No") %>%
-  bg(j = "Wi-Fi Bars", bg = "#80EF80", i = ~ `Wi-Fi Bars` >= 1) %>%
-  bg(j = "Wi-Fi Bars", bg = "#FAA0A0", i = ~ `Wi-Fi Bars` <= 0) %>%
-  bg(j = "Confidence", bg = "#80EF80", i = ~ `Confidence` >= 70) %>%
-  bg(j = "Confidence", bg = "#FAA0A0", i = ~ `Confidence` < 70) %>%
-  bg(j = "Data Collected", bg = "#80EF80", i = ~ `Data Collected` == "Yes") %>%
-  bg(j = "Data Collected", bg = "#FAA0A0", i = ~ `Data Collected` == "No")
-  
+  flextable::set_table_properties(opts_pdf = list(tabcolsep = 4)) %>%
+  flextable::bg(j = "Device Online", bg = "#80EF80", i = ~ `Device Online` == "Yes") %>%
+  flextable::bg(j = "Device Online", bg = "#FAA0A0", i = ~ `Device Online` == "No") %>%
+  flextable::bg(j = "Wi-Fi Bars", bg = "#80EF80", i = ~ `Wi-Fi Bars` >= 1) %>%
+  flextable::bg(j = "Wi-Fi Bars", bg = "#FAA0A0", i = ~ `Wi-Fi Bars` <= 0) %>%
+  flextable::bg(j = "Confidence", bg = "#80EF80", i = ~ `Confidence` >= 70) %>%
+  flextable::bg(j = "Confidence", bg = "#FAA0A0", i = ~ `Confidence` < 70) %>%
+  flextable::bg(j = "Data Collected", bg = "#80EF80", i = ~ `Data Collected` == "Yes") %>%
+  flextable::bg(j = "Data Collected", bg = "#FAA0A0", i = ~ `Data Collected` == "No")
+
 tb
 ```
 
@@ -203,15 +198,13 @@ choosenData <- params$myData$GraphTest %>%
     `Humidity Hourly` = `Humidity Graph`
   )
 
-tb <- flextable(choosenData) %>%
+tb <- flextable::flextable(choosenData) %>%
   FitFlextableToPage() %>%
-  # width(j = "Type", width = 0.5) %>%
-  # width(j = "Type", width = 0.6) %>%
-  set_table_properties(opts_pdf = list(tabcolsep = 4)) %>%
+  flextable::set_table_properties(opts_pdf = list(tabcolsep = 4)) %>%
   colorColumn("PM2.5 Hourly") %>%
   colorColumn("Temperature Hourly") %>%
   colorColumn("Humidity Hourly")
-  
+
 tb
 ```
 
@@ -220,22 +213,20 @@ tb
 ```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
 choosenData <- params$myData$ArchiveTest %>%
   dplyr::select(sensor_index, ShortCode, `Daily Label`, `Hourly Label`, `Daily Headers`, `Hourly Headers`) %>%
-  dplyr::rename(ID = sensor_index, Code = ShortCode) 
+  dplyr::rename(ID = sensor_index, Code = ShortCode)
 
-tb <- flextable(choosenData) %>%
+tb <- flextable::flextable(choosenData) %>%
   FitFlextableToPage() %>%
-  # width(j = "Type", width = 0.5) %>%
-  # width(j = "Type", width = 0.6) %>%
-  set_table_properties(opts_pdf = list(tabcolsep = 4)) %>%
-  bg(j = "Daily Label", bg = "#80EF80", i = ~ `Daily Label` == "Exist") %>%
-  bg(j = "Daily Label", bg = "#FAA0A0", i = ~ `Daily Label` != "Exist") %>%
-  bg(j = "Hourly Label", bg = "#80EF80", i = ~ `Hourly Label` == "Exist") %>%
-  bg(j = "Hourly Label", bg = "#FAA0A0", i = ~ `Hourly Label` != "Exist") %>%
-  bg(j = "Daily Headers", bg = "#80EF80", i = ~ `Daily Headers` == "Normal") %>%
-  bg(j = "Daily Headers", bg = "#FAA0A0", i = ~ `Daily Headers` != "Normal") %>%
-  bg(j = "Hourly Headers", bg = "#80EF80", i = ~ `Hourly Headers` == "Normal") %>%
-  bg(j = "Hourly Headers", bg = "#FAA0A0", i = ~ `Hourly Headers` != "Normal") 
-  
+  flextable::set_table_properties(opts_pdf = list(tabcolsep = 4)) %>%
+  flextable::bg(j = "Daily Label", bg = "#80EF80", i = ~ `Daily Label` == "Exist") %>%
+  flextable::bg(j = "Daily Label", bg = "#FAA0A0", i = ~ `Daily Label` != "Exist") %>%
+  flextable::bg(j = "Hourly Label", bg = "#80EF80", i = ~ `Hourly Label` == "Exist") %>%
+  flextable::bg(j = "Hourly Label", bg = "#FAA0A0", i = ~ `Hourly Label` != "Exist") %>%
+  flextable::bg(j = "Daily Headers", bg = "#80EF80", i = ~ `Daily Headers` == "Normal") %>%
+  flextable::bg(j = "Daily Headers", bg = "#FAA0A0", i = ~ `Daily Headers` != "Normal") %>%
+  flextable::bg(j = "Hourly Headers", bg = "#80EF80", i = ~ `Hourly Headers` == "Normal") %>%
+  flextable::bg(j = "Hourly Headers", bg = "#FAA0A0", i = ~ `Hourly Headers` != "Normal")
+
 tb
 ```
 
@@ -243,19 +234,17 @@ tb
 ```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
 choosenData <- params$myData$CompleteTest %>%
   dplyr::select(sensor_index, ShortCode, `Timestamp`, `PM25 Raw`, `PM25 Value`, `Temperature`, Humidity) %>%
-  dplyr::rename(ID = sensor_index, Code = ShortCode) 
+  dplyr::rename(ID = sensor_index, Code = ShortCode)
 
-tb <- flextable(choosenData) %>%
+tb <- flextable::flextable(choosenData) %>%
   FitFlextableToPage() %>%
-  # width(j = "Type", width = 0.5) %>%
-  # width(j = "Type", width = 0.6) %>%
-  set_table_properties(opts_pdf = list(tabcolsep = 4)) %>%
+  flextable::set_table_properties(opts_pdf = list(tabcolsep = 4)) %>%
   colorColumn("Timestamp", missing_prefix = "Miss:", no_problem_text = "Full") %>%
   colorColumn("PM25 Raw", missing_prefix = "Miss:", no_problem_text = "Full") %>%
   colorColumn("PM25 Value", missing_prefix = "Miss:", no_problem_text = "Full") %>%
   colorColumn("Temperature", missing_prefix = "Miss:", no_problem_text = "Full") %>%
-  colorColumn("Humidity", missing_prefix = "Miss:", no_problem_text = "Full") 
-  
+  colorColumn("Humidity", missing_prefix = "Miss:", no_problem_text = "Full")
+
 tb
 ```
 
@@ -265,7 +254,7 @@ pm25graph <- purrr::map2(
   .x = params$myData$RecentSensorData,
   .y = names(params$myData$RecentSensorData),
   .f = ~ generate_scatter_plot_data(
-    .x, "pm2.5_alt", 
+    .x, "pm2.5_alt",
     expression("PM 2.5 (µg/m"^{3}*")"),
     paste("PM2.5 graph - ", .y, sep = "")
   )
@@ -291,8 +280,8 @@ humidgraph <- purrr::map2(
   )
 )
 
-for (i in c(1:length(pm25graph))) {
-  combinedGraph <- pm25graph[[i]] + tempGraph[[i]] + humidgraph[[i]] + plot_layout(ncol = 3, nrow = 1)
+for (i in seq_along(pm25graph)) {
+  combinedGraph <- pm25graph[[i]] + tempGraph[[i]] + humidgraph[[i]] + patchwork::plot_layout(ncol = 3, nrow = 1)
   print(combinedGraph)
 }
 ```
@@ -328,9 +317,9 @@ purrr::compact() %>%
 dplyr::bind_rows()
 
 # Print table
-flextable(archive_data_sample) %>%
+flextable::flextable(archive_data_sample) %>%
   FitFlextableToPage() %>%
-  width(j = "ID", width = 1) %>%
-  set_table_properties(opts_pdf = list(tabcolsep = 2)) %>%
-  bg(i = which(((seq_len(nrow(archive_data_sample)) - 1) %% 10) >= 5), bg = "#F0F0F0") 
+  flextable::width(j = "ID", width = 1) %>%
+  flextable::set_table_properties(opts_pdf = list(tabcolsep = 2)) %>%
+  flextable::bg(i = which(((seq_len(nrow(archive_data_sample)) - 1) %% 10) >= 5), bg = "#F0F0F0") 
 ```

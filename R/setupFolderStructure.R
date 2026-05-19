@@ -78,16 +78,21 @@ setup_folder_and_file_structure <- function(directory) {
 #' specified for the function to return TRUE.
 #'
 #' @param directory Character string. The base directory to check for the folder structure.
+#' @param debug Logical. If TRUE, prints the first missing folder, file, sheet, or column mismatch before returning FALSE.
 #' @return Logical. TRUE if the exact folder structure and files exist, FALSE otherwise.
 #' @export
 #' @examples
 #' \dontrun{
 #' check_folder_and_file_structure("C:/MyProject")
 #' }
-check_folder_and_file_structure <- function(directory) {
+check_folder_and_file_structure <- function(directory, debug = FALSE) {
   # Validate input
   if (!is.character(directory) || length(directory) != 1) {
     stop("directory must be a single character string")
+  }
+
+  if (!is.logical(debug) || length(debug) != 1 || is.na(debug)) {
+    stop("debug must be a single logical value")
   }
 
   # Check if base directory exists
@@ -114,6 +119,9 @@ check_folder_and_file_structure <- function(directory) {
   for (folder in required_folders) {
     full_path <- file.path(directory, folder)
     if (!dir.exists(full_path)) {
+      if (isTRUE(debug)) {
+        message("Missing folder: ", full_path)
+      }
       return(FALSE)
     }
   }
@@ -137,6 +145,9 @@ check_folder_and_file_structure <- function(directory) {
 
     # Check if file exists
     if (!file.exists(full_csv_path)) {
+      if (isTRUE(debug)) {
+        message("Missing CSV file: ", full_csv_path)
+      }
       return(FALSE)
     }
 
@@ -149,10 +160,19 @@ check_folder_and_file_structure <- function(directory) {
 
       # Check if columns match exactly (order and names)
       if (!identical(actual_columns, expected_columns)) {
+        if (isTRUE(debug)) {
+          message("CSV column mismatch in: ", full_csv_path)
+          message("Expected: ", paste(expected_columns, collapse = ", "))
+          message("Actual:   ", paste(actual_columns, collapse = ", "))
+        }
         return(FALSE)
       }
     }, error = function(e) {
       # If we can't read the file, consider it invalid
+      if (isTRUE(debug)) {
+        message("Could not read CSV file: ", full_csv_path)
+        message("Error: ", e$message)
+      }
       return(FALSE)
     })
   }
@@ -179,7 +199,7 @@ setup_excel_file <- function(directory) {
   }
 
   # Create the main Excel file with MonitorStatus sheet
-  monitor_status_columns <- "Label,Type,API ID,Dashboard/API Organization ID,Location Short Code,Deployed Site Location,Data Sharing Setting,Owner"
+  monitor_status_columns <- "Label,Type,Hardware ID,API ID,Dashboard/API Organization ID,Location Short Code,Deployed Site Location,Data Sharing Setting,Owner"
 
   excel_file_path <- create_excel_with_columns(
     column_names_string = monitor_status_columns,
@@ -206,13 +226,14 @@ setup_excel_file <- function(directory) {
 #' the required sheets with the correct column structures for CAMN monitor tracking.
 #'
 #' @param directory Character string. Directory where the Excel file should be located.
+#' @param debug Logical. If TRUE, prints the first missing sheet or column mismatch before returning FALSE.
 #' @return Logical. TRUE if the Excel file exists with correct structure, FALSE otherwise.
 #' @export
 #' @examples
 #' \dontrun{
 #' check_excel_file("C:/MyProject")
 #' }
-check_excel_file <- function(directory, testing = FALSE) {
+check_excel_file <- function(directory, testing = FALSE, debug = FALSE) {
   # Check if openxlsx package is available
   if (!requireNamespace("openxlsx", quietly = TRUE)) {
     stop("Package 'openxlsx' is required but not installed. Please install it using: install.packages('openxlsx')")
@@ -221,6 +242,14 @@ check_excel_file <- function(directory, testing = FALSE) {
   # Validate input
   if (!is.character(directory) || length(directory) != 1) {
     stop("directory must be a single character string")
+  }
+
+  if (!is.logical(testing) || length(testing) != 1 || is.na(testing)) {
+    stop("testing must be a single logical value")
+  }
+
+  if (!is.logical(debug) || length(debug) != 1 || is.na(debug)) {
+    stop("debug must be a single logical value")
   }
 
   # Check if directory exists
@@ -238,7 +267,7 @@ check_excel_file <- function(directory, testing = FALSE) {
 
   # Define expected sheets and their column structures
   expected_sheets <- list(
-    "MonitorStatus" = c("Label", "Type", "API ID", "Dashboard/API Organization ID", "Location Short Code", "Deployed Site Location", "Data Sharing Setting", "Owner"),
+    "MonitorStatus" = c("Label", "Type", "Hardware ID", "API ID", "Dashboard/API Organization ID", "Location Short Code", "Deployed Site Location", "Data Sharing Setting", "Owner"),
     "ReferenceSiteData" = c("Datasource ID", "Site Name", "Short Code", "Collect PM2.5", "Collect NO2"),
     "SitesAndHosts" = c("Long Name of Location", "Dashboard/Map Location Name", "Short Code", "Host Contact Person", "Host Title", "Email", "Cellphone")
   )
@@ -261,6 +290,10 @@ check_excel_file <- function(directory, testing = FALSE) {
     # Check if all expected sheets exist
     for (sheet_name in names(expected_sheets)) {
       if (!sheet_name %in% actual_sheets) {
+        if (isTRUE(debug)) {
+          message("Missing Excel sheet: ", sheet_name)
+          message("Available sheets: ", paste(actual_sheets, collapse = ", "))
+        }
         return(FALSE)
       }
 
@@ -279,6 +312,11 @@ check_excel_file <- function(directory, testing = FALSE) {
 
       # Check if columns match exactly (order and names)
       if (!identical(actual_columns, expected_columns_converted)) {
+        if (isTRUE(debug)) {
+          message("Excel column mismatch in sheet: ", sheet_name)
+          message("Expected: ", paste(expected_columns, collapse = ", "))
+          message("Actual:   ", paste(actual_columns, collapse = ", "))
+        }
         return(FALSE)
       }
     }
@@ -288,6 +326,10 @@ check_excel_file <- function(directory, testing = FALSE) {
 
   }, error = function(e) {
     # If we can't read the file or encounter any error, consider it invalid
+    if (isTRUE(debug)) {
+      message("Could not read Excel file: ", excel_file_path)
+      message("Error: ", e$message)
+    }
     return(FALSE)
   })
 }

@@ -48,6 +48,7 @@ Imports:
     flextable,
     officer,
     geometry,
+    patchwork
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

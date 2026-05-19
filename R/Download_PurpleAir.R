@@ -59,7 +59,7 @@ save_purpleAir_to_csv <- function(current_date) {
 
   # get daily data
   # map pass each element of vector as parameter of get_single_sensor_data
-  rate <- rate_delay(2)
+  rate <- purrr::rate_delay(2)
   slow_get <- purrr::slowly(get_single_sensor_data_custom, rate = rate, quiet = F)
 
   temp_list_sensors_data <-

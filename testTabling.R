@@ -79,7 +79,7 @@ concept_table <- function(package_path = ".") {
     abort(glue::glue("No 'R/' directory under {normalizePath(package_path)}"))
   }
   files <- list.files(rdir, pattern = "\\.[rR]$", full.names = TRUE, recursive = TRUE)
-  blocks <- map(files, .extract_blocks_with_fun) |> list_flatten()
+  blocks <- map(files, .extract_blocks_with_fun) %>% list_flatten()
 
   # Parse @concept lines per block
   parsed <- map(blocks, function(b) {
@@ -92,17 +92,17 @@ concept_table <- function(package_path = ".") {
     payloads <- str_remove(concept_lines, "^@concept\\s+")
     kv <- reduce(map(payloads, .parse_concept), ~modifyList(.x, .y), .init = list())
     list(fun = b$fun %||% NA_character_, file = b$file, concepts = kv)
-  }) |> compact()
+  }) %>% compact()
 
   if (length(parsed) == 0) {
     return(tibble(function_name = character(), file = character()))
   }
 
   # Discover all concept keys across the package
-  all_keys <- parsed |>
-    map(~names(.x$concepts)) |>
-    unlist(use.names = FALSE) |>
-    unique() |>
+  all_keys <- parsed %>%
+    map(~names(.x$concepts)) %>%
+    unlist(use.names = FALSE) %>%
+    unique() %>%
     sort()
 
   # Row-bind into a tibble, aligning keys
@@ -115,11 +115,11 @@ concept_table <- function(package_path = ".") {
       file = p$file,
       !!!vals
     )
-  }) |>
+  }) %>%
     list_rbind()
 
   # Make logical columns actual logical where possible
-  rows <- rows |>
+  rows <- rows %>%
     mutate(across(where(is.character), ~ifelse(. %in% c("TRUE","FALSE"), as.logical(.), .)))
   rows
 }

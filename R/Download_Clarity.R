@@ -119,7 +119,7 @@ save_clarity_to_csv <- function(current_date,
   }
 
   # Check folder structure and Excel file
-  if (!check_folder_and_file_structure(root_folder)) {
+  if (!check_folder_and_file_structure(root_folder, debug = TRUE)) {
     stop("Required folder structure not found. Please run setup_folder_and_file_structure() first.")
   }
   if (!check_excel_file(records_folder, testing = FALSE)) {
