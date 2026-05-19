@@ -44,7 +44,7 @@
  #' )
  #' }
  #'
- #' @seealso `get_monthly_log`, `write_to_monthly_log`, `extract_colmap`
+ #' @seealso `get_monthly_log`, `write_to_monthly_log`
  #'
  #' @export
  #' @concept role:download

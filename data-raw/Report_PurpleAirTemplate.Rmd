@@ -157,11 +157,11 @@ generate_scatter_plot_data <- function(data, columnName, renameName, newLabel) {
 # 1. Current sensors' status
 ```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
 choosenData <- params$myData$StatusTest %>%
-  dplyr::select(sensor_index, last_seen, `Device Online`,
+  dplyr::select(sensor_index, ShortCode, last_seen, `Device Online`,
                 rssi, `Wi-Fi Bars`, 
                 confidence,
                 pm2.5, `Data Collected`) %>%
-  dplyr::rename(ID = sensor_index, `Last seen` = last_seen, 
+  dplyr::rename(ID = sensor_index, Code = ShortCode, `Last seen` = last_seen, 
                 RSSI = rssi, Confidence = confidence, `Current PM2.5` = pm2.5) %>%
   #dplyr::mutate(`Last seen` = as.character(`Last seen`)) %>%
   dplyr::mutate(`Last seen` = as.POSIXct(`Last seen`, origin = "1970-01-01", tz = "UTC") %>%
@@ -185,17 +185,19 @@ tb <- flextable(choosenData) %>%
 tb
 ```
 
-# 2. Hourly data quality assessment - 2 weeks period
+# 2. Hourly data quality assessment - past month
 
-**Notes: Please visit Appendix A below to investigate the 2-week graphs.**
+**Notes: Please visit Appendix A below to investigate the detailed graphs.**
 ```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
 choosenData <- params$myData$GraphTest %>%
   dplyr::select(sensor_index,
+                ShortCode,
                 `PM2.5 Graph`,
                 `Temperature Graph`,
                 `Humidity Graph`) %>%
   dplyr::rename(ID = sensor_index) %>%
   dplyr::rename(
+    Code = ShortCode,
     `PM2.5 Hourly` = `PM2.5 Graph`,
     `Temperature Hourly` = `Temperature Graph`,
     `Humidity Hourly` = `Humidity Graph`
@@ -217,8 +219,8 @@ tb
 **Notes: Please visit Appendix B below to investigate specific rows in the archived data per the SOP.**
 ```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
 choosenData <- params$myData$ArchiveTest %>%
-  dplyr::select(sensor_index, `Daily Label`, `Hourly Label`, `Daily Headers`, `Hourly Headers`) %>%
-  dplyr::rename(ID = sensor_index) 
+  dplyr::select(sensor_index, ShortCode, `Daily Label`, `Hourly Label`, `Daily Headers`, `Hourly Headers`) %>%
+  dplyr::rename(ID = sensor_index, Code = ShortCode) 
 
 tb <- flextable(choosenData) %>%
   FitFlextableToPage() %>%
@@ -240,8 +242,8 @@ tb
 ## 3.1 Archived data assessment - completeness assessment
 ```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
 choosenData <- params$myData$CompleteTest %>%
-  dplyr::select(sensor_index, `Timestamp`, `PM25 Raw`, `PM25 Value`, `Temperature`, Humidity) %>%
-  dplyr::rename(ID = sensor_index) 
+  dplyr::select(sensor_index, ShortCode, `Timestamp`, `PM25 Raw`, `PM25 Value`, `Temperature`, Humidity) %>%
+  dplyr::rename(ID = sensor_index, Code = ShortCode) 
 
 tb <- flextable(choosenData) %>%
   FitFlextableToPage() %>%

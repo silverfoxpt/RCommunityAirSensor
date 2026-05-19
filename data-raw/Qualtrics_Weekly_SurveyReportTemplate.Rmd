@@ -15,70 +15,74 @@ header-includes:
 
 ```{r echo = FALSE, warning=FALSE}
 # Hack-y function for autofitting tables
-FitFlextableToPage <- function(ft, pgwidth = 6.5){
-  ft_out <- ft %>% autofit()
-  ft_out <- width(ft_out, width = dim(ft_out)$widths*pgwidth /(flextable_dim(ft_out)$widths))
-  ft_out <- ft_out %>% paginate(init = FALSE, hdr_ftr = TRUE)
-  return(ft_out)
+FitFlextableToPage <- function(flextable_obj, pgwidth = 6.5) {
+  flextable_out <- flextable_obj %>%
+    flextable::autofit()
+
+  flextable_out <- flextable::width(
+    flextable_out,
+    width = dim(flextable_out)$widths * pgwidth / (flextable::flextable_dim(flextable_out)$widths)
+  )
+
+  flextable_out <- flextable::paginate(flextable_out, init = FALSE, hdr_ftr = TRUE)
+
+  return(flextable_out)
 }
 ```
 
 ## 1. Surveys' Submission Status
 
 ```{r echo = FALSE, warning=FALSE}
-pInfo <- params$myData$PersonnelInfo %>%
+personnel_info <- params$myData$PersonnelInfo %>%
   dplyr::select(FirstName, LastName, Email, SiteShortCode, Type, DeviceID, Submitted) %>%
   dplyr::arrange(Type)
 
-set_flextable_defaults(
-  theme_fun = theme_vanilla,
+flextable::set_flextable_defaults(
+  theme_fun = flextable::theme_vanilla,
   padding = 20,
   background.color = "white",
-  opts_pdf = list(
-    float = list(
-      "wrap-r"
-    )
-  )
+  opts_pdf = list(float = list("wrap-r"))
 )
 
-small_border <- fp_border(color="gray", width = 1)
-flextable(pInfo) %>%
-  set_table_properties(layout = "autofit") %>%
-  bg(i = ~ Submitted == "Yes", j = "Submitted", bg = "lightgreen") %>%
-  bg(i = ~ Submitted == "No", j = "Submitted", bg = "#fb6768") %>%
-  bg(i = ~ grepl("PurpleAir", Type), j = "Type", bg = "#e9d2fe") %>%
-  bg(i = ~ grepl("Clarity", Type), j = "Type", bg = "#add8e6") %>%
-  #border_inner_h(part = "all", border = small_border) %>%
-  border_inner_v(part = "all", border = small_border) 
+small_border <- officer::fp_border(color = "gray", width = 1)
+
+flextable::flextable(personnel_info) %>%
+  flextable::set_table_properties(layout = "autofit") %>%
+  flextable::bg(i = ~ Submitted == "Yes", j = "Submitted", bg = "lightgreen") %>%
+  flextable::bg(i = ~ Submitted == "No", j = "Submitted", bg = "#fb6768") %>%
+  flextable::bg(i = ~ grepl("PurpleAir", Type), j = "Type", bg = "#e9d2fe") %>%
+  flextable::bg(i = ~ grepl("Clarity", Type), j = "Type", bg = "#add8e6") %>%
+  flextable::border_inner_v(part = "all", border = small_border)
 ```
 
 ## 2. Purple Air sensors status
 
 **Note: This status does not include sites which surveys haven't been filled out. Refer to previous tables for information.**
 ```{r echo = FALSE, warning=FALSE}
-translateHeaderName <- tibble::deframe(params$myData$WeeklyShortlist %>% select(QuestionTag, QuestionColumnName))
+header_name_map <- tibble::deframe(
+  params$myData$WeeklyShortlist %>% dplyr::select(QuestionTag, QuestionColumnName)
+)
 
-pInfo <- params$myData$Responsed %>%
+pa_status <- params$myData$Responsed %>%
   dplyr::filter(grepl("PA", Label)) %>%
-  dplyr::select(Email, DeviceID, PAQuestion1, PAQuestion2, PAQuestion3) 
+  dplyr::select(Email, DeviceID, PAQuestion1, PAQuestion2, PAQuestion3)
 
-flextable(pInfo) %>%
-  border_inner_h(part = "all", border = small_border) %>%
-  border_inner_v(part = "all", border = small_border) %>%
-  #border_outer(part = "all", border = small_border) %>%
-  bg(i = ~ PAQuestion1 == "Yes", j = "PAQuestion1", bg = "white") %>%
-  bg(i = ~ PAQuestion1 == "No", j = "PAQuestion1", bg = "#fb6768") %>%
-  bg(i = ~ PAQuestion2 == "Yes", j = "PAQuestion2", bg = "white") %>%
-  bg(i = ~ PAQuestion2 == "No", j = "PAQuestion2", bg = "#fb6768") %>%
-  bg(i = ~ PAQuestion3 == "Yes", j = "PAQuestion3", bg = "white") %>%
-  bg(i = ~ PAQuestion3 == "No", j = "PAQuestion3", bg = "#fb6768") %>%
-  align(align = "center", part = "header") %>%
-  set_header_labels(
+flextable::flextable(pa_status) %>%
+  flextable::border_inner_h(part = "all", border = small_border) %>%
+  flextable::border_inner_v(part = "all", border = small_border) %>%
+  flextable::bg(i = ~ PAQuestion1 == "Yes", j = "PAQuestion1", bg = "white") %>%
+  flextable::bg(i = ~ PAQuestion1 == "No", j = "PAQuestion1", bg = "#fb6768") %>%
+  flextable::bg(i = ~ PAQuestion2 == "Yes", j = "PAQuestion2", bg = "white") %>%
+  flextable::bg(i = ~ PAQuestion2 == "No", j = "PAQuestion2", bg = "#fb6768") %>%
+  flextable::bg(i = ~ PAQuestion3 == "Yes", j = "PAQuestion3", bg = "white") %>%
+  flextable::bg(i = ~ PAQuestion3 == "No", j = "PAQuestion3", bg = "#fb6768") %>%
+  flextable::align(align = "center", part = "header") %>%
+  flextable::set_header_labels(
     Email = "Email",
     DeviceID = "DeviceID",
-    PAQuestion1 = translateHeaderName[["PAQuestion1"]],
-    PAQuestion2 = translateHeaderName[["PAQuestion2"]],
-    PAQuestion3 = translateHeaderName[["PAQuestion3"]]
+    PAQuestion1 = header_name_map[["PAQuestion1"]],
+    PAQuestion2 = header_name_map[["PAQuestion2"]],
+    PAQuestion3 = header_name_map[["PAQuestion3"]]
   ) %>%
   FitFlextableToPage()
 ```
@@ -86,29 +90,30 @@ flextable(pInfo) %>%
 ## 3. Clarity sensors status:
 **Note: This status does not include sites which surveys haven't been filled out. Refer to previous tables for information.**
 ```{r echo = FALSE, warning=FALSE}
-translateHeaderName <- tibble::deframe(params$myData$WeeklyShortlist %>% select(QuestionTag, QuestionColumnName))
+header_name_map <- tibble::deframe(
+  params$myData$WeeklyShortlist %>% dplyr::select(QuestionTag, QuestionColumnName)
+)
 
-pInfo <- params$myData$Responsed %>%
+clarity_status <- params$myData$Responsed %>%
   dplyr::filter(grepl("CN", Label)) %>%
-  dplyr::select(Email, DeviceID, ClarityQuestion1, ClarityQuestion2, ClarityQuestion3) 
+  dplyr::select(Email, DeviceID, ClarityQuestion1, ClarityQuestion2, ClarityQuestion3)
 
-flextable(pInfo) %>%
-  border_inner_h(part = "all", border = small_border) %>%
-  border_inner_v(part = "all", border = small_border) %>%
-  #border_outer(part = "all", border = small_border) %>%
-  bg(i = ~ ClarityQuestion1 == "Yes", j = "ClarityQuestion1", bg = "white") %>%
-  bg(i = ~ ClarityQuestion1 == "No", j = "ClarityQuestion1", bg = "#fb6768") %>%
-  bg(i = ~ ClarityQuestion2 == "Yes", j = "ClarityQuestion2", bg = "white") %>%
-  bg(i = ~ ClarityQuestion2 == "No", j = "ClarityQuestion2", bg = "#fb6768") %>%
-  bg(i = ~ ClarityQuestion3 == "Yes", j = "ClarityQuestion3", bg = "white") %>%
-  bg(i = ~ ClarityQuestion3 == "No", j = "ClarityQuestion3", bg = "#fb6768") %>%
-  align(align = "center", part = "header") %>%
-  set_header_labels(
+flextable::flextable(clarity_status) %>%
+  flextable::border_inner_h(part = "all", border = small_border) %>%
+  flextable::border_inner_v(part = "all", border = small_border) %>%
+  flextable::bg(i = ~ ClarityQuestion1 == "Yes", j = "ClarityQuestion1", bg = "white") %>%
+  flextable::bg(i = ~ ClarityQuestion1 == "No", j = "ClarityQuestion1", bg = "#fb6768") %>%
+  flextable::bg(i = ~ ClarityQuestion2 == "Yes", j = "ClarityQuestion2", bg = "white") %>%
+  flextable::bg(i = ~ ClarityQuestion2 == "No", j = "ClarityQuestion2", bg = "#fb6768") %>%
+  flextable::bg(i = ~ ClarityQuestion3 == "Yes", j = "ClarityQuestion3", bg = "white") %>%
+  flextable::bg(i = ~ ClarityQuestion3 == "No", j = "ClarityQuestion3", bg = "#fb6768") %>%
+  flextable::align(align = "center", part = "header") %>%
+  flextable::set_header_labels(
     Email = "Email",
     DeviceID = "DeviceID",
-    ClarityQuestion1 = translateHeaderName[["ClarityQuestion1"]],
-    ClarityQuestion2 = translateHeaderName[["ClarityQuestion2"]],
-    ClarityQuestion3 = translateHeaderName[["ClarityQuestion3"]]
+    ClarityQuestion1 = header_name_map[["ClarityQuestion1"]],
+    ClarityQuestion2 = header_name_map[["ClarityQuestion2"]],
+    ClarityQuestion3 = header_name_map[["ClarityQuestion3"]]
   ) %>%
   FitFlextableToPage()
 ```
@@ -116,24 +121,20 @@ flextable(pInfo) %>%
 ## 4. Other notes
 **Note: This status does not include sites which surveys haven't been filled out. Refer to previous tables for information.**
 ```{r echo = FALSE, warning=FALSE}
-header_question <- params$myData$QuestionDesc %>%
+final_question_text <- params$myData$QuestionDesc %>%
   dplyr::filter(qname %in% list("FinalQuestion"))
-header_question <- header_question[["main"]]
+final_question_text <- final_question_text[["main"]]
 ```
-Question: `r header_question`
+Question: `r final_question_text`
 
 ```{r echo = FALSE, warning=FALSE}
-pInfo <- params$myData$RawResponses %>%
+other_notes_df <- params$myData$RawResponses %>%
   dplyr::select(RecipientEmail, FinalQuestion) %>%
   dplyr::rename(Answer = FinalQuestion, Email = RecipientEmail)
 
-flextable(pInfo) %>%
-  #set_table_properties(layout = "fixed") %>%
-  #autofit() %>%
-  #border_inner_h(part = "all", border = small_border) %>%
-  border_inner_v(part = "all", border = small_border) %>%
-  #border_outer(part = "all", border = small_border) %>%
+flextable::flextable(other_notes_df) %>%
+  flextable::border_inner_v(part = "all", border = small_border) %>%
   FitFlextableToPage() %>%
-  width(j = 1, width = 2) %>%
-  width(j = 2, width = 4)
+  flextable::width(j = 1, width = 2) %>%
+  flextable::width(j = 2, width = 4)
 ```

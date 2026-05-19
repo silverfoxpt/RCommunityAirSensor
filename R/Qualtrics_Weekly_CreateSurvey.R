@@ -1,67 +1,87 @@
-#' @title Create Weekly Survey in Qualtrics API
-#' @description This function creates a new weekly survey in Qualtrics using a predefined template. It checks if the survey for the current week has already been created to avoid duplicates.
-#' @param None
-#' @returns None
-#' @export
-#' @concept role:qualtrics_weekly
-#' @concept removedDependencies:false
-#' @concept removedRawFunctionCalls:true
-#' @concept removedSensitiveInfo:true
-#' @concept cleanupParameters:false
-#' @concept cleanupComments:false
-#' @concept addRoxygenComments:true
-qualtrics_create_weekly_survey <- function() {
-  # Installation and loading
-  if (!require("pacman")) install.packages("pacman")
-  pacman::p_load(tidyverse, glue, httr2, jsonlite, lubridate)
+ #' Create Weekly Qualtrics Survey from Template
+ #'
+ #' Creates a new Qualtrics survey from a stored QSF template for the current week.
+ #'
+ #' @details
+ #' **Run:**
+ #' 1. Validate required parameters and API key
+ #' 2. Determine the start date of the current week
+ #' 3. Check the weekly log to avoid duplicate survey creation
+ #' 4. Retrieve the QSF template and create a new survey
+ #' 5. Record creation in the weekly log and activate/publish the survey
+ #'
+ #' @param current_date Date object used to determine the start of the week. Defaults to Sys.Date().
+ #' @param qualtrics_api_key Character API key for Qualtrics. Defaults to Sys.getenv("QUALTRICS_API_KEY").
+ #' @param template_id Character ID of the QSF template. Defaults to Sys.getenv("QUALTRICS_WEEKLY_TEMPLATE_ID").
+ #' @param directory_id Character directory id for Qualtrics library. Defaults to Sys.getenv("QUALTRICS_DIRECTORY_ID").
+ #' @param library_id Character library id for Qualtrics. Defaults to Sys.getenv("QUALTRICS_LIBRARY_ID").
+ #' @param message_id Character message id used for mailing (optional). Defaults to Sys.getenv("QUALTRICS_MESSAGE_ID").
+ #'
+ #' @return Invisibly returns the new survey_id (character) if created, or NULL if no action was taken.
+ #'
+ #' @section Error handling:
+ #' The function stops with a clear message when required parameters or API key are missing. If the survey already exists for the target week,
+ #' the function returns invisibly with NULL to avoid duplicate creation.
+ #'
+ #' @examples
+ #' \dontrun{
+ #' qualtrics_create_weekly_survey()
+ #' qualtrics_create_weekly_survey(current_date = as.Date("2025-01-20"))
+ #' }
+ #'
+ #' @seealso
+ #' \code{get_weekly_log}, \code{get_survey_qsf}, \code{create_survey_qsf}, \code{write_to_weekly_log}
+ #'
+ #' @export
+ #' @concept role:report
+ #' @concept removedDependencies:true
+ #' @concept removedRawFunctionCalls:true
+ #' @concept removedSensitiveInfo:true
+ #' @concept cleanupParameters:true
+ #' @concept cleanupComments:true
+ #' @concept cleanupDependenciesNamespace:true
+ #' @concept addRoxygenComments:true
+ qualtrics_create_weekly_survey <- function(
+   current_date = Sys.Date(),
+   qualtrics_api_key = Sys.getenv("QUALTRICS_API_KEY"),
+   template_id = Sys.getenv("QUALTRICS_WEEKLY_TEMPLATE_ID"),
+   directory_id = Sys.getenv("QUALTRICS_DIRECTORY_ID"),
+   library_id = Sys.getenv("QUALTRICS_LIBRARY_ID"),
+   message_id = Sys.getenv("QUALTRICS_MESSAGE_ID")
+ ) {
+   # Validate required inputs
+   if (is.null(qualtrics_api_key) || identical(qualtrics_api_key, "")) {
+     stop("qualtrics_api_key is required. Set QUALTRICS_API_KEY or pass qualtrics_api_key.")
+   }
+   if (is.null(template_id) || identical(template_id, "")) {
+     stop("template_id is required. Set QUALTRICS_WEEKLY_TEMPLATE_ID or pass template_id.")
+   }
 
-  # sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsUtil.R")
-  # source(file = sourcePath, echo = FALSE)
-  #
-  # sourcePath <- file.path(getwd(), "Code", "QualtricsCode", "QualtricsSecondaryUtils.R")
-  # source(file = sourcePath, echo = FALSE)
+   # compute start of current week (uses lubridate)
+   start_of_current_week <- lubridate::floor_date(current_date, unit = "week")
 
-  # get date of this week
-  current_date <- Sys.Date()
-  start_of_current_week <- floor_date(current_date, unit = "week")
+   # Retrieve weekly log and check for existing entry
+   logfile <- get_weekly_log()
+   if (check_exist_in_log(logfile, start_of_current_week, "CreateSurvey")) {
+     return(invisible(NULL))
+   }
 
-  # Check if Log has already been collected
-  logfile <- get_weekly_log()
+   # Retrieve QSF template and create survey
+   qsfData <- get_survey_qsf(
+     qualtrics_api_key,
+     template_id,
+     paste("Weekly Community Sensor Health Check survey - Week of ", start_of_current_week, sep = "")
+   )
 
-  # check if survey already created
-  if (check_exist_in_log(logfile, start_of_current_week, "CreateSurvey")) {
-    return()
-  }
+   newSurveyId <- create_survey_qsf(
+     qualtrics_api_key,
+     qsfData
+   )
 
-  # get info
-  qualtKey      <- Sys.getenv("QUALTRICS_API_KEY")
-  templateId    <- Sys.getenv("QUALTRICS_WEEKLY_TEMPLATE_ID")
-  directoryId   <- Sys.getenv("QUALTRICS_DIRECTORY_ID")
-  libraryId     <- Sys.getenv("QUALTRICS_LIBRARY_ID")
-  messageId     <- Sys.getenv("QUALTRICS_MESSAGE_ID")
+   # Record creation and activate/publish
+   write_to_weekly_log(start_of_current_week, 'CreateSurvey', newSurveyId)
+   set_qualtrics_survey_active(qualtrics_api_key, newSurveyId)
+   publishInfo <- publish_survey(qualtrics_api_key, newSurveyId)
 
-  # get qsf template file
-  qsfData <- get_survey_qsf(
-    qualtKey,
-    templateId,
-    paste("Weekly Community Sensor Health Check survey - Week of ", start_of_current_week, sep = "") #survey new name
-  )
-
-  # create survey
-  newSurveyId <- create_survey_qsf(
-    qualtKey,
-    qsfData
-  )
-
-  # write to weekly log
-  write_to_weekly_log(start_of_current_week, 'CreateSurvey', newSurveyId)
-
-  # set survey as active
-  set_qualtrics_survey_active(qualtKey, newSurveyId)
-
-  # publish survey
-  publishInfo <- publish_survey(qualtKey, newSurveyId)
-}
-#qualtrics_create_weekly_survey()
-
-# Tested: 20 Jan 2025
+   invisible(newSurveyId)
+ }

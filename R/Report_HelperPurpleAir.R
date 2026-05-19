@@ -212,4 +212,3 @@ check_missing_data <- function(sensor_index, field_name, hourly_data, countThisM
   
   return(paste0("Miss: ", missing_pct, " %"))
 }
-

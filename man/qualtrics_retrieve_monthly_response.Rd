@@ -69,7 +69,7 @@ qualtrics_retrieve_monthly_response(
 
 }
 \seealso{
-\code{get_monthly_log}, \code{write_to_monthly_log}, \code{extract_colmap}
+\code{get_monthly_log}, \code{write_to_monthly_log}}
 }
 \concept{addCheckSetupFolder:true}
 \concept{addRoxygenComments:true}
