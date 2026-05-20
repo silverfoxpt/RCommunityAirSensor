@@ -2,24 +2,48 @@
 % Please edit documentation in R/Qualtrics_Monthly_UpdateTemplateSurvey.R
 \name{update_list_unresolved_monitor_qualtrics}
 \alias{update_list_unresolved_monitor_qualtrics}
-\title{Get the monthly question shortlist from a CSV file}
+\title{Update an unresolved-monitor matrix question in a Qualtrics survey}
 \usage{
 update_list_unresolved_monitor_qualtrics(
-  qualtKey,
-  surveyId,
+  qualtKey = Sys.getenv("QUALTRICS_API_KEY"),
+  surveyId = Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID"),
   unresolveQuestionID
 )
 }
+\arguments{
+\item{qualtKey}{Character. Qualtrics API key. Default reads
+Sys.getenv("QUALTRICS_API_KEY").}
+
+\item{surveyId}{Character. Qualtrics survey ID. Default reads
+Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID").}
+
+\item{unresolveQuestionID}{Character. Qualtrics question ID to update (e.g.
+"QID66").}
+}
 \value{
-A tibble containing the question IDs and sensor types from the CSV file.
+NULL. Called for side effects (API update).
 }
 \description{
-This function reads a CSV file containing a shortlist of questions for monthly updates and returns it as a tibble.
+Fetches the existing question payload, constructs rows from the unresolved
+monitor log, and updates the question using the project's Qualtrics helper
+utilities. This function keeps the existing answers and display logic by
+default.
+}
+\details{
+The function expects helper utilities to exist in the package namespace:
+\code{get_single_qualtrics_question()}, \code{get_unresolved_monitor_log()},
+\code{custom_configure_matrix_question_qualtrics()} and \code{modify_qualtrics_question()}.
+}
+\examples{
+\dontrun{
+update_list_unresolved_monitor_qualtrics("<KEY>", "<SURVEY>", "QID66")
+}
 }
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
 \concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
-\concept{role:qualtrics_monthly_helper}
+\concept{role:qualtrics_monthly}

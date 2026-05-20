@@ -2,32 +2,75 @@
 % Please edit documentation in R/Qualtrics_Monthly_UpdateTemplateSurvey.R
 \name{qualtrics_update_monthly_template_survey}
 \alias{qualtrics_update_monthly_template_survey}
-\title{Qualtrics monthly - update the Qualtrics template survey with API}
+\title{Update the Qualtrics monthly template survey}
 \usage{
-qualtrics_update_monthly_template_survey()
+qualtrics_update_monthly_template_survey(
+  qualtKey = Sys.getenv("QUALTRICS_API_KEY"),
+  surveyId = Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID"),
+  questionShort = NULL
+)
+}
+\arguments{
+\item{qualtKey}{Character. Qualtrics API key. Defaults to
+Sys.getenv("QUALTRICS_API_KEY").}
+
+\item{surveyId}{Character. Qualtrics survey ID. Defaults to
+Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID").}
+
+\item{questionShort}{Optional tibble. If provided, used instead of calling
+\code{get_monthly_question_shortlist()}.}
 }
 \value{
-None. The function performs updates and logging but does not return a value.
+NULL. Called for side effects (API updates and logging).
 }
 \description{
-This function updates the Qualtrics monthly template survey by modifying matrix questions based on a predefined shortlist and updating unresolved monitor questions.
+High-level workflow to update matrix questions in the monthly Qualtrics
+template survey. The function reads a shortlist of question IDs and sensor
+types, updates matrix questions without altering display logic or answers,
+updates unresolved monitor list questions, copies a QA backup of the
+monitor-tracking workbook, and logs the update.
 }
 \details{
-The function performs the following steps:
+\strong{Run:}
 \enumerate{
-\item Loads necessary libraries and sources utility scripts.
-\item Copies the original CAMNMonitorTracking.xlsx file for QA purposes.
-\item Imports environment variables for the Qualtrics API key and survey ID.
-\item Reads a CSV file containing question IDs and sensor types for updates.
-\item Updates matrix questions in the survey without changing display logic or answers.
-\item Updates unresolved monitor questions.
-\item Logs the update action to a file.
+\item \strong{Validation}: Validates required parameters or reads them from the
+environment.
+\item \strong{QA backup}: Copies the original monitor tracking workbook via
+\code{copy_original_QAMonitorFile()}.
+\item \strong{Shortlist import}: Loads the monthly question shortlist using
+\code{get_monthly_question_shortlist()} (or accepts an override).
+\item \strong{Question updates}: Updates matrix questions using
+\code{custom_update_matrix_question_qualtrics()} and unresolved-monitor
+questions using \code{update_list_unresolved_monitor_qualtrics()}.
+\item \strong{Logging}: Writes an entry via \code{write_to_monthly_template_update_log()}.
 }
+
+\strong{Data processing details:}
+\itemize{
+\item Expects \code{get_monthly_question_shortlist()} to return a tibble with
+columns \code{QuestionID} and \code{SensorType}.
+}
+}
+\section{Error handling}{
+
+Stops with clear messages if required helper functions are missing or if
+the question shortlist does not contain required columns.
+}
+
+\examples{
+\dontrun{
+qualtrics_update_monthly_template_survey()
+}
+}
+\seealso{
+\code{\link{copy_original_QAMonitorFile}},
+\code{\link{update_list_unresolved_monitor_qualtrics}}
 }
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
-\concept{removedDependencies:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
 \concept{role:qualtrics_monthly}

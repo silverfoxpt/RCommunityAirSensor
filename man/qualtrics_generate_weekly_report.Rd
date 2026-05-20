@@ -2,19 +2,74 @@
 % Please edit documentation in R/Qualtrics_Weekly_GenerateReport.R
 \name{qualtrics_generate_weekly_report}
 \alias{qualtrics_generate_weekly_report}
-\title{Qualtrics Weekly - concentrate data from responses}
+\title{Generate and send the weekly Qualtrics sensor report (PDF)}
 \usage{
-qualtrics_generate_weekly_report()
+qualtrics_generate_weekly_report(
+  current_date = Sys.Date(),
+  upload_root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"),
+  smtp_api = Sys.getenv("SMTP_API"),
+  smtp_sender = Sys.getenv("SMTP_SENDER"),
+  rmd_template = file.path("data-raw", "Qualtrics_Weekly_SurveyReportTemplate.Rmd"),
+  send_email = FALSE
+)
+}
+\arguments{
+\item{current_date}{Date used to determine week bounds. Defaults to \code{Sys.Date()}.}
+
+\item{upload_root_folder}{Character string. Root folder where reports will be written. Defaults to the \code{UPLOAD_ROOT_FOLDER} environment variable.}
+
+\item{smtp_api}{Character string. SMTP API key used for sending email when \code{send_email = TRUE}. Defaults to \code{SMTP_API} environment variable.}
+
+\item{smtp_sender}{Character string. Sender email address used by the SMTP service. Defaults to \code{SMTP_SENDER} environment variable.}
+
+\item{rmd_template}{Character string. Path to the R Markdown template used to render the report. Defaults to \code{data-raw/Qualtrics_Weekly_SurveyReportTemplate.Rmd}.}
+
+\item{send_email}{Logical. If \code{TRUE}, the rendered PDF will be sent via SMTP using \code{smtp_api}/\code{smtp_sender}. Defaults to \code{FALSE}.}
+}
+\value{
+NULL. Called for side effects: writes a PDF, sends email, and logs the action.
 }
 \description{
-This function concentrates data from survey responses for weekly report generation.
-It checks if the report has already been sent for the current week, retrieves response data,
-merges it with personnel information, and prepares the data for report generation.
+This workflow collects the weekly consolidated Qualtrics data (via
+\code{qualtrics_concentrate_data_from_responses_weekly()}), renders a PDF report from
+an R Markdown template, optionally emails the PDF to maintainers/admins, and
+writes an entry to the weekly action log to avoid duplicate sends.
 }
+\details{
+\strong{Run:}
+\enumerate{
+\item Calls \code{qualtrics_concentrate_data_from_responses_weekly()} to obtain a data bundle.
+\item Renders the report from \code{template_path} using \code{rmarkdown::render()}.
+\item Sends the generated PDF to responsible personnel (unless \code{recipients} is provided).
+\item Records the \code{SendReport} action in the weekly log to prevent re-send.
+}
+
+\strong{File structure:}
+\preformatted{
+[upload_root_folder]/CSV/Qualtrics/Weekly/Reports/
+  WeeklyCommunitySensorReport - YYYY-MM-DD.pdf
+}
+}
+\section{Error handling}{
+
+Stops with informative messages when required inputs or folders are missing. Creates target folders when necessary.
+}
+
+\examples{
+\dontrun{
+qualtrics_generate_weekly_report()
+}
+
+}
+\seealso{
+\code{\link{qualtrics_concentrate_data_from_responses_weekly}}
+}
+\concept{addCheckSetupFolder:true}
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
 \concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
-\concept{role:qualtrics_weekly}
+\concept{role:report}

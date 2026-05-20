@@ -2,20 +2,38 @@
 % Please edit documentation in R/Qualtrics_Monthly_GenerateReport.R
 \name{qualtrics_concentrate_monthly_data_from_responses}
 \alias{qualtrics_concentrate_monthly_data_from_responses}
-\title{Qualtrics monthly - concentrate data from survey responses}
+\title{Concentrate monthly Qualtrics responses into structured lists}
 \usage{
-qualtrics_concentrate_monthly_data_from_responses()
+qualtrics_concentrate_monthly_data_from_responses(
+  upload_root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER")
+)
+}
+\arguments{
+\item{upload_root_folder}{Character. Root folder for uploads/exports. Defaults
+to the environment variable \code{UPLOAD_ROOT_FOLDER} if set.}
 }
 \value{
-None
+A named list with elements: \code{PersonnelInfo}, \code{Responsed},
+\code{Unresponsed}, \code{QuestionDesc}, \code{RawResponses}, \code{Monitors},
+\code{QuestionOtherInfo}, \code{UnresolvedMonitor}, \code{UnresolvedNotes}.
 }
 \description{
-Qualtrics monthly - concentrate data from survey responses
+Collects and merges monthly Qualtrics question descriptions, responses,
+personnel and monitor information into a single named list for downstream
+reporting. This function performs in-package data consolidation and does
+not perform any side-effecting I/O (files are not written here).
+}
+\details{
+This helper collects monthly Qualtrics data previously saved by other
+utilities (referenced via helper functions). It expects those helper
+functions (e.g. \code{get_monthly_log}, \code{get_monthly_responses_list}) to be
+available in the package namespace.
 }
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
-\concept{removedDependencies:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
-\concept{role:qualtrics_monthly}
+\concept{role:helper}

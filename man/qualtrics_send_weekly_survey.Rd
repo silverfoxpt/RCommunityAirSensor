@@ -2,17 +2,92 @@
 % Please edit documentation in R/Qualtrics_Weekly_SendSurvey.R
 \name{qualtrics_send_weekly_survey}
 \alias{qualtrics_send_weekly_survey}
-\title{Qualtrics Weekly - send weekly survey through emails}
+\title{Send weekly Qualtrics survey to personnel mailing list}
 \usage{
-qualtrics_send_weekly_survey()
+qualtrics_send_weekly_survey(
+  current_date = Sys.Date(),
+  qualtrics_api_key = Sys.getenv("QUALTRICS_API_KEY"),
+  directory_id = Sys.getenv("QUALTRICS_DIRECTORY_ID"),
+  library_id = Sys.getenv("QUALTRICS_LIBRARY_ID"),
+  message_id = Sys.getenv("QUALTRICS_MESSAGE_ID"),
+  participants = NULL
+)
+}
+\arguments{
+\item{current_date}{Date used to determine the current week. Defaults to \code{Sys.Date()}.}
+
+\item{qualtrics_api_key}{Qualtrics API key. Defaults to \code{Sys.getenv("QUALTRICS_API_KEY")}.}
+
+\item{directory_id}{Qualtrics directory ID for contact lists. Defaults to \code{Sys.getenv("QUALTRICS_DIRECTORY_ID")}.}
+
+\item{library_id}{Qualtrics library ID that contains the survey. Defaults to \code{Sys.getenv("QUALTRICS_LIBRARY_ID")}.}
+
+\item{message_id}{Qualtrics message/template ID to use for distribution. Defaults to \code{Sys.getenv("QUALTRICS_MESSAGE_ID")}.}
+
+\item{participants}{Optional participant data frame. If NULL, \code{get_weekly_personnel_list()} will be used.}
+}
+\value{
+Invisibly returns the \code{surveyId} of the distributed survey when sent, otherwise \code{NULL} if skipped.
 }
 \description{
-Qualtrics Weekly - send weekly survey through emails
+This function prepares and sends the weekly Qualtrics survey created earlier
+for the target week. It will:
+\itemize{
+\item check the weekly log for an existing \code{CreateSurvey} entry for the week and
+skip if not present (survey not created yet)
+\item skip if a \code{SendSurvey} entry already exists for the week
+\item build a mailing list from the personnel list and distribute the survey
 }
+}
+\details{
+\strong{Run:}
+\enumerate{
+\item \strong{Validation}: Verifies required credentials are provided (or available via environment variables).
+\item \strong{Log checks}: Ensures the survey was previously created and not already sent this week.
+\item \strong{Participant retrieval}: Loads weekly personnel list (via \code{get_weekly_personnel_list()}) if not provided.
+\item \strong{Mailing list creation}: Calls \code{create_and_add_contact_from_personnel_list()} to build contacts.
+\item \strong{Distribution}: Calls \code{distribute_qualtrics_survey()} to send the message and logs the action.
+}
+
+\strong{Data processing details:}
+\itemize{
+\item The function relies on package-local helper functions for reading/writing the weekly log and
+for constructing the personnel list. It does not itself persist copies of participant data.
+}
+}
+\section{Error handling}{
+
+\itemize{
+\item The function will stop with an informative error if required credentials are missing.
+\item If helper functions (log or personnel retrieval) return unexpected values, the function will stop.
+}
+}
+
+\examples{
+\dontrun{
+# Use environment variables (recommended):
+qualtrics_send_weekly_survey()
+
+# Or pass explicit credentials (useful in non-interactive contexts):
+qualtrics_send_weekly_survey(
+  qualtrics_api_key = "<REDACTED_API_KEY>",
+  directory_id = "<REDACTED_DIRECTORY_ID>",
+  library_id = "<REDACTED_LIBRARY_ID>",
+  message_id = "<REDACTED_MESSAGE_ID>"
+)
+}
+
+}
+\seealso{
+\code{\link{get_weekly_personnel_list}}, \code{\link{create_and_add_contact_from_personnel_list}},
+\code{\link{distribute_qualtrics_survey}}, \code{\link{write_to_weekly_log}}
+}
+\concept{addCheckSetupFolder:true}
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
-\concept{removedDependencies:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
-\concept{role:qualtrics_weekly}
+\concept{role:report}

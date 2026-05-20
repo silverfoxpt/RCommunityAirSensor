@@ -2,19 +2,61 @@
 % Please edit documentation in R/Qualtrics_Weekly_GenerateReport.R
 \name{qualtrics_concentrate_data_from_responses_weekly}
 \alias{qualtrics_concentrate_data_from_responses_weekly}
-\title{Qualtrics Weekly - concentrate data from responses}
+\title{Concentrate weekly Qualtrics responses into structured lists}
 \usage{
-qualtrics_concentrate_data_from_responses_weekly()
+qualtrics_concentrate_data_from_responses_weekly(current_date = Sys.Date())
+}
+\arguments{
+\item{current_date}{Date object used to determine the start of the week. Defaults to \code{Sys.Date()}.}
+}
+\value{
+A named list with elements: \code{PersonnelInfo}, \code{Responsed}, \code{Unresponsed},
+\code{QuestionDesc}, \code{RawResponses}, \code{WeeklyShortlist}.
 }
 \description{
-This function concentrates data from survey responses for weekly report generation.
-It checks if the report has already been sent for the current week, retrieves response data,
-merges it with personnel information, and prepares the data for report generation.
+This function collects weekly Qualtrics response artifacts recorded in the
+weekly log, loads the associated question descriptions and processed
+responses, and returns a named list containing personnel and response
+summaries used by downstream reporting functions.
+}
+\details{
+\strong{Run:}
+\enumerate{
+\item Determine the week start using \code{current_date}.
+\item Read the weekly log and select the latest response/description artifacts.
+\item Load processed responses, question descriptions and personnel lists.
+\item Join answers back to personnel by \code{DeviceID} and \code{Email}.
+}
+
+\strong{Data processing details:}
+\itemize{
+\item Expects helper functions such as \code{get_weekly_log()},
+\code{get_unresponsed_personnel_list()}, \code{get_responsed_personnel_list()},
+\code{get_merge_personnel_sensor_list()}, \code{get_question_descriptions()} and
+\code{get_processed_responses_list()} to be available in the package namespace.
+}
+}
+\section{Error handling}{
+
+The function returns \code{NULL} (invisibly) when there are no responses for the
+requested week, and raises errors when required helper functions or expected
+artifacts are missing.
+}
+
+\examples{
+\dontrun{
+qualtrics_concentrate_data_from_responses_weekly(Sys.Date())
+}
+
+}
+\seealso{
+\code{\link{qualtrics_generate_weekly_report}}
 }
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
-\concept{removedDependencies:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
-\concept{role:qualtrics_weekly_helper}
+\concept{role:process}

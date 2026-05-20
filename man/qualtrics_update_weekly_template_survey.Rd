@@ -2,17 +2,80 @@
 % Please edit documentation in R/Qualtrics_Weekly_UpdateTemplateSurvey.R
 \name{qualtrics_update_weekly_template_survey}
 \alias{qualtrics_update_weekly_template_survey}
-\title{Qualtrics Weekly - Update weekly template survey through Qualtrics API}
+\title{Update the Qualtrics weekly template survey}
 \usage{
-qualtrics_update_weekly_template_survey()
+qualtrics_update_weekly_template_survey(
+  qualtrics_api_key = Sys.getenv("QUALTRICS_API_KEY"),
+  survey_id = Sys.getenv("QUALTRICS_WEEKLY_TEMPLATE_ID"),
+  question_ids = c(Sys.getenv("WEEKLY_QUALTRICS_TEMPLATE_PA_Q1_ID"),
+    Sys.getenv("WEEKLY_QUALTRICS_TEMPLATE_PA_Q2_ID"),
+    Sys.getenv("WEEKLY_QUALTRICS_TEMPLATE_PA_Q3_ID"),
+    Sys.getenv("WEEKLY_QUALTRICS_TEMPLATE_CL_Q1_ID"),
+    Sys.getenv("WEEKLY_QUALTRICS_TEMPLATE_CL_Q2_ID"),
+    Sys.getenv("WEEKLY_QUALTRICS_TEMPLATE_CL_Q3_ID")),
+  sensor_types = c(rep("PurpleAir", 3), rep("Clarity", 3)),
+  log_date = Sys.Date(),
+  action_label = "UpdateWeeklyTemplate",
+  log_root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER")
+)
+}
+\arguments{
+\item{qualtrics_api_key}{Character. Qualtrics API key. Defaults to \code{Sys.getenv("QUALTRICS_API_KEY")}.}
+
+\item{survey_id}{Character. Qualtrics weekly template survey ID. Defaults to \code{Sys.getenv("QUALTRICS_WEEKLY_TEMPLATE_ID")}.}
+
+\item{question_ids}{Character vector of Qualtrics question IDs to update. Defaults to the weekly template question IDs from environment variables.}
+
+\item{sensor_types}{Character vector of sensor types aligned with \code{question_ids}. Defaults to three \code{"PurpleAir"} values followed by three \code{"Clarity"} values.}
+
+\item{log_date}{Date used when writing the completion log entry. Defaults to \code{Sys.Date()}.}
+
+\item{action_label}{Character action label written to the log. Defaults to \code{"UpdateWeeklyTemplate"}.}
+
+\item{log_root_folder}{Character root folder used for the update log. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+}
+\value{
+NULL. Called for side effects (Qualtrics API updates and logging).
 }
 \description{
-Qualtrics Weekly - Update weekly template survey through Qualtrics API
+Updates the weekly Qualtrics template survey by refreshing the configured
+matrix questions for PurpleAir and Clarity sensor groups and writing a
+completion entry to the weekly update log.
+}
+\details{
+\strong{Run:}
+\enumerate{
+\item \strong{Validation}: Checks that the API key, survey ID, and question inputs are available.
+\item \strong{Question updates}: Iterates through each question ID and sensor type pair.
+\item \strong{API mutation}: Calls \code{custom_update_matrix_question_qualtrics()} for each pair.
+\item \strong{Logging}: Records completion through \code{write_to_weekly_template_update_log()}.
+}
+
+\strong{Data processing details:}
+\itemize{
+\item Uses six configured question IDs, grouped into three PurpleAir questions and three Clarity questions by default.
+\item Preserves the current question structure and delegates the Qualtrics update logic to the helper function.
+}
+}
+\section{Error handling}{
+
+Stops with clear messages if the API key or survey ID is missing, if the question and sensor vectors are empty or different lengths, or if any question ID is missing.
+}
+
+\examples{
+\dontrun{
+qualtrics_update_weekly_template_survey()
+}
+}
+\seealso{
+\code{\link{custom_update_matrix_question_qualtrics}},
+\code{\link{write_to_weekly_template_update_log}}
 }
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
-\concept{removedDependencies:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
-\concept{role:qualtrics_weekly}
+\concept{role:process}

@@ -2,23 +2,55 @@
 % Please edit documentation in R/Qualtrics_Monthly_UpdateTemplateSurvey.R
 \name{copy_original_QAMonitorFile}
 \alias{copy_original_QAMonitorFile}
-\title{Copy the original MonitorTracking script for QA purposes}
+\title{Copy the original QA Monitor tracking workbook for monthly QA}
 \usage{
-copy_original_QAMonitorFile()
+copy_original_QAMonitorFile(
+  base_file = file.path(Sys.getenv("RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx"),
+  new_folder = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "QATimeshift"),
+  date = Sys.Date()
+)
+}
+\arguments{
+\item{base_file}{Character. Full path to the source workbook. Defaults to
+file.path(Sys.getenv("RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx").}
+
+\item{new_folder}{Character. Destination folder where the dated copy will
+be placed. Defaults to file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"),
+"CSV", "QATimeshift").}
+
+\item{date}{Date. Date used to compute the month suffix. Defaults to
+Sys.Date().}
 }
 \value{
-None. The function performs file operations and does not return a value.
+NULL. Called for side effects (file copy).
 }
 \description{
-This function copies the original CAMNMonitorTracking.xlsx file to a specified subfolder with a new name that includes the current month and year.
+Copies the \code{CAMNMonitorTracking.xlsx} workbook from a records location
+into a QA-specific upload folder and appends the current month to the
+filename. This function only performs file operations and does not
+attempt to install or load packages; dependencies are namespace-qualified.
 }
 \details{
-The function checks if the target subfolder exists and creates it if necessary. It then constructs a new file name based on the current date and copies the original file to the new location with the new name.
+Performs minimal validation: checks that the source file exists and
+creates the destination folder if necessary.
 }
+\section{Error handling}{
+
+Stops with informative messages when the source file does not exist or the
+copy operation fails.
+}
+
+\examples{
+\dontrun{
+copy_original_QAMonitorFile()
+}
+}
+\concept{addCheckSetupFolder:true}
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
 \concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
-\concept{role:qualtrics_monthly_helper}
+\concept{role:qualtrics_monthly}

@@ -2,20 +2,67 @@
 % Please edit documentation in R/Qualtrics_Weekly_CreateSurvey.R
 \name{qualtrics_create_weekly_survey}
 \alias{qualtrics_create_weekly_survey}
-\title{Create Weekly Survey in Qualtrics API}
+\title{Create Weekly Qualtrics Survey from Template}
 \usage{
-qualtrics_create_weekly_survey()
+qualtrics_create_weekly_survey(
+  current_date = Sys.Date(),
+  qualtrics_api_key = Sys.getenv("QUALTRICS_API_KEY"),
+  template_id = Sys.getenv("QUALTRICS_WEEKLY_TEMPLATE_ID"),
+  directory_id = Sys.getenv("QUALTRICS_DIRECTORY_ID"),
+  library_id = Sys.getenv("QUALTRICS_LIBRARY_ID"),
+  message_id = Sys.getenv("QUALTRICS_MESSAGE_ID")
+)
+}
+\arguments{
+\item{current_date}{Date object used to determine the start of the week. Defaults to Sys.Date().}
+
+\item{qualtrics_api_key}{Character API key for Qualtrics. Defaults to Sys.getenv("QUALTRICS_API_KEY").}
+
+\item{template_id}{Character ID of the QSF template. Defaults to Sys.getenv("QUALTRICS_WEEKLY_TEMPLATE_ID").}
+
+\item{directory_id}{Character directory id for Qualtrics library. Defaults to Sys.getenv("QUALTRICS_DIRECTORY_ID").}
+
+\item{library_id}{Character library id for Qualtrics. Defaults to Sys.getenv("QUALTRICS_LIBRARY_ID").}
+
+\item{message_id}{Character message id used for mailing (optional). Defaults to Sys.getenv("QUALTRICS_MESSAGE_ID").}
 }
 \value{
-None
+Invisibly returns the new survey_id (character) if created, or NULL if no action was taken.
 }
 \description{
-This function creates a new weekly survey in Qualtrics using a predefined template. It checks if the survey for the current week has already been created to avoid duplicates.
+Creates a new Qualtrics survey from a stored QSF template for the current week.
+}
+\details{
+\strong{Run:}
+\enumerate{
+\item Validate required parameters and API key
+\item Determine the start date of the current week
+\item Check the weekly log to avoid duplicate survey creation
+\item Retrieve the QSF template and create a new survey
+\item Record creation in the weekly log and activate/publish the survey
+}
+}
+\section{Error handling}{
+
+The function stops with a clear message when required parameters or API key are missing. If the survey already exists for the target week,
+the function returns invisibly with NULL to avoid duplicate creation.
+}
+
+\examples{
+\dontrun{
+qualtrics_create_weekly_survey()
+qualtrics_create_weekly_survey(current_date = as.Date("2025-01-20"))
+}
+
+}
+\seealso{
+\code{get_weekly_log}, \code{get_survey_qsf}, \code{create_survey_qsf}, \code{write_to_weekly_log}
 }
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
-\concept{removedDependencies:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
-\concept{role:qualtrics_weekly}
+\concept{role:report}

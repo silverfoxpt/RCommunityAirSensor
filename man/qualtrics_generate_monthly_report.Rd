@@ -2,19 +2,76 @@
 % Please edit documentation in R/Qualtrics_Monthly_GenerateReport.R
 \name{qualtrics_generate_monthly_report}
 \alias{qualtrics_generate_monthly_report}
-\title{Qualtrics monthly - generate report}
+\title{Qualtrics monthly — generate and send PDF report}
 \usage{
-qualtrics_generate_monthly_report()
+qualtrics_generate_monthly_report(
+  upload_root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"),
+  rmd_template = file.path("data-raw", "Qualtrics_Monthly_SurveyReportTemplate.Rmd"),
+  smtp_api = Sys.getenv("SMTP_API"),
+  smtp_sender = Sys.getenv("SMTP_SENDER"),
+  send_email = FALSE
+)
+}
+\arguments{
+\item{upload_root_folder}{Character. Root folder used for saving the PDF and imports.
+Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+
+\item{rmd_template}{Character. Path to the RMarkdown template to render.
+Defaults to \code{data-raw/Qualtrics_Monthly_SurveyReportTemplate.Rmd}.}
+
+\item{smtp_api}{Character. API key for SMTP provider. Defaults to
+\code{Sys.getenv("SMTP_API")}.}
+
+\item{smtp_sender}{Character. Sender email address. Defaults to
+\code{Sys.getenv("SMTP_SENDER")} or a redacted placeholder if unset.}
+
+\item{send_email}{Logical. Whether to send the email. Defaults to
+\code{FALSE}.}
 }
 \value{
-None
+NULL. Called for side effects: writes files and sends email.
 }
 \description{
-Qualtrics monthly - generate report
+Generates a monthly Qualtrics Data QA PDF report using consolidated
+responses produced by \code{qualtrics_concentrate_monthly_data_from_responses()}
+and emails the report to maintainers. File paths and email configuration
+are parameterized to avoid hard-coded credentials in package code.
 }
+\details{
+\strong{Run:}
+\enumerate{
+\item Call \code{qualtrics_concentrate_monthly_data_from_responses()} to collect data
+\item Render the RMarkdown report to PDF using \code{rmarkdown::render()}
+\item Save unresolved monitor records via \code{concentrate_unresolved_monitor_qualtrics()}
+\item Email the PDF to maintainers and admins
+\item Record the SendReport action to the monthly log
+}
+
+\strong{File structure:}
+\preformatted{
+[upload_root_folder]/CSV/Qualtrics/Monthly/Reports/
+}
+}
+\section{Error handling}{
+
+The function stops with clear messages if required data is missing, if the
+RMarkdown render fails, or if email sending fails (helper email functions
+are expected to signal errors).
+}
+
+\examples{
+\dontrun{
+qualtrics_generate_monthly_report()
+}
+}
+\seealso{
+\code{\link{qualtrics_concentrate_monthly_data_from_responses}}
+}
+\concept{addCheckSetupFolder:true}
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
 \concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}

@@ -3,6 +3,7 @@ params:
   title: "My title"
   myData: "`r list()`"
   debugTurnOn: TRUE
+  start_date: '`r as.Date("2026-04-01")`'
 title: "`r params$title`" 
 author: "Hillsborough County CAMN Network" 
 output: pdf_document
@@ -21,7 +22,7 @@ header-includes:
 
 ## 1.1 Statistics of raw daily PM2.5 levels
 ```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
-set_flextable_defaults(
+flextable::set_flextable_defaults(
   theme_fun = "theme_vanilla"
 )
 
@@ -78,11 +79,12 @@ trends_graph <- purrr::map2(
        params$myData[["DayReference"]],
        params$myData[["PurpleAirDay"]]
     ),
-     bind_rows(params$myData[["Info"]], params$myData[["PurpleAirInfo"]], params$myData$ReferenceInfo),
+    dplyr::bind_rows(params$myData[["Info"]], params$myData[["PurpleAirInfo"]], params$myData$ReferenceInfo),
      x,
      "pm2_5ConcMass24HourMean.value",
      expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
-     paste(x, " - ", y, sep = "")
+     paste(x, " - ", y, sep = ""),
+     start_date = params$start_date
     )
     return(plot)
   }
@@ -104,8 +106,9 @@ trends_graph <- purrr::map(
                                    "pm2_5ConcMass24HourMean.value",
                                    expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
                                    paste(x, " - ", params$myData[["CombinedInfoRefCo"]] %>% 
-                                                   filter(DeviceID == !!x) %>% pull(SiteName)
-                                         , sep = "")
+                                                   dplyr::filter(DeviceID == !!x) %>% dplyr::pull(SiteName)
+                                         , sep = ""),
+                                   start_date = params$start_date
     )
     return(plot)
   }
@@ -126,8 +129,9 @@ trends_graph <- purrr::map(
                                    "pm2_5ConcMass24HourMean.value",
                                    expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
                                    paste(x, " - ", params$myData[["CombinedInfoPark"]] %>% 
-                                                   filter(DeviceID == !!x) %>% pull(SiteName)
-                                         , sep = "")
+                                                   dplyr::filter(DeviceID == !!x) %>% dplyr::pull(SiteName)
+                                         , sep = ""),
+                                   start_date = params$start_date
     )
     return(plot)
   }
@@ -148,8 +152,9 @@ trends_graph <- purrr::map(
                                    "pm2_5ConcMass24HourMean.value",
                                    expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
                                    paste(x, " - ", params$myData[["CombinedInfoNonPark"]] %>% 
-                                                   filter(DeviceID == !!x) %>% pull(SiteName)
-                                         , sep = "")
+                                                   dplyr::filter(DeviceID == !!x) %>% dplyr::pull(SiteName)
+                                         , sep = ""),
+                                   start_date = params$start_date
     )
     return(plot)
   }
@@ -171,8 +176,8 @@ diurnal_graph <- purrr::map(
       "pm2_5ConcMass1HourMean.value",
       expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
       paste(x, " - ", params$myData[["CombinedInfoRefCo"]] %>% 
-               filter(DeviceID == !!x) %>% 
-               pull(SiteName), sep = "")
+           dplyr::filter(DeviceID == !!x) %>% 
+           dplyr::pull(SiteName), sep = "")
     )
     return(plot)
   }
@@ -193,8 +198,8 @@ diurnal_graph <- purrr::map(
       "pm2_5ConcMass1HourMean.value",
       expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
       paste(x, " - ", params$myData[["CombinedInfoPark"]] %>% 
-               filter(DeviceID == !!x) %>% 
-               pull(SiteName), sep = "")
+           dplyr::filter(DeviceID == !!x) %>% 
+           dplyr::pull(SiteName), sep = "")
     )
     return(plot)
   }
@@ -215,8 +220,8 @@ diurnal_graph <- purrr::map(
       "pm2_5ConcMass1HourMean.value",
       expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
       paste(x, " - ", params$myData[["CombinedInfoNonPark"]] %>% 
-               filter(DeviceID == !!x) %>% 
-               pull(SiteName), sep = "")
+           dplyr::filter(DeviceID == !!x) %>% 
+           dplyr::pull(SiteName), sep = "")
     )
     return(plot)
   }
@@ -237,8 +242,9 @@ weekly_graph <- purrr::map(
                                    "pm2_5ConcMass1HourMean.value",
                                    expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
                                    paste(x, " - ", params$myData[["CombinedInfoRefCo"]] %>% 
-                                            filter(DeviceID == !!x) %>% 
-                                            pull(SiteName), sep = "")
+                                            dplyr::filter(DeviceID == !!x) %>% 
+                                            dplyr::pull(SiteName), sep = ""),
+                                   start_date = params$start_date
     )
     return(plot)
   }
@@ -257,8 +263,9 @@ weekly_graph <- purrr::map(
                                    "pm2_5ConcMass1HourMean.value",
                                    expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
                                    paste(x, " - ", params$myData[["CombinedInfoPark"]] %>% 
-                                            filter(DeviceID == !!x) %>% 
-                                            pull(SiteName), sep = "")
+                                            dplyr::filter(DeviceID == !!x) %>% 
+                                            dplyr::pull(SiteName), sep = ""),
+                                   start_date = params$start_date
     )
     return(plot)
   }
@@ -277,8 +284,9 @@ weekly_graph <- purrr::map(
                                    "pm2_5ConcMass1HourMean.value",
                                    expression("PM"[2.5] * " Concentrations (µg/m"^{3}*")"),
                                    paste(x, " - ", params$myData[["CombinedInfoNonPark"]] %>% 
-                                            filter(DeviceID == !!x) %>% 
-                                            pull(SiteName), sep = "")
+                                            dplyr::filter(DeviceID == !!x) %>% 
+                                            dplyr::pull(SiteName), sep = ""),
+                                   start_date = params$start_date
     )
     return(plot)
   }

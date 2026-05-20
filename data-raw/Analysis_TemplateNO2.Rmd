@@ -3,6 +3,7 @@ params:
   title: "My title"
   myData: "`r list()`"
   debugTurnOn: TRUE
+  start_date: '`r as.Date("2026-04-01")`'
 title: "`r params$title`" 
 author: "Hillsborough County CAMN Network" 
 output: pdf_document
@@ -22,7 +23,7 @@ header-includes:
 
 ## 1.1 Statistics of raw hourly NO2 levels
 ```{r, echo = FALSE, warning = FALSE, eval = params$debugTurnOn}
-set_flextable_defaults(
+flextable::set_flextable_defaults(
   theme_fun = "theme_vanilla"
 )
 
@@ -78,12 +79,13 @@ trends_graph <- purrr::map2(
       c(params$myData[["Day"]], 
        params$myData[["DayReference"]] 
       ), 
-      bind_rows(params$myData[["Info"]], params$myData$ReferenceInfo),
+      dplyr::bind_rows(params$myData[["Info"]], params$myData$ReferenceInfo),
       x,
       "no2Conc24HourMean.value", 
       expression("NO"[2] * " Concentrations (ppb)"),
       paste(x, " - ", y, sep = ""),
-      type = "NO2"
+      type = "NO2",
+      start_date = params$start_date
     )
     return(plot)
   }
@@ -100,7 +102,7 @@ PrintGraphsTwoColumns(trends_graph)
 trends_graph <- purrr::map(
   .x = names(params$myData[["CombinedDayRefCoNoPA"]]),
   .f = function(x) {
-    sub <- params$myData[["CombinedInfoRefCoNoPA"]] %>% filter(DeviceID == !!x) %>% pull(Subtype)
+    sub <- params$myData[["CombinedInfoRefCoNoPA"]] %>% dplyr::filter(DeviceID == !!x) %>% dplyr::pull(Subtype)
     if (sub != "Reference") { sub <- "" }
     else { sub <- " - Reference"}
     
@@ -109,9 +111,10 @@ trends_graph <- purrr::map(
                                    "no2Conc24HourMean.value",
                                    expression("NO"[2] * " Concentrations (ppb)"),
                                    paste(x, " - ", params$myData[["CombinedInfoRefCoNoPA"]] %>% 
-                                                   filter(DeviceID == !!x) %>% pull(SiteName)
+                                                   dplyr::filter(DeviceID == !!x) %>% dplyr::pull(SiteName)
                                          ,sub , sep = ""),
-                                   type = "NO2"
+                                   type = "NO2",
+                                   start_date = params$start_date
     )
     return(plot)
   }
@@ -132,9 +135,10 @@ trends_graph <- purrr::map(
                                    "no2Conc24HourMean.value",
                                    expression("NO"[2] * " Concentrations (ppb)"),
                                    paste(x, " - ", params$myData[["CombinedInfoParkNoPA"]] %>% 
-                                                   filter(DeviceID == !!x) %>% pull(SiteName)
+                                                   dplyr::filter(DeviceID == !!x) %>% dplyr::pull(SiteName)
                                          , sep = ""),
-                                   type = "NO2"
+                                   type = "NO2",
+                                   start_date = params$start_date
     )
     return(plot)
   }
@@ -155,9 +159,10 @@ trends_graph <- purrr::map(
                                    "no2Conc24HourMean.value",
                                    expression("NO"[2] * " Concentrations (ppb)"),
                                    paste(x, " - ", params$myData[["CombinedInfoNonParkNoPA"]] %>% 
-                                                   filter(DeviceID == !!x) %>% pull(SiteName)
+                                                   dplyr::filter(DeviceID == !!x) %>% dplyr::pull(SiteName)
                                          , sep = ""),
-                                   type = "NO2"
+                                   type = "NO2",
+                                   start_date = params$start_date
     )
     return(plot)
   }
@@ -174,7 +179,7 @@ PrintGraphsTwoColumns(trends_graph)
 diurnal_graph <- purrr::map(
   .x = names(params$myData[["CombinedHourRefCoNoPA"]]),
   .f = function(x) {
-    sub <- params$myData[["CombinedInfoRefCoNoPA"]] %>% filter(DeviceID == !!x) %>% pull(Subtype)
+    sub <- params$myData[["CombinedInfoRefCoNoPA"]] %>% dplyr::filter(DeviceID == !!x) %>% dplyr::pull(Subtype)
     if (sub != "Reference") { sub <- "" }
     else { sub <- " - Reference"}
     
@@ -184,8 +189,8 @@ diurnal_graph <- purrr::map(
       expression("NO"[2] * " Concentrations (ppb)"),
       paste(x, " - ", 
                      params$myData[["CombinedInfoRefCoNoPA"]] %>% 
-                     filter(DeviceID == !!x) %>% 
-                     pull(SiteName), sub, sep = ""),
+                     dplyr::filter(DeviceID == !!x) %>% 
+                     dplyr::pull(SiteName), sub, sep = ""),
       type = "NO2"
     )
     return(plot)
@@ -208,8 +213,8 @@ diurnal_graph <- purrr::map(
       expression("NO"[2] * " Concentrations (ppb)"),
       paste(x, " - ", 
                      params$myData[["CombinedInfoParkNoPA"]] %>% 
-                     filter(DeviceID == !!x) %>% 
-                     pull(SiteName), sep = ""),
+                     dplyr::filter(DeviceID == !!x) %>% 
+                     dplyr::pull(SiteName), sep = ""),
       type = "NO2"
     )
     return(plot)
@@ -232,8 +237,8 @@ diurnal_graph <- purrr::map(
       expression("NO"[2] * " Concentrations (ppb)"),
       paste(x, " - ", 
                      params$myData[["CombinedInfoNonParkNoPA"]] %>% 
-                     filter(DeviceID == !!x) %>% 
-                     pull(SiteName), sep = ""),
+                     dplyr::filter(DeviceID == !!x) %>% 
+                     dplyr::pull(SiteName), sep = ""),
       type = "NO2"
     )
     return(plot)
@@ -251,7 +256,7 @@ PrintGraphsTwoColumns(diurnal_graph)
 weekly_graph <- purrr::map(
   .x = names(params$myData[["CombinedHourRefCoNoPA"]]),
   .f = function(x) {
-    sub <- params$myData[["CombinedInfoRefCoNoPA"]] %>% filter(DeviceID == !!x) %>% pull(Subtype)
+    sub <- params$myData[["CombinedInfoRefCoNoPA"]] %>% dplyr::filter(DeviceID == !!x) %>% dplyr::pull(Subtype)
     if (sub != "Reference") { sub <- "" }
     else { sub <- " - Reference"}
     
@@ -260,9 +265,10 @@ weekly_graph <- purrr::map(
                                    expression("NO"[2] * " Concentrations (ppb)"),
                                    paste(x, " - ", 
                                                    params$myData[["CombinedInfoRefCoNoPA"]] %>% 
-                                                   filter(DeviceID == !!x) %>% 
-                                                   pull(SiteName), sub, sep = ""),
-                                   type = "NO2"
+                                                   dplyr::filter(DeviceID == !!x) %>% 
+                                                   dplyr::pull(SiteName), sub, sep = ""),
+                                   type = "NO2",
+                                   start_date = params$start_date
     )
     return(plot)
   }
@@ -282,9 +288,10 @@ weekly_graph <- purrr::map(
                                    expression("NO"[2] * " Concentrations (ppb)"),
                                    paste(x, " - ", 
                                                    params$myData[["CombinedInfoParkNoPA"]] %>% 
-                                                   filter(DeviceID == !!x) %>% 
-                                                   pull(SiteName), sep = ""),
-                                   type = "NO2"
+                                                   dplyr::filter(DeviceID == !!x) %>% 
+                                                   dplyr::pull(SiteName), sep = ""),
+                                   type = "NO2",
+                                   start_date = params$start_date
     )
     return(plot)
   }
@@ -304,9 +311,10 @@ weekly_graph <- purrr::map(
                                    expression("NO"[2] * " Concentrations (ppb)"),
                                    paste(x, " - ", 
                                                    params$myData[["CombinedInfoNonParkNoPA"]] %>% 
-                                                   filter(DeviceID == !!x) %>% 
-                                                   pull(SiteName), sep = ""),
-                                   type = "NO2"
+                                                   dplyr::filter(DeviceID == !!x) %>% 
+                                                   dplyr::pull(SiteName), sep = ""),
+                                   type = "NO2",
+                                   start_date = params$start_date
     )
     return(plot)
   }

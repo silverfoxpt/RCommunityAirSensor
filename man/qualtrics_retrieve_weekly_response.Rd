@@ -2,17 +2,81 @@
 % Please edit documentation in R/Qualtrics_Weekly_RetrieveSurvey.R
 \name{qualtrics_retrieve_weekly_response}
 \alias{qualtrics_retrieve_weekly_response}
-\title{Qualtrics Weekly - retrieve survey responses from Qualtrics API}
+\title{Retrieve latest Qualtrics weekly survey responses and save to CSV}
 \usage{
-qualtrics_retrieve_weekly_response()
+qualtrics_retrieve_weekly_response(
+  current_date = Sys.Date(),
+  upload_root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"),
+  qualtrics_api_key = Sys.getenv("QUALTRICS_API_KEY"),
+  qualtrics_base_url = "usf.az1.qualtrics.com"
+)
+}
+\arguments{
+\item{current_date}{Date used to determine the start of the week. Defaults to \code{Sys.Date()}.}
+
+\item{upload_root_folder}{Character path to root upload folder. Defaults to the \code{UPLOAD_ROOT_FOLDER} environment variable.}
+
+\item{qualtrics_api_key}{Character API key for Qualtrics. Defaults to the \code{QUALTRICS_API_KEY} environment variable.}
+
+\item{qualtrics_base_url}{Character base URL for Qualtrics API. Defaults to "usf.az1.qualtrics.com".}
+}
+\value{
+NULL (called for side effects: files written and weekly log updated).
 }
 \description{
-Qualtrics Weekly - retrieve survey responses from Qualtrics API
+This function retrieves the most-recent response per recipient for a weekly
+Qualtrics survey (identified from the weekly action log), saves the full
+response CSV and a question description CSV to the specified upload folder,
+and records the retrieval in the weekly action log.
 }
+\details{
+\strong{Run:}
+\enumerate{
+\item Validate parameters and upload folder
+\item Read the weekly action log and determine the week start
+\item Skip processing if the survey has not been sent that week
+\item Locate the survey ID from the weekly log ("CreateSurvey" entry)
+\item Fetch responses from Qualtrics using the survey ID
+\item Normalize RecipientEmail columns so only one remains
+\item Keep only the latest response per recipient
+\item Save responses and question descriptions to CSV
+\item Record actions in the weekly action log
+}
+
+\strong{Data processing details:}
+\itemize{
+\item When multiple RecipientEmail columns exist, only the first is kept and
+the remaining RecipientEmail columns are removed.
+\item The function keeps the most recent RecordedDate per RecipientEmail.
+}
+}
+\section{Error handling}{
+
+The function stops with an informative message if the \code{upload_root_folder} does
+not exist, if the weekly log cannot be read, or if the survey id cannot be
+located for the given week. The function does not attempt to set Qualtrics
+credentials; credentials should be configured by the user (for example using
+\code{qualtRics::qualtrics_api_credentials()} or by setting the appropriate
+environment variables) before calling this function.
+}
+
+\examples{
+\dontrun{
+qualtrics_retrieve_weekly_response()
+qualtrics_retrieve_weekly_response(current_date = as.Date("2025-01-20"),
+                                   upload_root_folder = "C:/data/uploads")
+}
+
+}
+\seealso{
+\code{\link{get_weekly_log}}, \code{\link{get_first_save_data_from_weekly_log}}, \code{\link{write_to_weekly_log}}
+}
+\concept{addCheckSetupFolder:true}
 \concept{addRoxygenComments:true}
-\concept{cleanupComments:false}
-\concept{cleanupParameters:false}
-\concept{removedDependencies:false}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
 \concept{removedRawFunctionCalls:true}
 \concept{removedSensitiveInfo:true}
-\concept{role:qualtrics_weekly}
+\concept{role:download}
