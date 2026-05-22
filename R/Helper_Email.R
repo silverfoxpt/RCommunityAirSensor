@@ -1,61 +1,40 @@
-#' Send Email via Gmail SMTP
+#' Build and send an SMTP2GO request.
 #'
-#' Sends an email using Gmail's SMTP server with optional file attachments.
-#' Requires Gmail credentials stored in environment variables.
+#' Internal helper that centralizes request construction so both exported email
+#' helpers share the same request path and can be tested with injected stubs.
 #'
-#' @param Sender Character string of sender's email address
-#' @param Recipients Character vector of recipient email addresses
-#' @param Subject Character string of email subject
-#' @param Body Character string of email body content
-#' @param AttachmentPaths Character vector of file paths to attach
-#' @param AttachmentNames Character vector of attachment display names
+#' @param payload Named list containing the SMTP2GO request body.
+#' @param api_key Character string containing SMTP2GO API key.
+#' @param request_fun Function used to create the request object.
+#' @param req_method_fun Function used to set the HTTP method.
+#' @param req_headers_fun Function used to add request headers.
+#' @param req_body_json_fun Function used to attach the JSON body.
+#' @param req_perform_fun Function used to perform the request.
+#' @param resp_body_json_fun Function used to parse the response body.
 #'
-#' @return NULL (function called for side effects)
+#' @return Parsed response body returned by SMTP2GO.
 #'
-#' @details
-#' Requires GMAIL_USERNAME and GMAIL_APP_ACCOUNT environment variables.
-#' Uses SSL connection on port 465.
-#'
-#' @examples
-#' \dontrun{
-#' send_email_gmail(
-#'   Sender = "sender@gmail.com",
-#'   Recipients = c("recipient@example.com"),
-#'   Subject = "Test Email",
-#'   Body = "This is a test message",
-#'   AttachmentPaths = c("/path/to/file.csv"),
-#'   AttachmentNames = c("data.csv")
-#' )
-#' }
-#'
-#' @export
-#' @concept role:helper
-#' @concept removedDependencies:true
-#' @concept removedRawFunctionCalls:true
-#' @concept removedSensitiveInfo:true
-#' @concept cleanupParameters:true
-#' @concept cleanupComments:true
-#' @concept cleanupDependenciesNamespace:true
-#' @concept addRoxygenComments:true
-send_email_gmail <- function(Sender, Recipients, Subject, Body, AttachmentPaths, AttachmentNames) {
-  mailR::send.mail(
-    from = Sender,
-    to = Recipients,
-    subject = Subject,
-    body = Body,
-    smtp = list(
-      host.name = "smtp.gmail.com",
-      port = 465,
-      user.name = Sys.getenv("GMAIL_USERNAME"),
-      passwd = Sys.getenv("GMAIL_APP_ACCOUNT"),
-      ssl = TRUE
-    ),
-    authenticate = TRUE,
-    send = TRUE,
-    attach.files = AttachmentPaths,
-    file.names = AttachmentNames,
-    debug = F
-  )
+#' @noRd
+.send_email_smtp2go_request <- function(payload, api_key,
+                                        request_fun = httr2::request,
+                                        req_method_fun = httr2::req_method,
+                                        req_headers_fun = httr2::req_headers,
+                                        req_body_json_fun = httr2::req_body_json,
+                                        req_perform_fun = httr2::req_perform,
+                                        resp_body_json_fun = httr2::resp_body_json) {
+  url <- "https://api.smtp2go.com/v3/email/send"
+
+  req <- request_fun(url) %>%
+    req_method_fun("POST") %>%
+    req_headers_fun(
+      "Content-Type" = "application/json",
+      "X-Smtp2go-Api-Key" = api_key,
+      "accept" = "application/json"
+    ) %>%
+    req_body_json_fun(payload)
+
+  resp <- req_perform_fun(req)
+  resp_body_json_fun(resp)
 }
 
 #' Send Email via SMTP2GO API
@@ -92,24 +71,12 @@ send_email_gmail <- function(Sender, Recipients, Subject, Body, AttachmentPaths,
 #' @concept cleanupDependenciesNamespace:true
 #' @concept addRoxygenComments:true
 send_email_smtp2go <- function(api_key, sender, recipient, subject, text_body) {
-  url <- "https://api.smtp2go.com/v3/email/send"
-
-  req <- httr2::request(url) %>%
-    httr2::req_method("POST") %>%
-    httr2::req_headers(
-      "Content-Type" = "application/json",
-      "X-Smtp2go-Api-Key" = api_key,
-      "accept" = "application/json"
-    ) %>%
-    httr2::req_body_json(list(
+  .send_email_smtp2go_request(list(
       sender = sender,
       to = list(recipient),
       subject = subject,
       text_body = text_body
-    ))
-
-  resp <- httr2::req_perform(req)
-  return(httr2::resp_body_json(resp))
+    ), api_key = api_key)
 }
 
 #' Send Email with Attachment via SMTP2GO API
@@ -152,21 +119,12 @@ send_email_smtp2go <- function(api_key, sender, recipient, subject, text_body) {
 #' @concept cleanupDependenciesNamespace:true
 #' @concept addRoxygenComments:true
 send_email_smtp2go_attachment <- function(api_key, sender, recipient, subject, text_body, attachment_path) {
-  url <- "https://api.smtp2go.com/v3/email/send"
-
-  # Read file and encode in Base64
+  # Read the attachment locally so the request payload stays deterministic.
   attachment_name <- basename(attachment_path)
   file_content <- base64enc::base64encode(attachment_path)
   mimetype <- mime::guess_type(attachment_path)
 
-  req <- httr2::request(url) %>%
-    httr2::req_method("POST") %>%
-    httr2::req_headers(
-      "Content-Type" = "application/json",
-      "X-Smtp2go-Api-Key" = api_key,
-      "accept" = "application/json"
-    ) %>%
-    httr2::req_body_json(list(
+  .send_email_smtp2go_request(list(
       sender = sender,
       to = recipient,
       subject = subject,
@@ -178,10 +136,7 @@ send_email_smtp2go_attachment <- function(api_key, sender, recipient, subject, t
           mimetype = mimetype
         )
       )
-    ))
-
-  resp <- httr2::req_perform(req)
-  return(httr2::resp_body_json(resp))
+    ), api_key = api_key)
 }
 
 # Update 22/10/2025:

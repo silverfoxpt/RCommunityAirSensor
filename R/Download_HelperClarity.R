@@ -212,6 +212,28 @@ clarity_fetch_csv_from_url <- function(clarityURL) {
   return(data)
 }
 
+#' Fetch Clarity data from URL through httr2 request for fixture capture
+#'
+#' Downloads CSV data from a Clarity API-provided URL.
+#'
+#' @param clarityURL Character string URL to the CSV data file
+#'
+#' @return Data frame with the downloaded data
+#'
+#' @keywords internal
+
+clarity_fetch_csv_from_url_through_httr2 <- function(clarityURL) {
+  resp <- httr2::request(clarityURL) %>%
+    httr2::req_perform()
+
+  csv_text <- httr2::resp_body_string(resp)
+
+  readr::read_csv(
+    I(csv_text),
+    show_col_types = FALSE
+  )
+}
+
 #' Poll Clarity API for report completion
 #'
 #' Polls the Clarity API report endpoint until the report is ready or timeout.
@@ -390,7 +412,7 @@ clarity_get_organization_data <- function(orgID, clarityKey, averageTime, startT
   print("Got report")
 
   if (getReport$reportStatus == "succeeded") {
-    mainData <- clarity_fetch_csv_from_url(getReport$urls[[1]])
+    mainData <- clarity_fetch_csv_from_url_through_httr2(getReport$urls[[1]])
     print("Got CSV file")
     return(mainData)
   } else {
