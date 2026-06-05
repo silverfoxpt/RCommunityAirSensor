@@ -87,7 +87,7 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
   if (type == "Clarity") {
     # Get reference site short codes for co-located identification
     reference_shortcodes <- get_reference_site_shortcodes()
-    
+
     # Filter for Clarity sensors: CN prefix, device ID starts with D, valid org ID
     sitesInfo <- readMonitorTracking %>%
       dplyr::filter(substr(Label, 1, 2) == "CN")  %>%
@@ -96,7 +96,7 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
       dplyr::rename_with(~ ifelse(stringr::str_detect(., "ID Number"), "NodeID", .)) %>%
       dplyr::mutate(Type = "Clarity") %>%
       # Classify sites by location type for analysis (using dynamic reference codes)
-      dplyr::mutate(Subtype = case_when(
+      dplyr::mutate(Subtype = dplyr::case_when(
         ShortCode %in% reference_shortcodes ~ "Co-located",
         grepl("park", SiteName, ignore.case = TRUE) ~ "Park",
         TRUE ~ "Non-park"
@@ -105,7 +105,7 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
   else if (type == "PurpleAir") {
     # Get reference site short codes for co-located identification
     reference_shortcodes <- get_reference_site_shortcodes()
-    
+
     # Filter for PurpleAir sensors: PA prefix, numeric device ID, public data sharing
     sitesInfo <- readMonitorTracking %>%
       dplyr::filter(substr(Label, 1, 2) == "PA")  %>%
@@ -163,13 +163,13 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
 get_reference_site_shortcodes <- function() {
   # Read reference site data to get current short codes
   reference_data <- read_reference_info_from_monitor_tracking()
-  
+
   # Extract unique short codes and remove any empty/NA values
   shortcodes <- reference_data %>%
     dplyr::pull(ShortCode) %>%
     unique() %>%
     .[!is.na(.) & . != ""]
-  
+
   return(shortcodes)
 }
 
@@ -352,7 +352,7 @@ load_purple_air_data_from_archive <- function(startDateOfMonth) {
 #' @concept cleanupDependenciesNamespace:true
 #' @concept addRoxygenComments:true
 load_clarity_data_from_archive <- function(startDateOfMonth) {
-  # Calculate date range for the specified month  
+  # Calculate date range for the specified month
   sensorType <- "Clarity"
   startDate <- lubridate::as_date(startDateOfMonth)
   endDate <- (startDate + months(1)) - lubridate::days(1)

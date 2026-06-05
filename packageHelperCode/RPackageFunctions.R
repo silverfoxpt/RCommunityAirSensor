@@ -11,6 +11,8 @@ devtools::load_all(src)
 readRenviron("D:/R/RCommunityAirSensor/.RTestEnviron")
 #devtools::install(src, upgrade = "never")
 
+pkgdown::build_site() # only for building the site
+
 # -----------------------------------
 # Load and generate pkgnet graph
 library(pkgnet)

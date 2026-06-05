@@ -247,7 +247,7 @@ clarity_fetch_csv_from_url_through_httr2 <- function(clarityURL) {
 #' @keywords internal
 clarity_poll_report_status <- function(reportId, clarityKey) {
   for (c in 1:50) {
-    req <- glue("https://clarity-data-api.clarity.io/v2/report-requests/{reportId}") %>%
+    req <- glue::glue("https://clarity-data-api.clarity.io/v2/report-requests/{reportId}") %>%
       httr2::request() %>%
       httr2::req_headers("x-api-key" = clarityKey) %>%
       httr2::req_method("GET")

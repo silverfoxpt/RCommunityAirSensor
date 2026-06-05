@@ -1,0 +1,133 @@
+---
+title: "Downloading Monthly Clarity & PurpleAir Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Downloading Monthly Clarity & PurpleAir Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = TRUE, warning = TRUE)
+library(testPackage)
+```
+
+## TL;DR
+
+This vignette shows how to load, inspect, and perform basic QA on one month's archived Clarity and PurpleAir data using the package helper functions. It uses archived CSV exports so the examples are reproducible without API keys.
+
+## Prerequisites
+
+- Packages: `dplyr`, `purrr`, `ggplot2`, `readr` (these are used by the helpers).
+- Environment variables (only needed for live API runs): `CLARITYAPI`, `PURPLEAIRKEY`, `UPLOAD_ROOT_FOLDER`, `RECORDS_ROOT_FOLDER`.
+
+## Example month (reproducible)
+
+We'll use a fixed example month for reproducibility. Change `example_month` to a different date to operate on another month.
+
+```{r example-month, error=TRUE}
+example_month <- as.Date("2025-01-01")
+example_month
+```
+
+## Load archived data
+
+The helpers `load_clarity_data_from_archive()` and `load_purple_air_data_from_archive()` will look for CSV files under the `UPLOAD_ROOT_FOLDER` archive structure. The code below checks for the expected folder and attempts to load the archived data; if archives are not available it prints a helpful message.
+
+```{r load-archives, error=TRUE}
+root <- Sys.getenv("UPLOAD_ROOT_FOLDER")
+if (root == "") root <- getwd()
+
+clarity_ok <- tryCatch({
+  clarity <- load_clarity_data_from_archive(example_month)
+  TRUE
+}, error = function(e) {
+  message("Could not load Clarity archive: ", e$message)
+  FALSE
+})
+
+purpleair_ok <- tryCatch({
+  pa <- load_purple_air_data_from_archive(example_month)
+  TRUE
+}, error = function(e) {
+  message("Could not load PurpleAir archive: ", e$message)
+  FALSE
+})
+
+if (clarity_ok) names(clarity)
+if (purpleair_ok) names(pa)
+```
+
+## Inspect a sample dataset
+
+If the archive loaded, pick one sensor/datasource and show the first rows.
+
+```{r inspect-sample, error=TRUE}
+if (exists("clarity") && length(clarity$Daily) > 0) {
+  sample_clarity_id <- names(clarity$Daily)[1]
+  sample_clarity <- clarity$Daily[[sample_clarity_id]]
+  print(glue::glue("Clarity sample: {sample_clarity_id}"))
+  print(head(sample_clarity))
+}
+
+if (exists("pa") && length(pa$Daily) > 0) {
+  sample_pa_id <- names(pa$Daily)[1]
+  sample_pa <- pa$Daily[[sample_pa_id]]
+  print(glue::glue("PurpleAir sample: {sample_pa_id}"))
+  print(head(sample_pa))
+}
+```
+
+## Basic QA checks
+
+Use `get_last_month_hours()` to check expected hours and compare to hourly rows as a simple completeness check.
+
+```{r basic-qa, error=TRUE}
+if (exists("clarity") && length(clarity$Hourly) > 0) {
+  expected_hours <- get_last_month_hours(example_month)
+  available_hours <- clarity$Hourly %>%
+    map_int(~ if (is.data.frame(.x)) nrow(.x) else 0) %>%
+    sum()
+  tibble::tibble(Source = "Clarity", ExpectedHours = expected_hours, Rows = available_hours)
+}
+
+if (exists("pa") && length(pa$Hourly) > 0) {
+  expected_hours <- get_last_month_hours(example_month)
+  available_hours <- pa$Hourly %>%
+    map_int(~ if (is.data.frame(.x)) nrow(.x) else 0) %>%
+    sum()
+  tibble::tibble(Source = "PurpleAir", ExpectedHours = expected_hours, Rows = available_hours)
+}
+```
+
+## Quick plot example
+
+Plot a timeseries from the sample if available.
+
+```{r quick-plot, fig.width=8, fig.height=3, error=TRUE}
+if (exists("sample_clarity")) {
+  if ("startOfPeriod" %in% names(sample_clarity)) {
+    sample_clarity %>%
+      mutate(ts = as.POSIXct(startOfPeriod)) %>%
+      ggplot(aes(x = ts, y = value)) +
+      geom_line() +
+      ggtitle("Sample Clarity timeseries (one datasource)")
+  }
+}
+```
+
+## Optional: live API demo (guarded)
+
+Below is an example of how to run a live Clarity download for the previous month using `save_clarity_to_csv()`; commented out by default. To run it you must set `CLARITYAPI` and `UPLOAD_ROOT_FOLDER`.
+
+```{r live-demo, eval=FALSE}
+# Sys.setenv(CLA RITYAPI = "your_key_here")
+# Sys.setenv(UPLOAD_ROOT_FOLDER = "/path/to/upload/root")
+# save_clarity_to_csv(Sys.Date())
+```
+
+## Troubleshooting
+
+- If you get errors about `CAMNMonitorTracking.xlsx`, ensure `RECORDS_ROOT_FOLDER` points to the folder containing that file and that the file has the expected sheets (`MonitorStatus`, `ReferenceSiteData`).
+- If `load_*_from_archive()` finds no files, confirm the `CSV/<SensorType>/<SensorType>.YYYY-MM-DD.YYYY-MM-DD/` folder exists under `UPLOAD_ROOT_FOLDER`.
+

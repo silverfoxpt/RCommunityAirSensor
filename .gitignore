@@ -53,3 +53,5 @@ rsconnect/
 
 docs
 .RTestEnviron
+.positai
+inst/extdata/.RExtEnvTest

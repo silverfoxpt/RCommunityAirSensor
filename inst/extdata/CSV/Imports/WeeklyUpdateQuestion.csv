@@ -1,0 +1,7 @@
+QuestionID,SensorType,QuestionTag,QuestionColumnName,NotNormalAnswer
+QID20,PurpleAir,PAQuestion1,Site Online,
+QID31,PurpleAir,PAQuestion2,Data Collected,
+QID24,PurpleAir,PAQuestion3,Wi-Fi,
+QID6,Clarity,ClarityQuestion1,Site Online,
+QID10,Clarity,ClarityQuestion2,AQI Collected,
+QID11,Clarity,ClarityQuestion3,Datetime Correct,
