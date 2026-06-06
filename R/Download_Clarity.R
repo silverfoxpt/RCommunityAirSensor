@@ -154,8 +154,8 @@ save_clarity_to_csv <- function(current_date,
   end_time_ISO <- calc_time$end
 
   # Check if Log has already been collected
-  log_file_full_path <- file.path(root_folder, "CSV/Exports/ClarityLog.csv")
-  logfile <- read.csv(log_file_full_path) %>% as_tibble()
+  log_file_full_path <- file.path(root_folder, "CSV", "Exports", "ClarityLog.csv")
+  logfile <- read.csv(log_file_full_path) %>% dplyr::as_tibble()
 
   if (logfile %>% dplyr::filter(OriginDate == start_of_last_month) %>% nrow > 0) {
     print("Data has already been collected for this month. Function terminating.")

@@ -1,0 +1,23 @@
+{
+    "reportId": "JB3PMDEN8U",
+    "reportStatus": "succeeded",
+    "message": "Ready",
+    "report": "datasource-measurements",
+    "urls": [
+        "https://combined-measurements-export-prd.s3.amazonaws.com/historical/JB3PMDEN8U/JB3PMDEN8U.csv.gz"
+    ],
+    "query": {
+        "datasourceIds": [
+            "DQVRH5452",
+            "DJMZR0558",
+            "DSBZR5076",
+            "DAYCD0657"
+        ],
+        "endTime": "2026-04-30T23:59:59.000Z",
+        "outputFrequency": "hour",
+        "startTime": "2026-04-01T00:00:00.000Z",
+        "format": "csv-wide",
+        "metricLabelStyle": "canonical"
+    },
+    "urlsExpireAt": "2026-06-05T13:29:35.266Z"
+}

@@ -1,0 +1,22 @@
+{
+    "reportId": "JBA76DTATM",
+    "reportStatus": "in-progress",
+    "message": "Processing",
+    "report": "datasource-measurements",
+    "urls": [
+
+    ],
+    "query": {
+        "datasourceIds": [
+            "DQVRH5452",
+            "DJMZR0558",
+            "DSBZR5076",
+            "DAYCD0657"
+        ],
+        "endTime": "2026-04-30T23:59:59.000Z",
+        "outputFrequency": "day",
+        "startTime": "2026-04-01T00:00:00.000Z",
+        "format": "csv-wide",
+        "metricLabelStyle": "canonical"
+    }
+}

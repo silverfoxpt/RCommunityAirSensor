@@ -43,7 +43,7 @@ save_clarity_aq_to_csv <- function(sensorId, tb, owner, shortcode, average, fold
   start_of_last_month <- lubridate::floor_date(current_date - months(1), unit = "month")
 
   start_last <- format(start_of_last_month, "%Y%m%d")
-  start_current <- format(start_of_current_month - days(1), "%Y%m%d")
+  start_current <- format(start_of_current_month - lubridate::days(1), "%Y%m%d")
 
   filename <-
     paste(
@@ -222,7 +222,7 @@ clarity_fetch_csv_from_url <- function(clarityURL) {
 #'
 #' @keywords internal
 
-clarity_fetch_csv_from_url_through_httr2 <- function(clarityURL) {
+clarity_fetch_csv_from_url_through_httr2 <- function(clarityURL, clarityReportId = NULL) {
   resp <- httr2::request(clarityURL) %>%
     httr2::req_perform()
 
@@ -326,7 +326,7 @@ split_clarity_reference_data_by_datasource <- function(data) {
   referenceSiteInfo <- read_reference_info_from_monitor_tracking()
   filteredData <- data %>%
     dplyr::filter(grepl("^R", sourceId)) %>% # Only take reference sites
-    dplyr::filter(datasourceId %in% (referenceSiteInfo %>% pull("DatasourceID")))
+    dplyr::filter(datasourceId %in% (referenceSiteInfo %>% dplyr::pull("DatasourceID")))
 
   if (nrow(filteredData) == 0) {
     filteredData <- data.frame("Error: No data found!")
@@ -402,7 +402,8 @@ clarity_post_organization_report <- function(organization, clarityKey, averageTi
 #' }
 #'
 #' @export
-clarity_get_organization_data <- function(orgID, clarityKey, averageTime, startT, endT) {
+clarity_get_organization_data <- function(orgID, clarityKey, averageTime, startT, endT,
+                                          fetch_csv_func = clarity_fetch_csv_from_url_through_httr2) {
   fetchReport <- clarity_post_organization_report(orgID,
                                                      clarityKey, averageTime,
                                                      startT, endT)
@@ -412,10 +413,12 @@ clarity_get_organization_data <- function(orgID, clarityKey, averageTime, startT
   print("Got report")
 
   if (getReport$reportStatus == "succeeded") {
-    mainData <- clarity_fetch_csv_from_url_through_httr2(getReport$urls[[1]])
+    mainData <- fetch_csv_func(getReport$urls[[1]], getReport$reportId)
     print("Got CSV file")
     return(mainData)
-  } else {
+  }
+
+  else {
     warning("Report generation failed. Check API key and parameters.")
     return("EmptyData")
   }

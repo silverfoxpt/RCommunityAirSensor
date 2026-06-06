@@ -84,10 +84,10 @@ get_multi_sensors_status <- function(sensor_ids, neededFields, api_key) {
 
 save_aq_to_csv <- function(sensorId, tb, owner, shortcode, average, foldername, current_date) {
   start_of_current_month <- floor_date(current_date, unit = "month")
-  start_of_last_month <- floor_date(current_date - months(1), unit = "month")
+  start_of_last_month <- floor_date(current_date - lubridate::months(1), unit = "month")
 
   start_last <- format(start_of_last_month, "%Y%m%d")
-  start_current <- format(start_of_current_month - days(1), "%Y%m%d")
+  start_current <- format(start_of_current_month - lubridate::days(1), "%Y%m%d")
 
   filename <-
     paste(

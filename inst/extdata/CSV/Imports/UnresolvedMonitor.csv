@@ -1,3 +1,1 @@
-"OriginDate","DeviceID","SiteName","Reason","Resolved"
-"2026-05-01","225235","1497 N Munro Street","HealthFail","No"
-"2026-05-01","225235","1497 N Munro Street","DataArchiveFail","No"
+OriginDate,DeviceID,SiteName,Reason,Resolved

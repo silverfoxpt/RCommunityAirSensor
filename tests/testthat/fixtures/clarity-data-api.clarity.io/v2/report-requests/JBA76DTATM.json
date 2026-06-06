@@ -1,0 +1,23 @@
+{
+    "reportId": "JBA76DTATM",
+    "reportStatus": "succeeded",
+    "message": "Ready",
+    "report": "datasource-measurements",
+    "urls": [
+        "https://combined-measurements-export-prd.s3.amazonaws.com/historical/JBA76DTATM/JBA76DTATM.csv.gz"
+    ],
+    "query": {
+        "datasourceIds": [
+            "DQVRH5452",
+            "DJMZR0558",
+            "DSBZR5076",
+            "DAYCD0657"
+        ],
+        "endTime": "2026-04-30T23:59:59.000Z",
+        "outputFrequency": "day",
+        "startTime": "2026-04-01T00:00:00.000Z",
+        "format": "csv-wide",
+        "metricLabelStyle": "canonical"
+    },
+    "urlsExpireAt": "2026-06-05T13:29:04.786Z"
+}

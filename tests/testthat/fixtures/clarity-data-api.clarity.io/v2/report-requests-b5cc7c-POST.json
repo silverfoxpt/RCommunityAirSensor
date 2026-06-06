@@ -1,0 +1,48 @@
+{
+    "reportId": "JBWVGQEQZA",
+    "reportStatus": "in-progress",
+    "message": "Processing",
+    "report": "datasource-measurements",
+    "urls": [
+
+    ],
+    "query": {
+        "datasourceIds": [
+            "DVLVC4264",
+            "DFHCH1094",
+            "DXWDI9782",
+            "DPRWM3921",
+            "DXWZH5118",
+            "DUVKR7472",
+            "DQVRH5452",
+            "DJMZR0558",
+            "DZBYA9467",
+            "DHFAN0350",
+            "DSBZR5076",
+            "DAYCD0657",
+            "DWIHP2270",
+            "DIXNS3805",
+            "DBBZF7614",
+            "DJKZB2341",
+            "DRHEW5865",
+            "DWMFT9519",
+            "DIIFF8249",
+            "DDVSM6797",
+            "DJKLH2034",
+            "DYKLN2140",
+            "DZYFJ6640",
+            "DHRWJ9559",
+            "DCPBW0873",
+            "DPBUF7716",
+            "DPBRS7478",
+            "DVBLZ3967",
+            "DRQPE4506",
+            "DRSHV5775"
+        ],
+        "endTime": "2026-04-30T23:59:59.000Z",
+        "outputFrequency": "hour",
+        "startTime": "2026-04-01T00:00:00.000Z",
+        "format": "csv-wide",
+        "metricLabelStyle": "canonical"
+    }
+}
