@@ -4,10 +4,12 @@
 \alias{check_excel_file}
 \title{Check CAMN Monitor Tracking Excel File Structure}
 \usage{
-check_excel_file(directory, testing = FALSE)
+check_excel_file(directory, testing = FALSE, debug = FALSE)
 }
 \arguments{
 \item{directory}{Character string. Directory where the Excel file should be located.}
+
+\item{debug}{Logical. If TRUE, prints the first missing sheet or column mismatch before returning FALSE.}
 }
 \value{
 Logical. TRUE if the Excel file exists with correct structure, FALSE otherwise.

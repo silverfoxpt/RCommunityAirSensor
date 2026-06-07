@@ -4,7 +4,7 @@
 \alias{check_folder_and_file_structure}
 \title{Check if Standard Folder and File Structure Exists}
 \usage{
-check_folder_and_file_structure(directory)
+check_folder_and_file_structure(directory, debug = FALSE)
 }
 \arguments{
 \item{directory}{Character string. The base directory to check for the folder structure.}

@@ -70,9 +70,6 @@ raise informative errors on failure.
 }
 
 \examples{
-
-
-
 \dontrun{
 # Typical usage (requires QUALTRICS_* environment variables to be set):
 qualtrics_create_monthly_survey()

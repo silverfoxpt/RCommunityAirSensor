@@ -1,13 +1,3 @@
-#' @title Qualtrics Weekly - send survey reminder through emails
-#' @param None
-#' @export
-#' @concept role:qualtrics_weekly
-#' @concept removedDependencies:false
-#' @concept removedRawFunctionCalls:true
-#' @concept removedSensitiveInfo:true
-#' @concept cleanupParameters:false
-#' @concept cleanupComments:false
-#' @concept addRoxygenComments:true
 qualtrics_send_reminder_email <- function() {
   # Installation and loading
   if (!require("pacman")) install.packages("pacman")

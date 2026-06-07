@@ -185,11 +185,6 @@ get_last_month_hours <- function(date_str) {
   return(hours)
 }
 
-# Example usage:
-# Get the start and end boundaries of the month preceding "2025-02-21 15:30:00" in the "UTC" timezone.
-# result <- previous_month_bounds("2025-02-21 15:30:00", tz = "UTC")
-# print(result)
-
 # Update: 23/10/2025
 # - Added comprehensive roxygen2 documentation
 # - Added lubridate:: namespace prefixes

@@ -246,11 +246,6 @@ save_clarity_to_csv <- function(current_date,
   )
 }
 
-# Example usage (commented out for package distribution):
-# myDate <- Sys.Date()
-# myDate <- as.Date("2025-07-02")
-# tmp <- save_clarity_to_csv(myDate)
-
 # Development notes: Finish testing: 30 Sep 2025 x 2
 # Updates:
 # - Parameterized hardcoded variables

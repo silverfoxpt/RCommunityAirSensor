@@ -4,7 +4,14 @@
 \alias{clarity_get_organization_data}
 \title{Get Clarity data for all devices in organization}
 \usage{
-clarity_get_organization_data(orgID, clarityKey, averageTime, startT, endT)
+clarity_get_organization_data(
+  orgID,
+  clarityKey,
+  averageTime,
+  startT,
+  endT,
+  fetch_csv_func = clarity_fetch_csv_from_url_through_httr2
+)
 }
 \arguments{
 \item{orgID}{Character string of the organization ID}
