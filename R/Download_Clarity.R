@@ -274,7 +274,6 @@ save_clarity_to_csv <- function(current_date,
 # - Add dplyr package
 # - Add stringr package
 # - Add glue package
-# - Remove calls to lubridate::months in Download_HelperClarity.R
 # - Update Helper_File.R starting row to 2 instead of 10/3
 # - Update Helper_File.R read_monitor_info_from_monitor_tracking with new column names
 # - Add "Owner" field to MonitorStatus
