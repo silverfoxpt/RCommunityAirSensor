@@ -1,0 +1,20 @@
+{
+    "api_version": "V1.2.0-1.1.45",
+    "time_stamp": 1780927216,
+    "sensor_index": 150464,
+    "start_timestamp": 1775001600,
+    "end_timestamp": 1777593600,
+    "average": 60,
+    "private": 0,
+    "fields": [
+        "time_stamp",
+        "humidity",
+        "temperature",
+        "pm2.5_alt",
+        "pm2.5_atm",
+        "pm2.5_cf_1"
+    ],
+    "data": [
+
+    ]
+}
