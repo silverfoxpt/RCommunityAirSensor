@@ -31,6 +31,7 @@
 #' @param root_folder Character string specifying the root folder path for file operations. Defaults to `Sys.getenv("UPLOAD_ROOT_FOLDER")`.
 #' @param records_folder Character string specifying the folder path where the monitor tracking Excel file is located. Defaults to `Sys.getenv("RECORDS_ROOT_FOLDER")`.
 #' @param purpleair_api_key Character string containing the PurpleAir API key. Defaults to `Sys.getenv("PURPLEAPI")`.
+#' @param is_testing Logical flag indicating whether the function is being run in a testing environment. Defaults to `FALSE`. 
 #'
 #' @return NULL (invisible). Called for side effects: creates CSV files and appends to a log.
 #'
@@ -63,7 +64,8 @@
 save_purpleAir_to_csv <- function(current_date,
                                   root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"),
                                   records_folder = Sys.getenv("RECORDS_ROOT_FOLDER"),
-                                  purpleair_api_key = Sys.getenv("PURPLEAPI")) {
+                                  purpleair_api_key = Sys.getenv("PURPLEAPI"),
+                                  is_testing = FALSE) {
   # Validate required parameters
   if (is.null(root_folder) || root_folder == "") {
     stop("root_folder parameter is required. Set UPLOAD_ROOT_FOLDER environment variable or provide explicit path.")
@@ -120,8 +122,8 @@ save_purpleAir_to_csv <- function(current_date,
   sensor_shortcode <- sitesInfo[["ShortCode"]]
 
   # prepare rate-limited getter
-  rate <- purrr::rate_delay(2)
-  slow_get <- purrr::slowly(get_single_sensor_data_custom, rate = rate, quiet = FALSE)
+  rate <- if (is_testing) purrr::rate_delay(0) else purrr::rate_delay(2)
+  slow_get <- purrr::slowly(get_single_sensor_data_custom, rate = rate, quiet = TRUE)
 
   # fetch daily data (gap = 1440 -> daily)
   temp_list_sensors_data <- purrr::map(.x = sensor_ids,

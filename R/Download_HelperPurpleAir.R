@@ -47,6 +47,7 @@ get_single_sensor_data_custom <- function(sensor_id,
                                           gap,
                                           api_key,
                                           api_base_url = "https://api.purpleair.com/v1") {
+  message("Trying to retrieve history data for sensor ID: ", sensor_id)
   history_url <- glue::glue("{api_base_url}/sensors/{sensor_id}/history")
 
   req <- httr2::request(history_url)
@@ -89,6 +90,8 @@ get_single_sensor_data_custom <- function(sensor_id,
   sensor_data <- sensor_data[order(sensor_data$time_stamp, decreasing = TRUE), , drop = FALSE]
   sensor_data$time_stamp <- format_timestamp(sensor_data$time_stamp)
   sensor_data$sensor_index <- sensor_id
+  message("Successfully retrieved history data for sensor ID: ", sensor_id)
+  message("Waiting for 2 seconds to respect API rate limits...")
 
   sensor_data
 }
@@ -234,7 +237,7 @@ save_aq_to_csv <- function(sensorId,
   }
 
   start_of_current_month <- lubridate::floor_date(current_date, unit = "month")
-  start_of_last_month <- lubridate::floor_date(current_date - lubridate::month(1), unit = "month")
+  start_of_last_month <- lubridate::floor_date(current_date - months(1), unit = "month")
 
   start_last <- format(start_of_last_month, "%Y%m%d")
   start_current <- format(start_of_current_month - lubridate::days(1), "%Y%m%d")
