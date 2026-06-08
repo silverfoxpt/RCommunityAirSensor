@@ -40,7 +40,8 @@ get_weekly_personnel_list <- function(root_folder = Sys.getenv("UPLOAD_ROOT_FOLD
     readxl::read_xlsx(
       path = timeshift_file,
       sheet = "SitesAndHosts",
-      range = "A2:G100"
+      range = "A2:G100",
+      .name_repair = "unique_quiet"
     ) %>%
     tibble::as_tibble() %>%
     dplyr::rename("Name" = "Host contact person") %>%
@@ -393,7 +394,8 @@ get_monitor_sites <- function(root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER")) {
     readxl::read_xlsx(
       path = timeshift_file,
       sheet = "MonitorStatus",
-      range = "A2:J100"
+      range = "A2:J100",
+      .name_repair = "unique_quiet"
     ) %>%
     tibble::as_tibble() %>%
     dplyr::rename("DeviceID" = "API ID") %>%

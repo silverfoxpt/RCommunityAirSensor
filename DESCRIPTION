@@ -1,61 +1,63 @@
 Package: testPackage
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Air Quality Data Processing and Reporting Tools
 Version: 0.1.0
 Authors@R: c(
     person(
-      "Jane", "Doe",
-      email = "jane@example.com",
+      "Hung", "Nguyen",
+      email = "hmn16@usf.edu",
       role = c("aut", "cre")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
-License: What license is it under?
+Description: Provides tools for downloading, processing, validating, and reporting
+    air quality sensor data from Clarity, PurpleAir, and related monitoring
+    workflows. The package supports automated data extraction, file management,
+    quality control, and monthly reporting for air quality monitoring projects.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
 Imports:
-    ggplot2,
+    base64enc,
+    data.table,
     dplyr,
-    httr2,
+    DT,
+    flextable,
+    formattable,
+    fs,
+    geometry,
+    ggExtra,
+    ggforce,
+    ggplot2,
+    ggthemes,
     glue,
+    here,
+    httr2,
+    jsonlite,
+    kableExtra,
+    knitr,
+    lubridate,
+    mailR,
+    mime,
+    officer,
+    patchwork,
+    purrr,
+    qualtRics,
     readr,
     readxl,
-    stringr,
-    lubridate,
-    tibble,
-    stringr,
-    glue,
-    mailR,
-    base64enc,
-    mime,
-    purrr,
-    tidyr,
-    qualtRics,
-    jsonlite,
-    fs,
-    here,
+    rlang,
     rmarkdown,
-    data.table,
-    formattable,
+    scales,
     shiny,
-    DT,
-    knitr,
-    kableExtra,
+    stringr,
+    tibble,
+    tidyr,
     tinytex,
-    flextable,
-    officer,
-    geometry,
-    patchwork,
-    scales, 
-    ggforce, 
-    ggExtra, 
-    ggthemes,
     withr,
+    openxlsx
+Suggests:
+    httptest2,
     mockery,
-    pandoc
-Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

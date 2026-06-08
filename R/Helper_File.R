@@ -75,7 +75,8 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
     readxl::read_xlsx(
       path = file.path(Sys.getenv("RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx"),
       sheet = "MonitorStatus",
-      range = "A2:K100"
+      range = "A2:K100",
+      .name_repair = "unique_quiet"
     ) %>%
     dplyr::as_tibble() %>%
     dplyr::rename("DeviceID" = "API ID") %>%
@@ -113,7 +114,7 @@ read_monitor_info_from_monitor_tracking <- function(type, listAvailableSensor = 
       dplyr::filter(grepl("public", `Data Sharing Setting`)) %>%
       dplyr::mutate(Type = "PurpleAir") %>%
       # Classify sites by location type for analysis (using dynamic reference codes)
-      dplyr::mutate(Subtype = case_when(
+      dplyr::mutate(Subtype = dplyr::case_when(
         ShortCode %in% reference_shortcodes ~ "Co-located",
         grepl("park", SiteName, ignore.case = TRUE) ~ "Park",
         TRUE ~ "Non-park"
@@ -204,7 +205,8 @@ read_reference_info_from_monitor_tracking <- function() {
     readxl::read_xlsx(
       path = file.path(Sys.getenv("RECORDS_ROOT_FOLDER"), "CAMNMonitorTracking.xlsx"),
       sheet = "ReferenceSiteData",
-      range = "A2:E100"
+      range = "A2:E100",
+      .name_repair = "unique_quiet"
     ) %>%
     dplyr::as_tibble() %>%
     # Standardize column names to match sensor data format

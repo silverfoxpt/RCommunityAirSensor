@@ -208,7 +208,7 @@ clarity_get_single_device_data <- function(deviceID, orgID, clarityKey, averageT
 #'
 #' @keywords internal
 clarity_fetch_csv_from_url <- function(clarityURL) {
-  data <- readr::read_csv(clarityURL)
+  data <- readr::read_csv(clarityURL, name_repair = "unique_quiet")
   return(data)
 }
 
@@ -230,7 +230,8 @@ clarity_fetch_csv_from_url_through_httr2 <- function(clarityURL, clarityReportId
 
   readr::read_csv(
     I(csv_text),
-    show_col_types = FALSE
+    show_col_types = FALSE,
+    name_repair = "unique_quiet"
   )
 }
 

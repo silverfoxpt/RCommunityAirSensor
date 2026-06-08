@@ -12,6 +12,9 @@ readRenviron("D:/R/RCommunityAirSensor/.RTestEnviron")
 #devtools::install(src, upgrade = "never")
 
 pkgdown::build_site() # only for building the site
+rmarkdown::render(
+  "vignettes/download-monthly-data.Rmd"
+)
 
 # -----------------------------------
 # Load and generate pkgnet graph

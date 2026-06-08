@@ -28,7 +28,8 @@ mock_fetch_csv <- function(url, reportId) {
         paste0(reportId, ".csv")
       )
     ),
-    show_col_types = FALSE
+    show_col_types = FALSE,
+    name_repair = "unique_quiet"
   )
   return(sensor_data)
 }
@@ -67,7 +68,7 @@ expect_clarity_output_files <- function(folder, expected_n, filename_prefix) {
   ))
 
   purrr::walk(output_files, function(file) {
-    data <- readr::read_csv(file, show_col_types = FALSE)
+    data <- readr::read_csv(file, show_col_types = FALSE, name_repair = "unique_quiet")
 
     expect_true(all(expected_columns %in% names(data)))
   })
@@ -133,7 +134,7 @@ testthat::test_that("Clarity log file is created correctly", {
 
   expect_true(file.exists(log_file))
 
-  log_data <- readr::read_csv(log_file, show_col_types = FALSE)
+  log_data <- readr::read_csv(log_file, show_col_types = FALSE, name_repair = "unique_quiet")
 
   expect_equal(
     log_data,
