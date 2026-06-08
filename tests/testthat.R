@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(testPackage)
+library(AirSensorQAWorkflow)
 
-test_check("testPackage")
+test_check("AirSensorQAWorkflow")

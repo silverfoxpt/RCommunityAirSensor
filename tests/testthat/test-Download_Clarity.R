@@ -5,14 +5,14 @@ library(httptest2)
 temp_test_root_folder <- withr::local_tempdir()
 
 # copy extdata file into the temp folder to not muddle the original extdata
-test_data_path <- system.file("extdata", package = "testPackage")
+test_data_path <- system.file("extdata", package = "AirSensorQAWorkflow")
 file.copy(from = test_data_path,
           to = temp_test_root_folder,
           recursive = TRUE,
           copy.mode = TRUE)
 
 # get env
-env_path <- system.file("extdata", ".RExtEnvTest", package = "testPackage")
+env_path <- system.file("extdata", ".RExtEnvTest", package = "AirSensorQAWorkflow")
 envs <- read.dcf(env_path)
 
 # mock function for fetching csv file
@@ -85,7 +85,7 @@ withr::local_envvar(c(
 
 local_mocked_bindings(
   clarity_fetch_csv_from_url_through_httr2 = mock_fetch_csv,
-  .package = "testPackage"
+  .package = "AirSensorQAWorkflow"
 )
 
 httptest2::with_mock_api({

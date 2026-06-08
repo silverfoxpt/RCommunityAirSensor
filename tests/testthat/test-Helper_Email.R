@@ -77,7 +77,7 @@ test_that(".send_email_smtp2go_request propagates request failures", {
 
 with_mocked_send_email_helper <- function(mock, code) {
   # Temporarily swap the internal helper so the exported wrappers stay isolated.
-  namespace <- asNamespace("testPackage")
+  namespace <- asNamespace("AirSensorQAWorkflow")
   original <- get(".send_email_smtp2go_request", envir = namespace)
 
   unlockBinding(".send_email_smtp2go_request", namespace)

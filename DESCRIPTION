@@ -1,6 +1,6 @@
-Package: testPackage
+Package: AirSensorQAWorkflow
 Type: Package
-Title: Air Quality Data Processing and Reporting Tools
+Title: Air Quality Data Processing, Quality Assurance, and Reporting Tools
 Version: 0.1.0
 Authors@R: c(
     person(

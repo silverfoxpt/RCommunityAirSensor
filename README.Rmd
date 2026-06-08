@@ -13,16 +13,16 @@ knitr::opts_chunk$set(
 )
 ```
 
-# testPackage
+# AirSensorQAWorkflow
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of testPackage is to ...
+The goal of AirSensorQAWorkflow is to ...
 
 ## Installation
 
-You can install the development version of testPackage like so:
+You can install the development version of AirSensorQAWorkflow like so:
 
 ``` r
 # FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
@@ -33,7 +33,7 @@ You can install the development version of testPackage like so:
 This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
-library(testPackage)
+library(AirSensorQAWorkflow)
 ## basic example code
 ```
 

@@ -4,14 +4,14 @@ library(httptest2)
 temp_test_root_folder <- withr::local_tempdir()
 
 # copy extdata file into the temp folder to not muddle the original extdata
-test_data_path <- system.file("extdata", package = "testPackage")
+test_data_path <- system.file("extdata", package = "AirSensorQAWorkflow")
 file.copy(from = test_data_path,
           to = temp_test_root_folder,
           recursive = TRUE,
           copy.mode = TRUE)
 
 # set env
-env_path <- system.file("extdata", ".RExtEnvTest", package = "testPackage")
+env_path <- system.file("extdata", ".RExtEnvTest", package = "AirSensorQAWorkflow")
 envs <- read.dcf(env_path)
 
 # use with_envvar to enable temp. env. variables switching

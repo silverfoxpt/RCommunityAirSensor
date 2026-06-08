@@ -1,19 +1,90 @@
-save_purpleAir_to_csv <- function(current_date) {
-  # Installation and loading
-  if (!require("pacman")) install.packages("pacman")
-  pacman::p_load(readr, lubridate, tidyverse, glue, httr2, jsonlite, install = T, update = F)
+#' Download PurpleAir data and save to CSV files
+#'
+#' Downloads PurpleAir sensor data for the previous month, saves daily and hourly
+#' CSV exports for each sensor, and records a log entry to avoid duplicate runs.
+#'
+#' @details
+#' **Run:**
+#' 1. **Validation**: Checks required parameters and folder structure
+#' 2. **Log check**: Verifies if data for the target month has already been processed
+#' 3. **Time calculation**: Determines the previous month's date range for data extraction
+#' 4. **Retrieve monitor info**: Retrieves sensor information from monitor tracking
+#' 5. **API requests**: Downloads data for each sensor using the PurpleAir API
+#' 6. **File operations**: Creates folder structure and saves CSV files (daily and hourly)
+#' 7. **Logging**: Records completion status to prevent duplicate processing
+#'
+#' **Data processing details:**
+#' - Uses `previous_month_bounds()` to compute timestamps for the previous month
+#' - Splits and saves sensor data by device ID
+#'
+#' **File structure:**
+#' \preformatted{
+#' root_folder/
+#' └── CSV/
+#'     └── PurpleAir/
+#'         └── PurpleAir.YYYY-MM-DD.YYYY-MM-DD/
+#'             ├── [sensor files]
+#' └── CSV/Exports/PurpleAirLog.csv
+#' }
+#'
+#' @param current_date Date object used to determine the target month for data extraction.
+#' @param root_folder Character string specifying the root folder path for file operations. Defaults to `Sys.getenv("UPLOAD_ROOT_FOLDER")`.
+#' @param records_folder Character string specifying the folder path where the monitor tracking Excel file is located. Defaults to `Sys.getenv("RECORDS_ROOT_FOLDER")`.
+#' @param purpleair_api_key Character string containing the PurpleAir API key. Defaults to `Sys.getenv("PURPLEAPI")`.
+#'
+#' @return NULL (invisible). Called for side effects: creates CSV files and appends to a log.
+#'
+#' @section Error handling:
+#' The function will stop with clear messages if required inputs are missing or if
+#' folder creation or API calls fail. The function will not re-run for a month
+#' already present in the log file.
+#'
+#' @examples
+#' \dontrun{
+#' save_purpleAir_to_csv(Sys.Date(), root_folder = "~/project_uploads")
+#' }
+#'
+#' @seealso
+#' \code{\link{previous_month_bounds}},
+#' \code{\link{read_monitor_info_from_monitor_tracking}},
+#' \code{\link{get_single_sensor_data_custom}},
+#' \code{\link{save_aq_to_csv}}
+#'
+#' @export
+#' @concept role:download
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
+#' @concept addRoxygenComments:true
+#' @concept addCheckSetupFolder:true
+save_purpleAir_to_csv <- function(current_date,
+                                  root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"),
+                                  records_folder = Sys.getenv("RECORDS_ROOT_FOLDER"),
+                                  purpleair_api_key = Sys.getenv("PURPLEAPI")) {
+  # Validate required parameters
+  if (is.null(root_folder) || root_folder == "") {
+    stop("root_folder parameter is required. Set UPLOAD_ROOT_FOLDER environment variable or provide explicit path.")
+  }
+  if (is.null(purpleair_api_key) || purpleair_api_key == "") {
+    stop("purpleair_api_key parameter is required. Set PURPLEAPI environment variable or provide explicit key.")
+  }
 
-  # grab sources
-  sourcePath <- file.path(getwd(), "Code", "PurpleAirUtil.R")
-  #source(file = sourcePath, echo = FALSE)
+  # Check folder structure and Excel file
+  if (!check_folder_and_file_structure(root_folder, debug = TRUE)) {
+    stop("Required folder structure not found. Please run setup_folder_and_file_structure() first.")
+  }
+  if (!check_excel_file(records_folder, testing = FALSE)) {
+    stop("Required Excel file (CAMNMonitorTracking.xlsx) not found or has incorrect structure. Please run setup_excel_file() first.")
+  }
 
-  sourcePath <- file.path(getwd(), "Code", "FileUtil.R")
-  #source(file = sourcePath, echo = FALSE)
+  if (missing(current_date) || is.null(current_date)) {
+    stop("`current_date` is required and must be a Date-like object.")
+  }
 
-  sourcePath <- file.path(getwd(), "Code", "TimeUtil.R")
-  #source(file = sourcePath, echo = FALSE)
-
-  # get timestamp from start of month
+  # compute previous month bounds (assumes helper `previous_month_bounds` exists)
   calc_time <- previous_month_bounds(current_date, nextMonth = TRUE)
   calc_time_day_only <- previous_month_bounds(current_date, date_only = TRUE)
 
@@ -23,87 +94,80 @@ save_purpleAir_to_csv <- function(current_date) {
   start_timestamp <- calc_time$start
   end_timestamp <- calc_time$end
 
-  # Check if Log has already been collected
-  logfile <-
-    read.csv(file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "PurpleAirLog.csv")) %>%
-    as_tibble()
+  # prepare log path and ensure exports folder exists
+  log_dir <- file.path(root_folder, "CSV", "Exports")
+  log_path <- file.path(log_dir, "PurpleAirLog.csv")
 
-  if (logfile %>% dplyr::filter(OriginDate == start_of_last_month) %>% nrow > 0) {
-    return()
+  # read existing log if present
+  if (file.exists(log_path)) {
+    logfile <- tibble::as_tibble(utils::read.csv(log_path, stringsAsFactors = FALSE))
+  } else {
+    logfile <- tibble::tibble()
   }
 
-  api_key <- Sys.getenv("PURPLEAPI")
+  # if this month already processed, exit quietly
+  if (nrow(logfile) > 0 && dplyr::nrow(dplyr::filter(logfile, OriginDate == start_of_last_month)) > 0) {
+    return(invisible(NULL))
+  }
 
-  # Get DeviceID from CAMNMonitorTracking.xlsx file - synced to Box
+  # API key and monitor tracking info
+  api_key <- purpleair_api_key
+
   sitesInfo <- read_monitor_info_from_monitor_tracking("PurpleAir")
 
-  # Extract information
-  sensor_ids <- sitesInfo[['DeviceID']]
-  sensor_owners <- sitesInfo[['Owner']]
-  sensor_shortcode <- sitesInfo[['ShortCode']]
+  sensor_ids <- sitesInfo[["DeviceID"]]
+  sensor_owners <- sitesInfo[["Owner"]]
+  sensor_shortcode <- sitesInfo[["ShortCode"]]
 
-  # get daily data
-  # map pass each element of vector as parameter of get_single_sensor_data
+  # prepare rate-limited getter
   rate <- purrr::rate_delay(2)
-  slow_get <- purrr::slowly(get_single_sensor_data_custom, rate = rate, quiet = F)
+  slow_get <- purrr::slowly(get_single_sensor_data_custom, rate = rate, quiet = FALSE)
 
-  temp_list_sensors_data <-
-    purrr::map(.x = sensor_ids,
-               .f = purrr::possibly(slow_get, otherwise = NULL, quiet = F),
-               neededFields = "temperature,humidity,pm2.5_alt,pm2.5_atm,pm2.5_cf_1",
-               starting = start_timestamp,
-               ending = end_timestamp,
-               gap = "1440", #1440 -> daily (24 hours)
-               api_key = api_key)
+  # fetch daily data (gap = 1440 -> daily)
+  temp_list_sensors_data <- purrr::map(.x = sensor_ids,
+                                       .f = purrr::possibly(slow_get, otherwise = NULL, quiet = FALSE),
+                                       neededFields = "temperature,humidity,pm2.5_alt,pm2.5_atm,pm2.5_cf_1",
+                                       starting = start_timestamp,
+                                       ending = end_timestamp,
+                                       gap = "1440",
+                                       api_key = api_key)
 
-  # folder name
-  newFolderName <- paste("PurpleAir.",
-                         as.character(start_of_last_month), ".",
-                         as.character(start_of_current_month),
-                         sep = "")
-
-  # creating folder
+  newFolderName <- paste("PurpleAir.", as.character(start_of_last_month), ".", as.character(start_of_current_month), sep = "")
   folderPath <- file.path("CSV", "PurpleAir", newFolderName)
-  create_new_folder(folderPath, root_path = Sys.getenv("UPLOAD_ROOT_FOLDER"))
+  create_new_folder(folderPath, root_path = root_folder)
 
-  # save to file - daily
+  # save daily CSVs
   purrr::pwalk(.l = list(sensor_ids, temp_list_sensors_data, sensor_owners, sensor_shortcode),
                .f = save_aq_to_csv,
                average = "Daily",
-               foldername = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), folderPath),
-               current_date = current_date
-  )
+               foldername = file.path(root_folder, folderPath),
+               current_date = current_date)
 
-  # get hourly data
-  temp_list_sensors_data <-
-    purrr::map(.x = sensor_ids,
-               .f = purrr::possibly(slow_get, otherwise = NULL, quiet = F),
-               neededFields = "temperature,humidity,pm2.5_alt,pm2.5_atm,pm2.5_cf_1",
-               starting = start_timestamp,
-               ending = end_timestamp,
-               gap = "60", #60 -> hourly
-               api_key = api_key)
+  # fetch hourly data (gap = 60 -> hourly)
+  temp_list_sensors_data <- purrr::map(.x = sensor_ids,
+                                       .f = purrr::possibly(slow_get, otherwise = NULL, quiet = FALSE),
+                                       neededFields = "temperature,humidity,pm2.5_alt,pm2.5_atm,pm2.5_cf_1",
+                                       starting = start_timestamp,
+                                       ending = end_timestamp,
+                                       gap = "60",
+                                       api_key = api_key)
 
-  # save to file - hourly
+  # save hourly CSVs
   purrr::pwalk(.l = list(sensor_ids, temp_list_sensors_data, sensor_owners, sensor_shortcode),
                .f = save_aq_to_csv,
                average = "Hourly",
-               foldername = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), folderPath),
-               current_date = current_date
-  )
+               foldername = file.path(root_folder, folderPath),
+               current_date = current_date)
 
-  # write to log
+  # append to log to mark completion
   write.table(
-    data.frame(
-      OriginDate = c(start_of_last_month),
-      Complete = c('COMPLETED')
-    ),
-    file = file.path(Sys.getenv("UPLOAD_ROOT_FOLDER"), "CSV", "Exports", "PurpleAirLog.csv"),
+    data.frame(OriginDate = c(start_of_last_month), Complete = c("COMPLETED")),
+    file = log_path,
     sep = ",",
     col.names = FALSE,
     row.names = FALSE,
     append = TRUE
   )
-}
 
-# Finish testing: 22 February 2024
+  invisible(NULL)
+}
