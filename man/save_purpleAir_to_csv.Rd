@@ -8,7 +8,8 @@ save_purpleAir_to_csv(
   current_date,
   root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"),
   records_folder = Sys.getenv("RECORDS_ROOT_FOLDER"),
-  purpleair_api_key = Sys.getenv("PURPLEAPI")
+  purpleair_api_key = Sys.getenv("PURPLEAPI"),
+  is_testing = FALSE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ save_purpleAir_to_csv(
 \item{records_folder}{Character string specifying the folder path where the monitor tracking Excel file is located. Defaults to \code{Sys.getenv("RECORDS_ROOT_FOLDER")}.}
 
 \item{purpleair_api_key}{Character string containing the PurpleAir API key. Defaults to \code{Sys.getenv("PURPLEAPI")}.}
+
+\item{is_testing}{Logical flag indicating whether the function is being run in a testing environment. Defaults to \code{FALSE}.}
 }
 \value{
 NULL (invisible). Called for side effects: creates CSV files and appends to a log.

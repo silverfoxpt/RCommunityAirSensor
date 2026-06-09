@@ -264,8 +264,8 @@ CheckNotEmptyString <- function(x) {
 GetAnnotateInfoForScatterplot <- function(type) {
   if (type == "PM25") {
     return(list(
-      hourlyLabel = expression("Hourly standard (35 µg/m"^{3}*")"),
-      annualLabel = expression("Annual standard (9 µg/m"^{3}*")"),
+      hourlyLabel = expression("Hourly standard (35 \u00b5g/m"^{3}*")"),
+      annualLabel = expression("Annual standard (9 \u00b5g/m"^{3}*")"),
       hourlyValue = 35.0,
       annualValue = 9.0
     ))
@@ -287,7 +287,7 @@ GetAnnotateInfoForScatterplot <- function(type) {
 #' `patchwork::plot_layout`. Accepts NULL placeholders in the list.
 #'
 #' @param myGraph A list of ggplot/patchwork objects.
-#' @return NULL (called for side effects — prints plots).
+#' @return NULL (called for side effects - prints plots).
 #' @export
 #' @concept role:helper
 #' @concept removedDependencies:true

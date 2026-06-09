@@ -56,7 +56,8 @@ Imports:
     tinytex,
     withr,
     openxlsx,
-    tibble
+    tibble,
+    magrittr
 Suggests:
     httptest2,
     mockery,

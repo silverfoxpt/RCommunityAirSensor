@@ -200,18 +200,18 @@ setup_helper <- function(testing = FALSE) {
   cat("Creating folder structure in UPLOAD_ROOT_FOLDER...\n")
   tryCatch({
     setup_folder_and_file_structure(upload_root)
-    cat("✓ Folder structure created successfully in:", upload_root, "\n")
+    cat("[OK] Folder structure created successfully in:", upload_root, "\n")
   }, error = function(e) {
-    cat("✗ Error creating folder structure:", e$message, "\n")
+    cat("[ERROR] Error creating folder structure:", e$message, "\n")
   })
 
   # Create Excel file in RECORDS_ROOT_FOLDER
   cat("\nCreating Excel tracking file in RECORDS_ROOT_FOLDER...\n")
   tryCatch({
     setup_excel_file(records_root)
-    cat("✓ Excel tracking file created successfully in:", records_root, "\n")
+    cat("[OK] Excel tracking file created successfully in:", records_root, "\n")
   }, error = function(e) {
-    cat("✗ Error creating Excel file:", e$message, "\n")
+    cat("[ERROR] Error creating Excel file:", e$message, "\n")
   })
 
   # === Setup Complete ===
@@ -221,9 +221,9 @@ setup_helper <- function(testing = FALSE) {
 
   cat("Setup process completed successfully!\n\n")
   cat("Summary of what was created:\n")
-  cat("   • Environment variables saved to:", env_file, "\n")
-  cat("   • Folder structure created in:", upload_root, "\n")
-  cat("   • Excel tracking file created in:", records_root, "\n\n")
+  cat("   - Environment variables saved to:", env_file, "\n")
+  cat("   - Folder structure created in:", upload_root, "\n")
+  cat("   - Excel tracking file created in:", records_root, "\n\n")
 
   cat("IMPORTANT: Please restart R to load the environment variables properly.\n")
   cat("   You can do this by restarting your R session or RStudio.\n\n")
