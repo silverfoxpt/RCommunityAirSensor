@@ -9,13 +9,13 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = TRUE, warning = TRUE)
-library(AirSensorQAWorkflow)
+library(CoAirSensor)
 
 # set temp directory
 temp_test_root_folder <- withr::local_tempdir()
 
 # copy extdata file into the temp folder to not muddle the original extdata
-test_data_path <- system.file("extdata", package = "AirSensorQAWorkflow")
+test_data_path <- system.file("extdata", package = "CoAirSensor")
 file.copy(from = test_data_path,
           to = temp_test_root_folder,
           recursive = TRUE,

@@ -5,14 +5,14 @@ library(httptest2)
 temp_test_root_folder <- withr::local_tempdir()
 
 # copy extdata file into the temp folder to not muddle the original extdata
-test_data_path <- system.file("extdata", package = "AirSensorQAWorkflow")
+test_data_path <- system.file("extdata", package = "CoAirSensor")
 file.copy(from = test_data_path,
           to = temp_test_root_folder,
           recursive = TRUE,
           copy.mode = TRUE)
 
 # get env
-env_path <- system.file("extdata", ".RExtEnvTest", package = "AirSensorQAWorkflow")
+env_path <- system.file("extdata", ".RExtEnvTest", package = "CoAirSensor")
 envs <- read.dcf(env_path)
 
 expect_purpleAir_output_files <- function(folder, expected_n, filename_prefix) {

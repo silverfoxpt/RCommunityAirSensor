@@ -51,9 +51,7 @@
 #' }
 #'
 #' @seealso
-#' 
-#' \\code{\link{get_survey_qsf}}, \\code{\link{create_survey_qsf}},
-#' \\code{\link{publish_survey}}
+#' \code{\link{get_survey_qsf}}, \code{\link{create_survey_qsf}}, \code{\link{publish_survey}}
 #'
 #' @export
 #' @concept role:qualtrics_monthly

@@ -6,6 +6,16 @@
 \usage{
 get_first_save_data_from_monthly_log(logFile, originDate, neededAction)
 }
+\arguments{
+\item{logFile}{Tibble or data.frame log file.}
+
+\item{originDate}{Character or date to match in \code{OriginDate}.}
+
+\item{neededAction}{Character to match in \code{Action}.}
+}
+\value{
+The first matching \code{SaveData} value (or NULL if none).
+}
 \description{
 Alias for monthly logs
 }

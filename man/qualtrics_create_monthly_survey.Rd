@@ -77,8 +77,7 @@ qualtrics_create_monthly_survey()
 
 }
 \seealso{
-\\code{\link{get_survey_qsf}}, \\code{\link{create_survey_qsf}},
-\\code{\link{publish_survey}}
+\code{\link{get_survey_qsf}}, \code{\link{create_survey_qsf}}, \code{\link{publish_survey}}
 }
 \concept{addCheckSetupFolder:true}
 \concept{addRoxygenComments:true}

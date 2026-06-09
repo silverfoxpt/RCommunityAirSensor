@@ -23,6 +23,8 @@ clarity_get_organization_data(
 \item{startT}{Character string with ISO start timestamp}
 
 \item{endT}{Character string with ISO end timestamp}
+
+\item{fetch_csv_func}{Function used to fetch and parse the CSV payload.}
 }
 \value{
 Data frame with all organization sensor data or "EmptyData" if failed

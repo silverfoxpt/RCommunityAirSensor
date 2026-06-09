@@ -391,6 +391,8 @@ clarity_post_organization_report <- function(organization, clarityKey, averageTi
 #' This is the primary function used by save_clarity_to_csv() to download
 #' data for entire organizations rather than individual sensors, which reduce API calls.
 #'
+#' @param fetch_csv_func Function used to fetch and parse the CSV payload.
+#'
 #' @examples
 #' \dontrun{
 #' org_data <- get_clarity_data_custom_v2_ORG(

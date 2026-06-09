@@ -226,6 +226,7 @@ setup_excel_file <- function(directory) {
 #' the required sheets with the correct column structures for CAMN monitor tracking.
 #'
 #' @param directory Character string. Directory where the Excel file should be located.
+#' @param testing Logical. If TRUE, uses the alternate row offset used in tests.
 #' @param debug Logical. If TRUE, prints the first missing sheet or column mismatch before returning FALSE.
 #' @return Logical. TRUE if the Excel file exists with correct structure, FALSE otherwise.
 #' @export

@@ -4,6 +4,9 @@
 #' and folder structures for the RCommunityAirSensor package.
 
 # Helper function for input validation
+#' @param prompt Text shown to the user.
+#' @param allow_empty Logical. If TRUE, returns an empty string for blank input.
+#' @param variable_name Character label kept for compatibility with callers.
 validate_input <- function(prompt, allow_empty = FALSE, variable_name = "") {
   repeat {
     cat(prompt)

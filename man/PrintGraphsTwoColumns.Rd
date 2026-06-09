@@ -10,7 +10,7 @@ PrintGraphsTwoColumns(myGraph)
 \item{myGraph}{A list of ggplot/patchwork objects.}
 }
 \value{
-NULL (called for side effects — prints plots).
+NULL (called for side effects - prints plots).
 }
 \description{
 Helper that prints a list of ggplot/patched plots two per row using

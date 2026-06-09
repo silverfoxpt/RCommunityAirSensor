@@ -9,6 +9,8 @@ check_excel_file(directory, testing = FALSE, debug = FALSE)
 \arguments{
 \item{directory}{Character string. Directory where the Excel file should be located.}
 
+\item{testing}{Logical. If TRUE, uses the alternate row offset used in tests.}
+
 \item{debug}{Logical. If TRUE, prints the first missing sheet or column mismatch before returning FALSE.}
 }
 \value{

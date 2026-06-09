@@ -132,6 +132,10 @@ get_first_save_data_from_weekly_log <- function(logFile, originDate, neededActio
 
  #' Alias for monthly logs
  #'
+#' @param logFile Tibble or data.frame log file.
+#' @param originDate Character or date to match in `OriginDate`.
+#' @param neededAction Character to match in `Action`.
+#' @return The first matching `SaveData` value (or NULL if none).
  #' @concept role:helper
 get_first_save_data_from_monthly_log <- function(logFile, originDate, neededAction) {
   return(get_first_save_data_from_weekly_log(logFile, originDate, neededAction))
@@ -139,6 +143,9 @@ get_first_save_data_from_monthly_log <- function(logFile, originDate, neededActi
 
  #' Check existence in log
  #'
+#' @param logFile Tibble or data.frame log file.
+#' @param originDate Character or date to match in `OriginDate`.
+#' @param neededAction Character to match in `Action`.
  #' @return Logical TRUE if a matching row exists, otherwise FALSE.
  #' @concept role:helper
 check_exist_in_log <- function(logFile, originDate, neededAction) {
@@ -150,6 +157,9 @@ check_exist_in_log <- function(logFile, originDate, neededAction) {
 
  #' Check not exist in log
  #'
+#' @param logFile Tibble or data.frame log file.
+#' @param originDate Character or date to match in `OriginDate`.
+#' @param neededAction Character to match in `Action`.
  #' @return Logical TRUE if no matching row exists, otherwise FALSE.
  #' @concept role:helper
 check_not_exist_in_log <- function(logFile, originDate, neededAction) {
@@ -225,6 +235,9 @@ write_to_weekly_template_update_log <- function(originDate, neededAction, root_f
 
  #' Append a row to the monthly template update log (alias)
  #'
+#' @param originDate Character or date to record.
+#' @param neededAction Character action label.
+#' @param root_folder Character root folder path. Defaults to `Sys.getenv("UPLOAD_ROOT_FOLDER")`.
  #' @concept role:helper
 write_to_monthly_template_update_log <- function(originDate, neededAction, root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER")) {
   write_to_weekly_template_update_log(originDate, neededAction, root_folder = root_folder)

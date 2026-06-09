@@ -1,5 +1,5 @@
 # Uninstall
-remove.packages("AirSensorQAWorkflow")
+remove.packages("CoAirSensor")
 
 src <- "D:/R/RCommunityAirSensor/"
 library(pkgnet)
@@ -20,7 +20,7 @@ rmarkdown::render(
 # Load and generate pkgnet graph
 library(pkgnet)
 report <- CreatePackageReport(
-  pkg_name      = "AirSensorQAWorkflow",
+  pkg_name      = "CoAirSensor",
   pkg_path      = ".",
   pkg_reporters = list(FunctionReporter$new())
 )
@@ -99,4 +99,4 @@ devtools::document()
 devtools::check()
 
 # List all functions
-lsf.str("package:AirSensorQAWorkflow")
+lsf.str("package:CoAirSensor")

@@ -6,6 +6,13 @@
 \usage{
 validate_input(prompt, allow_empty = FALSE, variable_name = "")
 }
+\arguments{
+\item{prompt}{Text shown to the user.}
+
+\item{allow_empty}{Logical. If TRUE, returns an empty string for blank input.}
+
+\item{variable_name}{Character label kept for compatibility with callers.}
+}
 \description{
 This file contains functions to help users set up their environment variables
 and folder structures for the RCommunityAirSensor package.

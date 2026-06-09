@@ -6,6 +6,13 @@
 \usage{
 check_not_exist_in_log(logFile, originDate, neededAction)
 }
+\arguments{
+\item{logFile}{Tibble or data.frame log file.}
+
+\item{originDate}{Character or date to match in \code{OriginDate}.}
+
+\item{neededAction}{Character to match in \code{Action}.}
+}
 \value{
 Logical TRUE if no matching row exists, otherwise FALSE.
 }

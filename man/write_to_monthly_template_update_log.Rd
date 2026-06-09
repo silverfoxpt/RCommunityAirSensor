@@ -10,6 +10,13 @@ write_to_monthly_template_update_log(
   root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER")
 )
 }
+\arguments{
+\item{originDate}{Character or date to record.}
+
+\item{neededAction}{Character action label.}
+
+\item{root_folder}{Character root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+}
 \description{
 Append a row to the monthly template update log (alias)
 }
