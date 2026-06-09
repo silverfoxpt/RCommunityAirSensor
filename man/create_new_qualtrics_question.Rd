@@ -2,21 +2,35 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{create_new_qualtrics_question}
 \alias{create_new_qualtrics_question}
-\title{Create a new question in a survey}
+\title{Create a new question in a Qualtrics survey}
 \usage{
-create_new_qualtrics_question(qualtricsKey, jsonBody, surveyID)
+create_new_qualtrics_question(
+  qualtrics_api_key,
+  jsonBody,
+  surveyID,
+  base_url = "https://iad1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{jsonBody}{List body for the question JSON.}
+\item{jsonBody}{A list representing the question payload (see Qualtrics API docs).}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier.}
+
+\item{base_url}{Character string for Qualtrics base URL. Defaults to the IAD datacenter used historically.}
 }
 \value{
-Parsed API response as a list.
+Parsed JSON response invisibly.
 }
 \description{
-Create a new question in a survey
+Create a new question in a Qualtrics survey
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

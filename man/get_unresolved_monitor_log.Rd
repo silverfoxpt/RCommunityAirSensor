@@ -2,17 +2,24 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{get_unresolved_monitor_log}
 \alias{get_unresolved_monitor_log}
-\title{Read unresolved monitor CSV}
+\title{Read unresolved monitor list}
 \usage{
 get_unresolved_monitor_log(root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"))
 }
 \arguments{
-\item{root_folder}{Character root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
 }
 \value{
-A tibble with unresolved monitors.
+A tibble with unresolved monitors (all columns read as character).
 }
 \description{
-Read unresolved monitor CSV
+Read unresolved monitor list
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

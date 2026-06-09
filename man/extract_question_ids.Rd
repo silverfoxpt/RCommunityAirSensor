@@ -2,19 +2,32 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{extract_question_ids}
 \alias{extract_question_ids}
-\title{Extract question IDs from survey definition}
+\title{Extract question IDs from a survey}
 \usage{
-extract_question_ids(qualtricsKey, surveyID)
+extract_question_ids(
+  qualtrics_api_key,
+  surveyID,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
-Character vector of question IDs.
+A character vector of question IDs.
 }
 \description{
-Extract question IDs from survey definition
+Extract question IDs from a survey
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

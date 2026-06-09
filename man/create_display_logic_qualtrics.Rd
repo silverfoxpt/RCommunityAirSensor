@@ -2,7 +2,7 @@
 % Please edit documentation in R/Qualtrics_Helper_LogicAndFlow.R
 \name{create_display_logic_qualtrics}
 \alias{create_display_logic_qualtrics}
-\title{Create display logic element for Qualtrics}
+\title{Create display logic structure for Qualtrics}
 \usage{
 create_display_logic_qualtrics(
   logicType,
@@ -13,21 +13,31 @@ create_display_logic_qualtrics(
 )
 }
 \arguments{
-\item{logicType}{Character logic type (e.g. "EmbeddedField").}
+\item{logicType}{Character. The logic type (e.g. "EmbeddedField").}
 
-\item{leftOperand}{Character left operand name.}
+\item{leftOperand}{Character. Left operand name used in the expression.}
 
-\item{operator}{Character comparison operator.}
+\item{operator}{Character. Comparison operator (e.g. "EqualTo").}
 
-\item{rightOperand}{Character right operand value.}
+\item{rightOperand}{Character. Right-hand value to compare against.}
 
-\item{eqType}{Character expression type.}
+\item{eqType}{Character. Expression type (commonly "Expression").}
 }
 \value{
-A list representing a Qualtrics display logic BooleanExpression.
+A nested list representing Qualtrics display logic.
 }
 \description{
-Helper to create a single display logic BooleanExpression used in Qualtrics
+Creates a nested list structure representing a single display logic
+expression used by the Qualtrics API. This is a lightweight helper used
+when constructing question display logic or flow branch conditions.
+}
+\details{
+The returned list follows the Qualtrics API structure for a BooleanExpression
+with a single If clause.
+}
+\examples{
+create_display_logic_qualtrics("EmbeddedField", "RecipientEmail", "EqualTo", "me@example.com", "Expression")
+
 }
 \concept{addRoxygenComments:true}
 \concept{cleanupComments:true}

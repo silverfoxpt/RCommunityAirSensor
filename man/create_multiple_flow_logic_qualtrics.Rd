@@ -2,7 +2,7 @@
 % Please edit documentation in R/Qualtrics_Helper_LogicAndFlow.R
 \name{create_multiple_flow_logic_qualtrics}
 \alias{create_multiple_flow_logic_qualtrics}
-\title{Create multiple-condition survey flow logic}
+\title{Create multiple flow logic expressions}
 \usage{
 create_multiple_flow_logic_qualtrics(
   logicTypes,
@@ -20,17 +20,25 @@ create_multiple_flow_logic_qualtrics(
 
 \item{operators}{Character vector of operators.}
 
-\item{rightOperands}{Character vector of right operands.}
+\item{rightOperands}{Character vector of right operand values.}
 
 \item{eqTypes}{Character vector of expression types.}
 
-\item{conjunctions}{Character vector of conjunctions (length = n-1).}
+\item{conjunctions}{Character vector of conjunctions (e.g. "Or", "And").}
 }
 \value{
-A list representing the multi-condition BooleanExpression.
+A list matching Qualtrics' BooleanExpression structure.
 }
 \description{
-Helper to build a Qualtrics BooleanExpression containing multiple
-condition rows and optional conjunctions.
+Build a multi-clause BooleanExpression for use in Flow objects. Conjunctions
+are inserted between subsequent expressions; the first clause has no
+conjunction (NA).
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

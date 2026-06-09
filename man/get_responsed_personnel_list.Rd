@@ -2,7 +2,7 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{get_responsed_personnel_list}
 \alias{get_responsed_personnel_list}
-\title{Get personnel who have responded (weekly)}
+\title{Get personnel who responded (weekly)}
 \usage{
 get_responsed_personnel_list(
   responseFileName,
@@ -10,14 +10,21 @@ get_responsed_personnel_list(
 )
 }
 \arguments{
-\item{responseFileName}{Character file name of weekly responses.}
+\item{responseFileName}{Character. Filename in \verb{CSV/Qualtrics/Weekly/} with responses.}
 
-\item{root_folder}{Character root folder path.}
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
 }
 \value{
-A tibble of personnel who have responded.
+A tibble of personnel (with sensor rows) who responded.
 }
 \description{
-Get personnel who have responded (weekly)
+Get personnel who responded (weekly)
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

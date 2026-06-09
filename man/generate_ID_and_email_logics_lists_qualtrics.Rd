@@ -2,7 +2,7 @@
 % Please edit documentation in R/Qualtrics_Helper_LogicAndFlow.R
 \name{generate_ID_and_email_logics_lists_qualtrics}
 \alias{generate_ID_and_email_logics_lists_qualtrics}
-\title{Generate ID and email logic lists}
+\title{Generate question rows and email logic lists for Qualtrics}
 \usage{
 generate_ID_and_email_logics_lists_qualtrics(
   sensorType = NULL,
@@ -10,15 +10,33 @@ generate_ID_and_email_logics_lists_qualtrics(
 )
 }
 \arguments{
-\item{sensorType}{Optional character filter applied to the sensors.}
+\item{sensorType}{Optional character. Sensor type to filter when calling
+\code{get_merge_personnel_sensor_list()}.}
 
-\item{getEmailLogics}{Logical; if TRUE returns the email logic list.}
+\item{getEmailLogics}{Logical. If TRUE, returns a \code{QuestionLogics} list
+populated by \code{create_email_logic_qualtrics()}.}
 }
 \value{
-A list with \code{QuestionRows} and \code{QuestionLogics}.
+A list with elements \code{QuestionRows} (character vector) and
+\code{QuestionLogics} (list) when requested.
 }
 \description{
-Produces the QuestionRows vector and (optionally) a list of email display
-logic entries for use when updating Qualtrics questions or flows.
+Builds the display rows and optional email display logic list from the
+personnel-sensor merge used by the package. This function expects
+\code{get_merge_personnel_sensor_list()} to return a data.frame or tibble with
+columns \code{DeviceID}, \code{Type}, \code{SiteName}, and \code{Email}.
 }
+\examples{
+\dontrun{
+generate_ID_and_email_logics_lists_qualtrics("PM2.5")
+}
+
+}
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

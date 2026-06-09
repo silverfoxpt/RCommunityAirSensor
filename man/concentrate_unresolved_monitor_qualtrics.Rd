@@ -2,20 +2,27 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{concentrate_unresolved_monitor_qualtrics}
 \alias{concentrate_unresolved_monitor_qualtrics}
-\title{Concentrate unresolved monitor entries into unresolvedList}
+\title{Consolidate unresolved monitors from survey data}
 \usage{
 concentrate_unresolved_monitor_qualtrics(myData, unresolvedList)
 }
 \arguments{
-\item{myData}{A list with a \code{Monitors} tibble/data.frame.}
+\item{myData}{A list-like object with a \code{Monitors} data.frame/tibble.}
 
-\item{unresolvedList}{A tibble to which unresolved rows will be appended.}
+\item{unresolvedList}{A tibble to which new unresolved rows will be appended.}
 }
 \value{
-The updated \code{unresolvedList}.
+The updated \code{unresolvedList} tibble.
 }
 \description{
-Scans monitor summaries for flagged entries (asterisk) and appends rows
-to \code{unresolvedList} describing the reason.
+Examines \code{myData$Monitors} for indicators (asterisks) that signal unresolved
+issues and appends corresponding rows to \code{unresolvedList} with a reason code.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

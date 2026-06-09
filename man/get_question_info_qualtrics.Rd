@@ -2,20 +2,39 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{get_question_info_qualtrics}
 \alias{get_question_info_qualtrics}
-\title{Extract question text and export tags}
+\title{Extract question text and export tag for a survey}
 \usage{
-get_question_info_qualtrics(qualtricsKey, surveyID)
+get_question_info_qualtrics(
+  qualtrics_api_key,
+  surveyID,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
-A tibble with \code{QuestionText} and \code{DataExportTag}.
+A tibble with columns \code{QuestionText} and \code{DataExportTag}.
 }
 \description{
-Returns a tibble with \code{QuestionText} and \code{DataExportTag} for each question
-in the provided survey.
+Returns a two-column tibble with \code{QuestionText} and \code{DataExportTag} for
+all questions in the survey. HTML tags are removed from question text.
 }
+\examples{
+\dontrun{
+get_question_info_qualtrics("<REDACTED_API_KEY>", "SV_XXXX")
+}
+
+}
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

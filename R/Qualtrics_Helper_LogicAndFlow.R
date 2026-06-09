@@ -1,14 +1,24 @@
-# Question Display Logics ####
- #' Create display logic element for Qualtrics
+#' Create display logic structure for Qualtrics
 #'
-#' Helper to create a single display logic BooleanExpression used in Qualtrics
+#' Creates a nested list structure representing a single display logic
+#' expression used by the Qualtrics API. This is a lightweight helper used
+#' when constructing question display logic or flow branch conditions.
 #'
-#' @param logicType Character logic type (e.g. "EmbeddedField").
-#' @param leftOperand Character left operand name.
-#' @param operator Character comparison operator.
-#' @param rightOperand Character right operand value.
-#' @param eqType Character expression type.
-#' @return A list representing a Qualtrics display logic BooleanExpression.
+#' @param logicType Character. The logic type (e.g. "EmbeddedField").
+#' @param leftOperand Character. Left operand name used in the expression.
+#' @param operator Character. Comparison operator (e.g. "EqualTo").
+#' @param rightOperand Character. Right-hand value to compare against.
+#' @param eqType Character. Expression type (commonly "Expression").
+#'
+#' @return A nested list representing Qualtrics display logic.
+#'
+#' @details
+#' The returned list follows the Qualtrics API structure for a BooleanExpression
+#' with a single If clause.
+#'
+#' @examples
+#' create_display_logic_qualtrics("EmbeddedField", "RecipientEmail", "EqualTo", "me@example.com", "Expression")
+#'
 #' @concept role:helper
 #' @concept removedDependencies:true
 #' @concept removedRawFunctionCalls:true
@@ -32,35 +42,67 @@ create_display_logic_qualtrics <- function(logicType, leftOperand, operator, rig
     Type = "BooleanExpression",
     inPage = FALSE
   )
-  return(res)
+  res
 }
 
- #' Create display logic for recipient email
+#' Create display logic for a recipient email
 #'
-#' Shortcut wrapper to create an email-specific display logic where the
-#' left operand is `RecipientEmail`.
+#' Helper that wraps `create_display_logic_qualtrics()` to produce an
+#' EmbeddedField equality test against `RecipientEmail`. NA addresses are
+#' converted to the placeholder "0" to match Qualtrics' expectations.
 #'
-#' @param emailAddress Character email address. If NA, will be coerced to "0".
-#' @return A list representing the display logic for email matching.
+#' @param emailAddress Character. Email address to match; NA becomes "0".
+#'
+#' @return A nested list representing the email display logic.
+#'
+#' @examples
+#' create_email_logic_qualtrics(NA)
+#'
 #' @concept role:helper
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
+#' @concept addRoxygenComments:true
 create_email_logic_qualtrics <- function(emailAddress) {
   if (is.na(emailAddress)) {
     emailAddress <- "0"
   }
 
-  return(create_display_logic_qualtrics("EmbeddedField", "RecipientEmail", "EqualTo", emailAddress, "Expression"))
+  create_display_logic_qualtrics("EmbeddedField", "RecipientEmail", "EqualTo", emailAddress, "Expression")
 }
 
-# Helper function for generating email logic based on weekly personnel list
- #' Generate ID and email logic lists
+
+#' Generate question rows and email logic lists for Qualtrics
 #'
-#' Produces the QuestionRows vector and (optionally) a list of email display
-#' logic entries for use when updating Qualtrics questions or flows.
+#' Builds the display rows and optional email display logic list from the
+#' personnel-sensor merge used by the package. This function expects
+#' `get_merge_personnel_sensor_list()` to return a data.frame or tibble with
+#' columns `DeviceID`, `Type`, `SiteName`, and `Email`.
 #'
-#' @param sensorType Optional character filter applied to the sensors.
-#' @param getEmailLogics Logical; if TRUE returns the email logic list.
-#' @return A list with `QuestionRows` and `QuestionLogics`.
+#' @param sensorType Optional character. Sensor type to filter when calling
+#'   `get_merge_personnel_sensor_list()`.
+#' @param getEmailLogics Logical. If TRUE, returns a `QuestionLogics` list
+#'   populated by `create_email_logic_qualtrics()`.
+#'
+#' @return A list with elements `QuestionRows` (character vector) and
+#'   `QuestionLogics` (list) when requested.
+#'
+#' @examples
+#' \dontrun{
+#' generate_ID_and_email_logics_lists_qualtrics("PM2.5")
+#' }
+#'
 #' @concept role:helper
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
+#' @concept addRoxygenComments:true
 generate_ID_and_email_logics_lists_qualtrics <- function(sensorType = NULL, getEmailLogics = TRUE) {
   merger <- get_merge_personnel_sensor_list(sensorType) %>%
     dplyr::mutate(QuestionRows = paste(DeviceID, Type, SiteName, sep = ", "))
@@ -69,22 +111,30 @@ generate_ID_and_email_logics_lists_qualtrics <- function(sensorType = NULL, getE
     QuestionRows = merger[["QuestionRows"]],
     QuestionLogics = if (getEmailLogics) purrr::map(.x = merger[["Email"]], .f = create_email_logic_qualtrics) else list()
   )
-  return(res)
+  res
 }
 
-# Survey flow Display Logics ####
-# single conditions
- #' Create a survey flow logic element for Qualtrics
+#' Create flow logic structure for Qualtrics flow
 #'
-#' Creates a BooleanExpression list suitable for Qualtrics survey flow rules.
+#' Same structure as `create_display_logic_qualtrics()` but without the
+#' `inPage` flag; used when constructing Flow branch logic objects.
 #'
-#' @param logicType Character logic type.
-#' @param leftOperand Character left operand.
-#' @param operator Character operator.
-#' @param rightOperand Character right operand.
-#' @param eqType Character expression type.
-#' @return A list representing a survey flow BooleanExpression.
+#' @param logicType Character. The logic type.
+#' @param leftOperand Character. Left operand name.
+#' @param operator Character. Operator name.
+#' @param rightOperand Character. Right operand value.
+#' @param eqType Character. Expression type.
+#'
+#' @return A list representing a BooleanExpression for use in Flow objects.
+#'
 #' @concept role:helper
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
+#' @concept addRoxygenComments:true
 create_flow_logic_qualtrics <- function(logicType, leftOperand, operator, rightOperand, eqType) {
   res <- list(
     "0" = list(
@@ -99,38 +149,57 @@ create_flow_logic_qualtrics <- function(logicType, leftOperand, operator, rightO
     ),
     Type = "BooleanExpression"
   )
-  return(res)
+  res
 }
 
- #' Create survey flow logic for recipient email
+#' Create flow logic for recipient email
 #'
-#' @param emailAddress Character email address. NA becomes "0".
-#' @return A list representing the flow logic for email comparison.
+#' Similar to `create_email_logic_qualtrics()` but returns the Flow-style
+#' BooleanExpression used in Flow objects.
+#'
+#' @param emailAddress Character. Email address; NA becomes "0".
+#'
+#' @return A nested list for Flow branch logic.
+#'
 #' @concept role:helper
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
+#' @concept addRoxygenComments:true
 create_flow_email_logic_qualtrics <- function(emailAddress) {
   if (is.na(emailAddress)) {
     emailAddress <- "0"
   }
 
-  return(create_flow_logic_qualtrics("EmbeddedField", "RecipientEmail", "EqualTo", emailAddress, "Expression"))
+  create_flow_logic_qualtrics("EmbeddedField", "RecipientEmail", "EqualTo", emailAddress, "Expression")
 }
 
-
-# multiple conditions
-# TODO: Please, someone, clean this up
- #' Create multiple-condition survey flow logic
+#' Create multiple flow logic expressions
 #'
-#' Helper to build a Qualtrics BooleanExpression containing multiple
-#' condition rows and optional conjunctions.
+#' Build a multi-clause BooleanExpression for use in Flow objects. Conjunctions
+#' are inserted between subsequent expressions; the first clause has no
+#' conjunction (NA).
 #'
 #' @param logicTypes Character vector of logic types.
 #' @param leftOperands Character vector of left operands.
 #' @param operators Character vector of operators.
-#' @param rightOperands Character vector of right operands.
+#' @param rightOperands Character vector of right operand values.
 #' @param eqTypes Character vector of expression types.
-#' @param conjunctions Character vector of conjunctions (length = n-1).
-#' @return A list representing the multi-condition BooleanExpression.
+#' @param conjunctions Character vector of conjunctions (e.g. "Or", "And").
+#'
+#' @return A list matching Qualtrics' BooleanExpression structure.
+#'
 #' @concept role:helper
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
+#' @concept addRoxygenComments:true
 create_multiple_flow_logic_qualtrics <- function(logicTypes, leftOperands, operators, rightOperands, eqTypes, conjunctions) {
   # add NA at start to first logic's conjunction
   conjunctions <- c(NA, conjunctions)
@@ -145,9 +214,9 @@ create_multiple_flow_logic_qualtrics <- function(logicTypes, leftOperands, opera
       Type = eqType
     )
     if (!is.na(conjunction)) {
-      sublist[["Conjunction"]] = conjunction
+      sublist[["Conjunction"]] <- conjunction
     }
-    return(sublist)
+    sublist
   }
 
   # create the list of logics
@@ -166,81 +235,133 @@ create_multiple_flow_logic_qualtrics <- function(logicTypes, leftOperands, opera
     "0" = listLogics,
     Type = "BooleanExpression"
   )
-  return(res)
+  res
 }
 
- #' Create multiple email flow logic
+#' Create multiple flow email logic expressions
 #'
-#' Build a multi-condition email matching boolean expression for Qualtrics.
+#' Convert a vector of email addresses into a multi-clause BooleanExpression
+#' where each clause checks `RecipientEmail` equality. NA addresses are
+#' converted to the placeholder "0".
 #'
-#' @param emailAddresses Character vector of email addresses (NAs allowed).
-#' @return A list representing the multi-email BooleanExpression.
+#' @param emailAddresses Character vector of emails.
+#'
+#' @return A list suitable for use as Flow `BranchLogic` in Qualtrics.
+#'
+#' @examples
+#' create_multiple_flow_email_logic_qualtrics(c("a@example.com", NA))
+#'
 #' @concept role:helper
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
+#' @concept addRoxygenComments:true
 create_multiple_flow_email_logic_qualtrics <- function(emailAddresses) {
   # if an email is NA, set it to "0"
   emailAddresses <-
     purrr::map(
       .x = emailAddresses,
-      .f = \(x) {if (is.na(x)) "0" else x}
+      .f = \(x) { if (is.na(x)) "0" else x }
     )
 
   # shortcut to create display logic for emails
-  return(create_multiple_flow_logic_qualtrics(
+  create_multiple_flow_logic_qualtrics(
     rep("EmbeddedField", length(emailAddresses)),
     rep("RecipientEmail", length(emailAddresses)),
     rep("EqualTo", length(emailAddresses)),
     emailAddresses,
     rep("Expression", length(emailAddresses)),
-    rep("Or", length(emailAddresses)-1)
-  ))
+    rep("Or", length(emailAddresses) - 1)
+  )
 }
 
- #' Create a branch flow element body
+#' Create a Qualtrics Branch flow body
 #'
-#' @param description Character description of the branch.
-#' @param flowID Character/ID for the flow.
-#' @param logic List representing the branch logic.
-#' @param subflow Optional subflow list.
-#' @return A list representing a Qualtrics Branch flow element.
+#' Construct a list representing a Qualtrics Flow Branch element.
+#'
+#' @param description Character. Branch description text.
+#' @param flowID Character or numeric. Flow identifier.
+#' @param logic List. Branch logic structure (from flow logic helpers).
+#' @param subflow List. Optional nested flow elements.
+#'
+#' @return A list representing a Flow `Branch` element.
+#'
 #' @concept role:helper
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
+#' @concept addRoxygenComments:true
 create_branch_flow_body_qualtrics <- function(description, flowID, logic, subflow = list()) {
-  return(list(
+  list(
     Type = "Branch",
     FlowID = flowID,
     Description = description,
     BranchLogic = logic,
     Flow = subflow
-  ))
+  )
 }
 
- #' Create a block flow element body
+#' Create a Qualtrics Block flow body
 #'
-#' @param blockID Block ID.
-#' @param flowID Flow ID.
-#' @return A list representing a Qualtrics Block flow element.
+#' Construct a list representing a Qualtrics Flow Block element.
+#'
+#' @param blockID Character or numeric. Block identifier.
+#' @param flowID Character or numeric. Flow identifier.
+#'
+#' @return A list representing a Flow `Block` element.
+#'
 #' @concept role:helper
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
+#' @concept addRoxygenComments:true
 create_block_flow_body_qualtrics <- function(blockID, flowID) {
-  return(list(
+  list(
     Type = "Block",
     ID = blockID,
     FlowID = flowID
-  ))
+  )
 }
 
-# Others ####
- #' Configure a matrix question structure for Qualtrics
+#' Configure a matrix question for Qualtrics
 #'
-#' Helper that prepares the `Choices`, `ChoiceOrder`, `Answers`, and
-#' `AnswerOrder` elements of a matrix-style question configuration.
+#' Populate the `questionConfig` object with `Choices`, `ChoiceOrder`,
+#' and optionally `Answers`/`AnswerOrder`. Display logic for individual
+#' choices can be attached when provided.
 #'
-#' @param questionConfig List representing existing question configuration.
-#' @param choices Character vector of choice labels.
-#' @param choicesDisplayLogics List of display logics per choice (may be empty).
-#' @param answers Character vector of answer labels.
-#' @param questionText Optional question text.
-#' @param changeAnswer Logical whether to set Answers/AnswerOrder.
-#' @return Modified `questionConfig` list.
+#' @param questionConfig List. Existing question configuration object returned
+#'   by the Qualtrics API.
+#' @param choices Character or list. Display texts for each choice.
+#' @param choicesDisplayLogics List of display logic objects corresponding to
+#'   each choice. Use `list()` for no display logic.
+#' @param answers Character or list. Answer display texts.
+#' @param questionText Character or NA. Optional question text to set.
+#' @param changeAnswer Logical. If TRUE, `Answers` and `AnswerOrder` are set.
+#'
+#' @return The modified `questionConfig` list.
+#'
+#' @examples
+#' \dontrun{
+#' custom_configure_matrix_question_qualtrics(cfg, c("A","B"), list(), c("Yes","No"))
+#' }
+#'
 #' @concept role:helper
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
+#' @concept addRoxygenComments:true
 custom_configure_matrix_question_qualtrics <- function(questionConfig, choices, choicesDisplayLogics, answers, questionText = NA, changeAnswer = TRUE) {
   # configure question choices
   QuestionChoices <- list()
@@ -277,31 +398,47 @@ custom_configure_matrix_question_qualtrics <- function(questionConfig, choices, 
 
   if (!is.na(questionText)) {
     questionConfig[["QuestionText"]] <- questionText
-    questionConfig[["QuestionText_Unsafe"]] <- questionText # :'D
+    questionConfig[["QuestionText_Unsafe"]] <- questionText
   }
 
-  return(questionConfig)
+  questionConfig
 }
 
- #' Update a matrix question in Qualtrics with new rows and logics
+#' Update a matrix question on Qualtrics
 #'
-#' Pulls the question JSON, updates rows/answers/display logic, and
-#' pushes the updated question back to Qualtrics.
+#' Retrieve an existing matrix question, update its choices/answers and optional
+#' display logic, then push the update back to Qualtrics.
 #'
-#' @param qualtricsKey Character API token.
-#' @param surveyID Character survey id.
-#' @param questionID Character question id.
-#' @param sensorType Optional character sensor filter passed to personnel merge.
-#' @param newQuestionText Optional character to set as new question text.
-#' @param applyEmailLogic Logical whether to apply email display logic.
-#' @param applyNewAnswer Logical whether to replace Answers/AnswerOrder.
-#' @param DEBUG Logical debug printing flag. Defaults to FALSE.
-#' @return Invisibly returns NULL; side-effect updates Qualtrics question.
+#' @param qualtrics_api_key Character. API key or key identifier used by the
+#'   package's Qualtrics helper functions.
+#' @param surveyID Character. Survey identifier.
+#' @param questionID Character. Question identifier within the survey.
+#' @param sensorType Optional character. Sensor type used to build question rows.
+#' @param newQuestionText Character or NA. Optional replacement question text.
+#' @param applyEmailLogic Logical. If TRUE, email display logic will be applied.
+#' @param applyNewAnswer Logical. If TRUE, answers will be set/updated.
+#' @param answer_choices Character vector. Answer choices to apply (defaults to Yes/No).
+#' @param DEBUG Logical. If TRUE, prints a brief update message.
+#'
+#' @return NULL (called for side effects). Invisibly returns NULL on success.
+#'
+#' @examples
+#' \dontrun{
+#' custom_update_matrix_question_qualtrics(key, "SV_123", "QID1")
+#' }
+#'
 #' @concept role:helper
+#' @concept removedDependencies:true
+#' @concept removedRawFunctionCalls:true
+#' @concept removedSensitiveInfo:true
+#' @concept cleanupParameters:true
+#' @concept cleanupComments:true
+#' @concept cleanupDependenciesNamespace:true
+#' @concept addRoxygenComments:true
 custom_update_matrix_question_qualtrics <-
-  function(qualtricsKey, surveyID, questionID, sensorType = NULL, newQuestionText = NA, applyEmailLogic = TRUE, applyNewAnswer = TRUE, DEBUG = FALSE) {
+  function(qualtrics_api_key, surveyID, questionID, sensorType = NULL, newQuestionText = NA, applyEmailLogic = TRUE, applyNewAnswer = TRUE, answer_choices = c("Yes", "No"), DEBUG = FALSE) {
   # pull current question from qualtrics
-  question <- get_single_qualtrics_question(qualtricsKey, surveyID, questionID)
+  question <- get_single_qualtrics_question(qualtrics_api_key, surveyID, questionID)
   result <- question$result
 
   # update question
@@ -311,17 +448,15 @@ custom_update_matrix_question_qualtrics <-
       result,
       questionNewInfo[["QuestionRows"]],
       questionNewInfo[["QuestionLogics"]],
-      list("Yes", "No"),
+      as.list(answer_choices),
       newQuestionText,
       applyNewAnswer
     )
 
   # push update to qualtrics
-  modify_qualtrics_question(qualtricsKey, modifiedResult, surveyID, questionID)
+  modify_qualtrics_question(qualtrics_api_key, modifiedResult, surveyID, questionID)
   if (DEBUG) {
     message(paste("Updated question:", questionID))
   }
   invisible(NULL)
 }
-
-

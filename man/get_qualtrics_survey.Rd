@@ -4,17 +4,30 @@
 \alias{get_qualtrics_survey}
 \title{Get Qualtrics survey definition}
 \usage{
-get_qualtrics_survey(qualtricsKey, surveyID)
+get_qualtrics_survey(
+  qualtrics_api_key,
+  surveyID,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
 Parsed JSON response as a list.
 }
 \description{
-Get Qualtrics survey definition
+Retrieve the survey definition for a given survey ID.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

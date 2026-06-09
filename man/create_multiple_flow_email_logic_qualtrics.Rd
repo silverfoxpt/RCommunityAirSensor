@@ -2,17 +2,30 @@
 % Please edit documentation in R/Qualtrics_Helper_LogicAndFlow.R
 \name{create_multiple_flow_email_logic_qualtrics}
 \alias{create_multiple_flow_email_logic_qualtrics}
-\title{Create multiple email flow logic}
+\title{Create multiple flow email logic expressions}
 \usage{
 create_multiple_flow_email_logic_qualtrics(emailAddresses)
 }
 \arguments{
-\item{emailAddresses}{Character vector of email addresses (NAs allowed).}
+\item{emailAddresses}{Character vector of emails.}
 }
 \value{
-A list representing the multi-email BooleanExpression.
+A list suitable for use as Flow \code{BranchLogic} in Qualtrics.
 }
 \description{
-Build a multi-condition email matching boolean expression for Qualtrics.
+Convert a vector of email addresses into a multi-clause BooleanExpression
+where each clause checks \code{RecipientEmail} equality. NA addresses are
+converted to the placeholder "0".
 }
+\examples{
+create_multiple_flow_email_logic_qualtrics(c("a@example.com", NA))
+
+}
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

@@ -2,21 +2,28 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{get_first_save_data_from_weekly_log}
 \alias{get_first_save_data_from_weekly_log}
-\title{Pull first SaveData matching originDate and action}
+\title{Get first SaveData value from weekly log}
 \usage{
 get_first_save_data_from_weekly_log(logFile, originDate, neededAction)
 }
 \arguments{
-\item{logFile}{Tibble or data.frame log file.}
+\item{logFile}{A data.frame or tibble representing the log.}
 
-\item{originDate}{Character or date to match in \code{OriginDate}.}
+\item{originDate}{Value to match in \code{OriginDate} column.}
 
-\item{neededAction}{Character to match in \code{Action}.}
+\item{neededAction}{Value to match in \code{Action} column.}
 }
 \value{
-The first matching \code{SaveData} value (or NULL if none).
+The first \code{SaveData} value matching the filters, or \code{NULL} if none.
 }
 \description{
-Pull first SaveData matching originDate and action
+Get first SaveData value from weekly log
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

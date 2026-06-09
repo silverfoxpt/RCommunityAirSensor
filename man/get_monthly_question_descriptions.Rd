@@ -2,7 +2,7 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{get_monthly_question_descriptions}
 \alias{get_monthly_question_descriptions}
-\title{Read and split monthly question descriptions}
+\title{Read and parse monthly question descriptions}
 \usage{
 get_monthly_question_descriptions(
   questionDescFileName,
@@ -11,16 +11,23 @@ get_monthly_question_descriptions(
 )
 }
 \arguments{
-\item{questionDescFileName}{Character file name under \code{CSV/Qualtrics/Monthly}.}
+\item{questionDescFileName}{Character. Filename in \verb{CSV/Qualtrics/Monthly/}.}
 
-\item{splitLikeUnresponsed}{Logical toggle for alternative split format.}
+\item{splitLikeUnresponsed}{Logical. If TRUE, parse \code{sub} column with a different pattern.}
 
-\item{root_folder}{Character root folder path.}
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
 }
 \value{
-A tibble with separated columns.
+A tibble with separated columns depending on \code{splitLikeUnresponsed}.
 }
 \description{
-Read and split monthly question descriptions
+Read and parse monthly question descriptions
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

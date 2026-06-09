@@ -2,17 +2,24 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{get_monthly_log}
 \alias{get_monthly_log}
-\title{Read monthly Qualtrics log CSV}
+\title{Get monthly Qualtrics log}
 \usage{
 get_monthly_log(root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"))
 }
 \arguments{
-\item{root_folder}{Character root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
 }
 \value{
 A tibble with the monthly log contents.
 }
 \description{
-Read monthly Qualtrics log CSV
+Read the monthly Qualtrics log CSV from the configured upload folder.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

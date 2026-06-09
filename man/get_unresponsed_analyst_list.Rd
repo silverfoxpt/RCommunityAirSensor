@@ -2,7 +2,7 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{get_unresponsed_analyst_list}
 \alias{get_unresponsed_analyst_list}
-\title{Get analysts who have not responded (monthly)}
+\title{Get analysts who did not respond (monthly)}
 \usage{
 get_unresponsed_analyst_list(
   responseFileName,
@@ -10,14 +10,21 @@ get_unresponsed_analyst_list(
 )
 }
 \arguments{
-\item{responseFileName}{Character file name of monthly responses.}
+\item{responseFileName}{Character. Filename in \verb{CSV/Qualtrics/Monthly/} with responses.}
 
-\item{root_folder}{Character root folder path.}
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
 }
 \value{
-A tibble of analysts who have not responded.
+A tibble of analysts who did not respond.
 }
 \description{
-Get analysts who have not responded (monthly)
+Get analysts who did not respond (monthly)
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

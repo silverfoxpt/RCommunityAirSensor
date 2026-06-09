@@ -2,19 +2,32 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{create_survey_qsf}
 \alias{create_survey_qsf}
-\title{Create a new survey from QSF data}
+\title{Create a survey from QSF data}
 \usage{
-create_survey_qsf(qualtricsKey, qsfData)
+create_survey_qsf(
+  qualtrics_api_key,
+  qsfData,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{qsfData}{List representing the QSF JSON.}
+\item{qsfData}{A list representing the QSF payload (as returned by \code{get_survey_qsf}).}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
-New survey ID as character.
+The new survey ID as a character string.
 }
 \description{
-Create a new survey from QSF data
+Create a survey from QSF data
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

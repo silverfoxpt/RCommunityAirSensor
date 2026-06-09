@@ -2,7 +2,7 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{write_to_weekly_log}
 \alias{write_to_weekly_log}
-\title{Append a row to the weekly log CSV}
+\title{Append a row to the weekly Qualtrics log}
 \usage{
 write_to_weekly_log(
   originDate,
@@ -12,15 +12,25 @@ write_to_weekly_log(
 )
 }
 \arguments{
-\item{originDate}{Character or date to record.}
+\item{originDate}{Value to write to \code{OriginDate} column.}
 
-\item{neededAction}{Character action label.}
+\item{neededAction}{Value to write to \code{Action} column.}
 
-\item{saveData}{Character save data to store.}
+\item{saveData}{Value to write to \code{SaveData} column.}
 
-\item{root_folder}{Character root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+}
+\value{
+NULL, called for side effect.
 }
 \description{
-Append a row to the weekly log CSV
+Append a row to the weekly Qualtrics log
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

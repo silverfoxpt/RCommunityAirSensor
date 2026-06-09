@@ -2,19 +2,32 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{set_qualtrics_survey_active}
 \alias{set_qualtrics_survey_active}
-\title{Set survey active flag}
+\title{Set a survey active}
 \usage{
-set_qualtrics_survey_active(qualtricsKey, surveyID)
+set_qualtrics_survey_active(
+  qualtrics_api_key,
+  surveyID,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
-Parsed API response as a list (invisible).
+Parsed response invisibly.
 }
 \description{
-Set survey active flag
+Toggle a survey's \code{isActive} flag to TRUE.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

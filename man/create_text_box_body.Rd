@@ -2,19 +2,26 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{create_text_box_body}
 \alias{create_text_box_body}
-\title{Create body for a text box question}
+\title{Build a text box question body}
 \usage{
-create_text_box_body(questionText, allowMultipleLineTextbox)
+create_text_box_body(questionText, allowMultipleLineTextbox = FALSE)
 }
 \arguments{
-\item{questionText}{Character question text.}
+\item{questionText}{Character string with the question prompt.}
 
-\item{allowMultipleLineTextbox}{Logical whether multi-line input is allowed.}
+\item{allowMultipleLineTextbox}{Logical; if TRUE uses multi-line selector.}
 }
 \value{
-A list ready for the Qualtrics API.
+A list suitable for Qualtrics question creation.
 }
 \description{
-Create body for a text box question
+Build a text box question body
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

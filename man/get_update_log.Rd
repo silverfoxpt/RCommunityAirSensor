@@ -2,17 +2,24 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{get_update_log}
 \alias{get_update_log}
-\title{Read template update log CSV}
+\title{Get Qualtrics template update log}
 \usage{
 get_update_log(root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"))
 }
 \arguments{
-\item{root_folder}{Character root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
 }
 \value{
 A tibble with the update log contents.
 }
 \description{
-Read template update log CSV
+Read the Qualtrics update log CSV from the configured upload folder.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

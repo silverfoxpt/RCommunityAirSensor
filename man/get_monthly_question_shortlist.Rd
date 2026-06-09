@@ -7,12 +7,19 @@
 get_monthly_question_shortlist(root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"))
 }
 \arguments{
-\item{root_folder}{Character root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
 }
 \value{
-A tibble with question shortlist.
+A tibble with the monthly question shortlist.
 }
 \description{
 Read monthly question shortlist
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

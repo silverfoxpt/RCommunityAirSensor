@@ -2,23 +2,38 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{modify_qualtrics_question}
 \alias{modify_qualtrics_question}
-\title{Modify an existing question}
+\title{Modify an existing Qualtrics question}
 \usage{
-modify_qualtrics_question(qualtricsKey, jsonBody, surveyID, questionID)
+modify_qualtrics_question(
+  qualtrics_api_key,
+  jsonBody,
+  surveyID,
+  questionID,
+  base_url = "https://iad1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{jsonBody}{List body for the question JSON.}
+\item{jsonBody}{A list representing the updated question payload.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier.}
 
-\item{questionID}{Character question id.}
+\item{questionID}{Question identifier to modify.}
+
+\item{base_url}{Character string for Qualtrics base URL. Defaults to IAD datacenter.}
 }
 \value{
-Parsed API response as a list.
+Parsed JSON response invisibly.
 }
 \description{
-Modify an existing question
+Modify an existing Qualtrics question
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

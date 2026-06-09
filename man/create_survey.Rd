@@ -4,18 +4,30 @@
 \alias{create_survey}
 \title{Create a new Qualtrics survey}
 \usage{
-create_survey(qualtricsKey, surveyName)
+create_survey(
+  qualtrics_api_key,
+  surveyName,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{surveyName}{Character name for the new survey.}
+\item{surveyName}{Character string with the desired survey name.}
+
+\item{base_url}{Character string for Qualtrics base URL. Defaults to the USF datacenter.}
 }
 \value{
-Parsed JSON response from the Qualtrics API as a list.
+Parsed JSON response from Qualtrics as a list.
 }
 \description{
-Wrapper for the Qualtrics API to create a new survey definition.
+Create a new survey resource in Qualtrics using the survey-definitions endpoint.
+}
+\examples{
+\dontrun{
+create_survey("<REDACTED_API_KEY>", "My Survey")
+}
+
 }
 \concept{addRoxygenComments:true}
 \concept{cleanupComments:true}

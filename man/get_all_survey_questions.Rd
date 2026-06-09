@@ -4,17 +4,30 @@
 \alias{get_all_survey_questions}
 \title{Get all questions for a Qualtrics survey}
 \usage{
-get_all_survey_questions(qualtricsKey, surveyID)
+get_all_survey_questions(
+  qualtrics_api_key,
+  surveyID,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
 Parsed JSON response as a list.
 }
 \description{
-Get all questions for a Qualtrics survey
+Retrieves all question elements for a survey definition.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

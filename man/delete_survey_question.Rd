@@ -2,21 +2,35 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{delete_survey_question}
 \alias{delete_survey_question}
-\title{Delete a survey question}
+\title{Delete a Qualtrics survey question}
 \usage{
-delete_survey_question(qualtricsKey, surveyID, questionID)
+delete_survey_question(
+  qualtrics_api_key,
+  surveyID,
+  questionID,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier.}
 
-\item{questionID}{Character question id to delete.}
+\item{questionID}{Question identifier to delete.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
-Parsed response from API (invisible).
+Parsed response invisibly.
 }
 \description{
-Delete a survey question
+Delete a Qualtrics survey question
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

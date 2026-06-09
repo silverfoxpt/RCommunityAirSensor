@@ -2,19 +2,26 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{create_text_form_body}
 \alias{create_text_form_body}
-\title{Create body for a text form question}
+\title{Build a text form question body}
 \usage{
 create_text_form_body(questionOptions, questionText)
 }
 \arguments{
-\item{questionOptions}{Character vector for form fields.}
+\item{questionOptions}{Character vector of labels for the form fields.}
 
-\item{questionText}{Character question text.}
+\item{questionText}{Character string with the question prompt.}
 }
 \value{
-A list ready for the Qualtrics API.
+A list suitable for Qualtrics question creation.
 }
 \description{
-Create body for a text form question
+Build a text form question body
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

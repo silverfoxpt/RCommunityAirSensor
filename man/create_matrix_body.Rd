@@ -2,28 +2,35 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{create_matrix_body}
 \alias{create_matrix_body}
-\title{Create body for a matrix question}
+\title{Build a matrix question body}
 \usage{
 create_matrix_body(
   questionStatements,
   questionText,
   questionColumns,
-  allowMultipleAnswer
+  allowMultipleAnswer = FALSE
 )
 }
 \arguments{
-\item{questionStatements}{Character vector of statements (rows).}
+\item{questionStatements}{Character vector of row statements.}
 
-\item{questionText}{Character question text.}
+\item{questionText}{Character string with the question prompt.}
 
-\item{questionColumns}{Character vector of column choices.}
+\item{questionColumns}{Character vector of column labels.}
 
-\item{allowMultipleAnswer}{Logical whether multiple answers per row allowed.}
+\item{allowMultipleAnswer}{Logical; if TRUE allows multiple selections per row.}
 }
 \value{
-A list ready for the Qualtrics API.
+A list suitable for Qualtrics question creation.
 }
 \description{
-Create body for a matrix question
+Build a matrix question body
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

@@ -2,17 +2,25 @@
 % Please edit documentation in R/Qualtrics_Helper_LogicAndFlow.R
 \name{create_flow_email_logic_qualtrics}
 \alias{create_flow_email_logic_qualtrics}
-\title{Create survey flow logic for recipient email}
+\title{Create flow logic for recipient email}
 \usage{
 create_flow_email_logic_qualtrics(emailAddress)
 }
 \arguments{
-\item{emailAddress}{Character email address. NA becomes "0".}
+\item{emailAddress}{Character. Email address; NA becomes "0".}
 }
 \value{
-A list representing the flow logic for email comparison.
+A nested list for Flow branch logic.
 }
 \description{
-Create survey flow logic for recipient email
+Similar to \code{create_email_logic_qualtrics()} but returns the Flow-style
+BooleanExpression used in Flow objects.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

@@ -2,23 +2,30 @@
 % Please edit documentation in R/Qualtrics_Helper_LogicAndFlow.R
 \name{create_branch_flow_body_qualtrics}
 \alias{create_branch_flow_body_qualtrics}
-\title{Create a branch flow element body}
+\title{Create a Qualtrics Branch flow body}
 \usage{
 create_branch_flow_body_qualtrics(description, flowID, logic, subflow = list())
 }
 \arguments{
-\item{description}{Character description of the branch.}
+\item{description}{Character. Branch description text.}
 
-\item{flowID}{Character/ID for the flow.}
+\item{flowID}{Character or numeric. Flow identifier.}
 
-\item{logic}{List representing the branch logic.}
+\item{logic}{List. Branch logic structure (from flow logic helpers).}
 
-\item{subflow}{Optional subflow list.}
+\item{subflow}{List. Optional nested flow elements.}
 }
 \value{
-A list representing a Qualtrics Branch flow element.
+A list representing a Flow \code{Branch} element.
 }
 \description{
-Create a branch flow element body
+Construct a list representing a Qualtrics Flow Branch element.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{get_main_personnel_list}
 \alias{get_main_personnel_list}
-\title{Read main personnel CSV and optionally filter by role}
+\title{Read main personnel list}
 \usage{
 get_main_personnel_list(
   role = NULL,
@@ -10,14 +10,21 @@ get_main_personnel_list(
 )
 }
 \arguments{
-\item{role}{Optional character or list of roles to filter by.}
+\item{role}{Character or NULL. Role(s) to filter on. If NULL, returns all participants.}
 
-\item{root_folder}{Character root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
 }
 \value{
-A tibble of participants, optionally filtered.
+A tibble of participants; filtered by \code{role} when provided.
 }
 \description{
-Read main personnel CSV and optionally filter by role
+Loads the main personnel CSV and optionally filters by role.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

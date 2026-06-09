@@ -4,21 +4,36 @@
 \alias{update_survey_flow_element}
 \title{Update a survey flow element}
 \usage{
-update_survey_flow_element(qualtricsKey, surveyID, flowID, jsonBody)
+update_survey_flow_element(
+  qualtrics_api_key,
+  surveyID,
+  flowID,
+  jsonBody,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier.}
 
-\item{flowID}{Character flow id.}
+\item{flowID}{Flow element identifier.}
 
-\item{jsonBody}{List body for the flow element.}
+\item{jsonBody}{A list payload for the flow element update.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
-Parsed API response as a list (invisible).
+Parsed response invisibly.
 }
 \description{
 Update a survey flow element
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

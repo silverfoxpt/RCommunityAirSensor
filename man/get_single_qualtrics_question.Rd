@@ -2,21 +2,35 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{get_single_qualtrics_question}
 \alias{get_single_qualtrics_question}
-\title{Get a single question from a survey}
+\title{Get a single Qualtrics question}
 \usage{
-get_single_qualtrics_question(qualtricsKey, surveyID, questionID)
+get_single_qualtrics_question(
+  qualtrics_api_key,
+  surveyID,
+  questionID,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier.}
 
-\item{questionID}{Character question id.}
+\item{questionID}{Question identifier.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
 Parsed JSON response as a list.
 }
 \description{
-Get a single question from a survey
+Get a single Qualtrics question
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

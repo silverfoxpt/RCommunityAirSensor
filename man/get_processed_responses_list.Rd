@@ -10,14 +10,21 @@ get_processed_responses_list(
 )
 }
 \arguments{
-\item{responseFileName}{Character file name under \code{CSV/Qualtrics/Weekly}.}
+\item{responseFileName}{Character. CSV filename within \verb{CSV/Qualtrics/Weekly/}.}
 
-\item{root_folder}{Character root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
 }
 \value{
-A tibble of responses.
+A tibble with processed responses.
 }
 \description{
 Read processed weekly responses
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{get_question_descriptions}
 \alias{get_question_descriptions}
-\title{Read question descriptions (weekly)}
+\title{Read and parse question descriptions for weekly surveys}
 \usage{
 get_question_descriptions(
   questionDescFileName,
@@ -10,14 +10,21 @@ get_question_descriptions(
 )
 }
 \arguments{
-\item{questionDescFileName}{Character file name under \code{CSV/Qualtrics/Weekly}.}
+\item{questionDescFileName}{Character. Filename in \verb{CSV/Qualtrics/Weekly/}.}
 
-\item{root_folder}{Character root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
 }
 \value{
-A tibble with question descriptions and split columns.
+A tibble with separated \code{DeviceID}, \code{DeviceType}, and \code{Site} columns.
 }
 \description{
-Read question descriptions (weekly)
+Read and parse question descriptions for weekly surveys
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

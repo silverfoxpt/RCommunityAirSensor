@@ -4,17 +4,30 @@
 \alias{get_survey_flow}
 \title{Get survey flow}
 \usage{
-get_survey_flow(qualtricsKey, surveyID)
+get_survey_flow(
+  qualtrics_api_key,
+  surveyID,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
-Parsed API response as a list.
+Parsed JSON response as a list.
 }
 \description{
-Get survey flow
+Retrieve the flow object (survey structure) for a given survey.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

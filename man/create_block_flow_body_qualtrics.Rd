@@ -2,19 +2,26 @@
 % Please edit documentation in R/Qualtrics_Helper_LogicAndFlow.R
 \name{create_block_flow_body_qualtrics}
 \alias{create_block_flow_body_qualtrics}
-\title{Create a block flow element body}
+\title{Create a Qualtrics Block flow body}
 \usage{
 create_block_flow_body_qualtrics(blockID, flowID)
 }
 \arguments{
-\item{blockID}{Block ID.}
+\item{blockID}{Character or numeric. Block identifier.}
 
-\item{flowID}{Flow ID.}
+\item{flowID}{Character or numeric. Flow identifier.}
 }
 \value{
-A list representing a Qualtrics Block flow element.
+A list representing a Flow \code{Block} element.
 }
 \description{
-Create a block flow element body
+Construct a list representing a Qualtrics Flow Block element.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

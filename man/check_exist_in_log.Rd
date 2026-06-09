@@ -2,21 +2,28 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{check_exist_in_log}
 \alias{check_exist_in_log}
-\title{Check existence in log}
+\title{Check if entry exists in log}
 \usage{
 check_exist_in_log(logFile, originDate, neededAction)
 }
 \arguments{
-\item{logFile}{Tibble or data.frame log file.}
+\item{logFile}{A data.frame or tibble representing the log.}
 
-\item{originDate}{Character or date to match in \code{OriginDate}.}
+\item{originDate}{Value to match in \code{OriginDate} column.}
 
-\item{neededAction}{Character to match in \code{Action}.}
+\item{neededAction}{Value to match in \code{Action} column.}
 }
 \value{
-Logical TRUE if a matching row exists, otherwise FALSE.
+Logical; \code{TRUE} if at least one matching row exists.
 }
 \description{
-Check existence in log
+Check if entry exists in log
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

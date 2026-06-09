@@ -2,17 +2,30 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{get_monitor_sites}
 \alias{get_monitor_sites}
-\title{Read monitor sites from timeshift Excel}
+\title{Read monitor sites from timeshift workbook}
 \usage{
-get_monitor_sites(root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"))
+get_monitor_sites(
+  date = Sys.Date(),
+  root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER")
+)
 }
 \arguments{
-\item{root_folder}{Character root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+\item{date}{Date. Date used to determine the monthly timeshift filename. Defaults to \code{Sys.Date()}.}
+
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
 }
 \value{
-A tibble of monitor site metadata.
+A tibble with monitor site information.
 }
 \description{
-Read monitor sites from timeshift Excel
+Loads the "MonitorStatus" sheet from the monthly CAMN monitor tracking workbook
+and performs basic filtering to return only active public sites with valid short codes.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

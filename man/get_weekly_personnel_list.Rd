@@ -2,17 +2,31 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{get_weekly_personnel_list}
 \alias{get_weekly_personnel_list}
-\title{Read weekly personnel list from monitor tracking}
+\title{Read weekly personnel list from timeshift workbook}
 \usage{
-get_weekly_personnel_list(root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"))
+get_weekly_personnel_list(
+  date = Sys.Date(),
+  root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER")
+)
 }
 \arguments{
-\item{root_folder}{Character root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+\item{date}{Date. Date used to determine the monthly timeshift filename. Defaults to \code{Sys.Date()}.}
+
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
 }
 \value{
-A tibble of personnel and short codes.
+A tibble with columns \code{Name}, \code{Email}, \code{SiteShortCode}, \code{FirstName}, \code{LastName}.
 }
 \description{
-Reads the QATimeshift Excel sheet and extracts Name/Email/SiteShortCode.
+Loads the "SitesAndHosts" sheet from the monthly CAMN monitor tracking workbook
+and returns a tibble of contact names, emails, and site short codes. The
+reporting month can be overridden with the \code{date} argument.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

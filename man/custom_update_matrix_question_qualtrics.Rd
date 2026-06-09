@@ -2,41 +2,58 @@
 % Please edit documentation in R/Qualtrics_Helper_LogicAndFlow.R
 \name{custom_update_matrix_question_qualtrics}
 \alias{custom_update_matrix_question_qualtrics}
-\title{Update a matrix question in Qualtrics with new rows and logics}
+\title{Update a matrix question on Qualtrics}
 \usage{
 custom_update_matrix_question_qualtrics(
-  qualtricsKey,
+  qualtrics_api_key,
   surveyID,
   questionID,
   sensorType = NULL,
   newQuestionText = NA,
   applyEmailLogic = TRUE,
   applyNewAnswer = TRUE,
+  answer_choices = c("Yes", "No"),
   DEBUG = FALSE
 )
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{Character. API key or key identifier used by the
+package's Qualtrics helper functions.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Character. Survey identifier.}
 
-\item{questionID}{Character question id.}
+\item{questionID}{Character. Question identifier within the survey.}
 
-\item{sensorType}{Optional character sensor filter passed to personnel merge.}
+\item{sensorType}{Optional character. Sensor type used to build question rows.}
 
-\item{newQuestionText}{Optional character to set as new question text.}
+\item{newQuestionText}{Character or NA. Optional replacement question text.}
 
-\item{applyEmailLogic}{Logical whether to apply email display logic.}
+\item{applyEmailLogic}{Logical. If TRUE, email display logic will be applied.}
 
-\item{applyNewAnswer}{Logical whether to replace Answers/AnswerOrder.}
+\item{applyNewAnswer}{Logical. If TRUE, answers will be set/updated.}
 
-\item{DEBUG}{Logical debug printing flag. Defaults to FALSE.}
+\item{answer_choices}{Character vector. Answer choices to apply (defaults to Yes/No).}
+
+\item{DEBUG}{Logical. If TRUE, prints a brief update message.}
 }
 \value{
-Invisibly returns NULL; side-effect updates Qualtrics question.
+NULL (called for side effects). Invisibly returns NULL on success.
 }
 \description{
-Pulls the question JSON, updates rows/answers/display logic, and
-pushes the updated question back to Qualtrics.
+Retrieve an existing matrix question, update its choices/answers and optional
+display logic, then push the update back to Qualtrics.
 }
+\examples{
+\dontrun{
+custom_update_matrix_question_qualtrics(key, "SV_123", "QID1")
+}
+
+}
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

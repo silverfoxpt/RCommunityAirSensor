@@ -2,21 +2,33 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{create_multiple_choice_body}
 \alias{create_multiple_choice_body}
-\title{Create body for multiple choice question}
+\title{Build a multiple-choice question body for the Qualtrics API}
 \usage{
-create_multiple_choice_body(questionOptions, questionText, allowMultipleChoice)
+create_multiple_choice_body(
+  questionOptions,
+  questionText,
+  allowMultipleChoice = FALSE
+)
 }
 \arguments{
-\item{questionOptions}{Character vector of choices.}
+\item{questionOptions}{Character vector of choice labels.}
 
-\item{questionText}{Character question text.}
+\item{questionText}{Character string with the question prompt.}
 
-\item{allowMultipleChoice}{Logical whether multiple choices are allowed.}
+\item{allowMultipleChoice}{Logical; if TRUE uses multiple-answer selector.}
 }
 \value{
-A list ready to be serialized to JSON for the Qualtrics API.
+A list suitable for \code{httr2::req_body_json()} when creating a question.
 }
 \description{
-Create body for multiple choice question
+Helper that assembles the JSON-like list structure for a multiple-choice
+question payload.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

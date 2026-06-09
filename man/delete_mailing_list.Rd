@@ -4,19 +4,33 @@
 \alias{delete_mailing_list}
 \title{Delete a mailing list}
 \usage{
-delete_mailing_list(qualtricsKey, directoryID, mailingID)
+delete_mailing_list(
+  qualtrics_api_key,
+  directoryID,
+  mailingID,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{directoryID}{Character directory id.}
+\item{directoryID}{Directory identifier.}
 
-\item{mailingID}{Character mailing list id.}
+\item{mailingID}{Mailing list identifier to delete.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
-Parsed API response as a list (invisible).
+Parsed response invisibly.
 }
 \description{
 Delete a mailing list
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

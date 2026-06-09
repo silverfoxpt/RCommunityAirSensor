@@ -5,13 +5,13 @@
 \title{Update the Qualtrics monthly template survey}
 \usage{
 qualtrics_update_monthly_template_survey(
-  qualtKey = Sys.getenv("QUALTRICS_API_KEY"),
+  qualtrics_api_key = Sys.getenv("QUALTRICS_API_KEY"),
   surveyId = Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID"),
   questionShort = NULL
 )
 }
 \arguments{
-\item{qualtKey}{Character. Qualtrics API key. Defaults to
+\item{qualtrics_api_key}{Character. Qualtrics API key. Defaults to
 Sys.getenv("QUALTRICS_API_KEY").}
 
 \item{surveyId}{Character. Qualtrics survey ID. Defaults to

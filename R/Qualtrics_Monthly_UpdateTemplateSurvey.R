@@ -71,7 +71,7 @@ copy_original_QAMonitorFile <- function(
 #' utilities. This function keeps the existing answers and display logic by
 #' default.
 #'
-#' @param qualtKey Character. Qualtrics API key. Default reads
+#' @param qualtrics_api_key Character. Qualtrics API key. Default reads
 #'   Sys.getenv("QUALTRICS_API_KEY").
 #' @param surveyId Character. Qualtrics survey ID. Default reads
 #'   Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID").
@@ -96,7 +96,7 @@ copy_original_QAMonitorFile <- function(
 #' @concept cleanupDependenciesNamespace:true
 #' @concept addRoxygenComments:true
 update_list_unresolved_monitor_qualtrics <- function(
-  qualtKey = Sys.getenv("QUALTRICS_API_KEY"),
+  qualtrics_api_key = Sys.getenv("QUALTRICS_API_KEY"),
   surveyId = Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID"),
   unresolveQuestionID
 ) {
@@ -104,7 +104,7 @@ update_list_unresolved_monitor_qualtrics <- function(
     stop("unresolveQuestionID is required and must be a non-empty string")
   }
 
-  unresolveQues <- get_single_qualtrics_question(qualtKey, surveyId, unresolveQuestionID)
+  unresolveQues <- get_single_qualtrics_question(qualtrics_api_key, surveyId, unresolveQuestionID)
   result <- unresolveQues$result
 
   questionRows <- get_unresolved_monitor_log() %>%
@@ -126,7 +126,7 @@ update_list_unresolved_monitor_qualtrics <- function(
     changeAnswer = FALSE
   )
 
-  modify_qualtrics_question(qualtKey, modifiedResult, surveyId, unresolveQuestionID)
+  modify_qualtrics_question(qualtrics_api_key, modifiedResult, surveyId, unresolveQuestionID)
   message("Updated question: Unresolved List - ", unresolveQuestionID)
   invisible(TRUE)
 }
@@ -156,7 +156,7 @@ update_list_unresolved_monitor_qualtrics <- function(
 #' - Expects `get_monthly_question_shortlist()` to return a tibble with
 #'   columns `QuestionID` and `SensorType`.
 #'
-#' @param qualtKey Character. Qualtrics API key. Defaults to
+#' @param qualtrics_api_key Character. Qualtrics API key. Defaults to
 #'   Sys.getenv("QUALTRICS_API_KEY").
 #' @param surveyId Character. Qualtrics survey ID. Defaults to
 #'   Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID").
@@ -183,7 +183,7 @@ update_list_unresolved_monitor_qualtrics <- function(
 #' @concept cleanupDependenciesNamespace:true
 #' @concept addRoxygenComments:true
 qualtrics_update_monthly_template_survey <- function(
-  qualtKey = Sys.getenv("QUALTRICS_API_KEY"),
+  qualtrics_api_key = Sys.getenv("QUALTRICS_API_KEY"),
   surveyId = Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID"),
   questionShort = NULL
 ) {
@@ -206,7 +206,7 @@ qualtrics_update_monthly_template_survey <- function(
     .l = list(listID, listType),
     .f = function(x, y) {
       custom_update_matrix_question_qualtrics(
-        qualtKey, surveyId, x, y,
+        qualtrics_api_key, surveyId, x, y,
         applyEmailLogic = FALSE,
         applyNewAnswer = FALSE,
         DEBUG = TRUE
@@ -214,8 +214,8 @@ qualtrics_update_monthly_template_survey <- function(
     }
   )
 
-  update_list_unresolved_monitor_qualtrics(qualtKey, surveyId, "QID66")
-  update_list_unresolved_monitor_qualtrics(qualtKey, surveyId, "QID67")
+  update_list_unresolved_monitor_qualtrics(qualtrics_api_key, surveyId, "QID66")
+  update_list_unresolved_monitor_qualtrics(qualtrics_api_key, surveyId, "QID67")
 
   write_to_monthly_template_update_log(Sys.Date(), "UpdateMonthlyTemplate")
 

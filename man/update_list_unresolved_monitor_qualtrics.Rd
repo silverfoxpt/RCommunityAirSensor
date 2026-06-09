@@ -5,13 +5,13 @@
 \title{Update an unresolved-monitor matrix question in a Qualtrics survey}
 \usage{
 update_list_unresolved_monitor_qualtrics(
-  qualtKey = Sys.getenv("QUALTRICS_API_KEY"),
+  qualtrics_api_key = Sys.getenv("QUALTRICS_API_KEY"),
   surveyId = Sys.getenv("QUALTRICS_MONTHLY_TEMPLATE_ID"),
   unresolveQuestionID
 )
 }
 \arguments{
-\item{qualtKey}{Character. Qualtrics API key. Default reads
+\item{qualtrics_api_key}{Character. Qualtrics API key. Default reads
 Sys.getenv("QUALTRICS_API_KEY").}
 
 \item{surveyId}{Character. Qualtrics survey ID. Default reads

@@ -2,17 +2,24 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{get_weekly_log}
 \alias{get_weekly_log}
-\title{Read weekly Qualtrics log CSV}
+\title{Get weekly Qualtrics log}
 \usage{
 get_weekly_log(root_folder = Sys.getenv("UPLOAD_ROOT_FOLDER"))
 }
 \arguments{
-\item{root_folder}{Character root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
 }
 \value{
 A tibble with the weekly log contents.
 }
 \description{
-Read weekly Qualtrics log CSV
+Read the weekly Qualtrics log CSV from the configured upload folder.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

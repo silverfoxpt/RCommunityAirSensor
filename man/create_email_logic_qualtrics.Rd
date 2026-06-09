@@ -2,18 +2,30 @@
 % Please edit documentation in R/Qualtrics_Helper_LogicAndFlow.R
 \name{create_email_logic_qualtrics}
 \alias{create_email_logic_qualtrics}
-\title{Create display logic for recipient email}
+\title{Create display logic for a recipient email}
 \usage{
 create_email_logic_qualtrics(emailAddress)
 }
 \arguments{
-\item{emailAddress}{Character email address. If NA, will be coerced to "0".}
+\item{emailAddress}{Character. Email address to match; NA becomes "0".}
 }
 \value{
-A list representing the display logic for email matching.
+A nested list representing the email display logic.
 }
 \description{
-Shortcut wrapper to create an email-specific display logic where the
-left operand is \code{RecipientEmail}.
+Helper that wraps \code{create_display_logic_qualtrics()} to produce an
+EmbeddedField equality test against \code{RecipientEmail}. NA addresses are
+converted to the placeholder "0" to match Qualtrics' expectations.
 }
+\examples{
+create_email_logic_qualtrics(NA)
+
+}
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

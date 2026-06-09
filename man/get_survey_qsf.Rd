@@ -2,21 +2,36 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{get_survey_qsf}
 \alias{get_survey_qsf}
-\title{Get QSF (full survey JSON) for a survey}
+\title{Get survey QSF (full survey definition)}
 \usage{
-get_survey_qsf(qualtricsKey, surveyID, newSurveyName)
+get_survey_qsf(
+  qualtrics_api_key,
+  surveyID,
+  newSurveyName,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier.}
 
-\item{newSurveyName}{Character new survey name to assign to the copy data.}
+\item{newSurveyName}{Character string to replace \code{SurveyEntry$SurveyName}.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
-The \code{result} field of the QSF response as a list.
+A list representing the QSF (survey definition) with modified name.
 }
 \description{
-Get QSF (full survey JSON) for a survey
+Downloads the full QSF representation of a survey and replaces the SurveyName
+entry with \code{newSurveyName} in the returned object (useful for cloning).
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

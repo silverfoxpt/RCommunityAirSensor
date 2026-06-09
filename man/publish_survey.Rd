@@ -2,19 +2,32 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{publish_survey}
 \alias{publish_survey}
-\title{Publish a survey version}
+\title{Publish a Qualtrics survey version}
 \usage{
-publish_survey(qualtricsKey, surveyID)
+publish_survey(
+  qualtrics_api_key,
+  surveyID,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
-Parsed API response as a list.
+Parsed JSON response as a list.
 }
 \description{
-Publish a survey version
+Marks a new survey version as published.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

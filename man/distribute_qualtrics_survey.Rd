@@ -2,38 +2,58 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{distribute_qualtrics_survey}
 \alias{distribute_qualtrics_survey}
-\title{Distribute a survey via mailing list}
+\title{Distribute a Qualtrics survey via mailing list}
 \usage{
 distribute_qualtrics_survey(
-  qualtricsKey,
+  qualtrics_api_key,
   libraryID,
   messageID,
   mailingID,
   qualtricsEmailSubject,
   surveyID,
-  isMultiple
+  isMultiple = FALSE,
+  from_name = "Qualtrics",
+  from_email = "noreply@qualtrics.com",
+  reply_to_email = "noreply@qualtrics.com",
+  base_url = "https://usf.az1.qualtrics.com"
 )
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{libraryID}{Character library id.}
+\item{libraryID}{Library identifier for the message template.}
 
-\item{messageID}{Character message id.}
+\item{messageID}{Message identifier inside the library.}
 
-\item{mailingID}{Character mailing list id.}
+\item{mailingID}{Mailing list identifier to receive the distribution.}
 
-\item{qualtricsEmailSubject}{Character email subject base.}
+\item{qualtricsEmailSubject}{Email subject base text.}
 
-\item{surveyID}{Character survey id.}
+\item{surveyID}{Survey identifier to distribute.}
 
-\item{isMultiple}{Logical whether distribution type is 'Multiple'.}
+\item{isMultiple}{Logical indicating whether distribution is "Multiple" or "Individual".}
+
+\item{from_name}{Sender display name (defaults to "Qualtrics").}
+
+\item{from_email}{Sender email address used in the header.}
+
+\item{reply_to_email}{Reply-to address used in the header.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
-Parsed API response as a list.
+Parsed JSON response from the distribution request.
 }
 \description{
-Sends a distribution request to Qualtrics. Time and subject defaults use
-the current system time; these are preserved for backward compatibility.
+Schedule a distribution using mailing lists, message/library references and a
+survey link. Times are computed relative to the current system time. The
+\code{base_url} parameter allows using different data centers.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

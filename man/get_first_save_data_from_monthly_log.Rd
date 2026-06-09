@@ -2,21 +2,28 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{get_first_save_data_from_monthly_log}
 \alias{get_first_save_data_from_monthly_log}
-\title{Alias for monthly logs}
+\title{Alias for monthly log lookup}
 \usage{
 get_first_save_data_from_monthly_log(logFile, originDate, neededAction)
 }
 \arguments{
-\item{logFile}{Tibble or data.frame log file.}
+\item{logFile}{A data.frame or tibble representing the log.}
 
-\item{originDate}{Character or date to match in \code{OriginDate}.}
+\item{originDate}{Value to match in \code{OriginDate} column.}
 
-\item{neededAction}{Character to match in \code{Action}.}
+\item{neededAction}{Value to match in \code{Action} column.}
 }
 \value{
-The first matching \code{SaveData} value (or NULL if none).
+The matched \code{SaveData} value or \code{NULL}.
 }
 \description{
-Alias for monthly logs
+Wrapper around \code{get_first_save_data_from_weekly_log} for monthly logs.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

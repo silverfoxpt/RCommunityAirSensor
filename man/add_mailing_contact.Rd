@@ -2,34 +2,44 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{add_mailing_contact}
 \alias{add_mailing_contact}
-\title{Add a contact to a mailing list}
+\title{Add a contact to a Qualtrics mailing list}
 \usage{
 add_mailing_contact(
-  qualtricsKey,
+  qualtrics_api_key,
   directoryID,
   mailingListID,
   firstname,
   lastname,
-  mail
+  mail,
+  base_url = "https://usf.az1.qualtrics.com"
 )
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{directoryID}{Character directory id.}
+\item{directoryID}{Directory identifier that contains the mailing list.}
 
-\item{mailingListID}{Character mailing list id.}
+\item{mailingListID}{Mailing list identifier.}
 
-\item{firstname}{Character first name.}
+\item{firstname}{Contact first name.}
 
-\item{lastname}{Character last name.}
+\item{lastname}{Contact last name.}
 
-\item{mail}{Character email address.}
+\item{mail}{Contact email address.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
-Parsed API response as a list (invisible).
+Parsed response invisibly.
 }
 \description{
-Add a contact to a mailing list
+Add a contact to a Qualtrics mailing list
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{write_to_monthly_template_update_log}
 \alias{write_to_monthly_template_update_log}
-\title{Append a row to the monthly template update log (alias)}
+\title{Alias for weekly template update log writer}
 \usage{
 write_to_monthly_template_update_log(
   originDate,
@@ -11,13 +11,23 @@ write_to_monthly_template_update_log(
 )
 }
 \arguments{
-\item{originDate}{Character or date to record.}
+\item{originDate}{Value to write to \code{OriginDate} column.}
 
-\item{neededAction}{Character action label.}
+\item{neededAction}{Value to write to \code{Action} column.}
 
-\item{root_folder}{Character root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+\item{root_folder}{Character. Root folder path. Defaults to \code{Sys.getenv("UPLOAD_ROOT_FOLDER")}.}
+}
+\value{
+NULL, called for side effect.
 }
 \description{
-Append a row to the monthly template update log (alias)
+Alias for weekly template update log writer
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Qualtrics_Helper_LogicAndFlow.R
 \name{create_flow_logic_qualtrics}
 \alias{create_flow_logic_qualtrics}
-\title{Create a survey flow logic element for Qualtrics}
+\title{Create flow logic structure for Qualtrics flow}
 \usage{
 create_flow_logic_qualtrics(
   logicType,
@@ -13,20 +13,28 @@ create_flow_logic_qualtrics(
 )
 }
 \arguments{
-\item{logicType}{Character logic type.}
+\item{logicType}{Character. The logic type.}
 
-\item{leftOperand}{Character left operand.}
+\item{leftOperand}{Character. Left operand name.}
 
-\item{operator}{Character operator.}
+\item{operator}{Character. Operator name.}
 
-\item{rightOperand}{Character right operand.}
+\item{rightOperand}{Character. Right operand value.}
 
-\item{eqType}{Character expression type.}
+\item{eqType}{Character. Expression type.}
 }
 \value{
-A list representing a survey flow BooleanExpression.
+A list representing a BooleanExpression for use in Flow objects.
 }
 \description{
-Creates a BooleanExpression list suitable for Qualtrics survey flow rules.
+Same structure as \code{create_display_logic_qualtrics()} but without the
+\code{inPage} flag; used when constructing Flow branch logic objects.
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

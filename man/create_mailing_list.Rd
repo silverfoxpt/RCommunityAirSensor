@@ -2,21 +2,35 @@
 % Please edit documentation in R/Qualtrics_Helper_Main.R
 \name{create_mailing_list}
 \alias{create_mailing_list}
-\title{Create a mailing list}
+\title{Create a mailing list in a Qualtrics directory}
 \usage{
-create_mailing_list(qualtricsKey, directoryID, listName)
+create_mailing_list(
+  qualtrics_api_key,
+  directoryID,
+  listName,
+  base_url = "https://usf.az1.qualtrics.com"
+)
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{API token for Qualtrics.}
 
-\item{directoryID}{Character directory id.}
+\item{directoryID}{Directory identifier.}
 
-\item{listName}{Character list name.}
+\item{listName}{Desired mailing list name.}
+
+\item{base_url}{Character string for Qualtrics base URL.}
 }
 \value{
-Mailing list id (character).
+The newly created mailing list id as a character string.
 }
 \description{
-Create a mailing list
+Create a mailing list in a Qualtrics directory
 }
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

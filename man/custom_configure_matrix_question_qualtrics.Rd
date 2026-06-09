@@ -2,7 +2,7 @@
 % Please edit documentation in R/Qualtrics_Helper_LogicAndFlow.R
 \name{custom_configure_matrix_question_qualtrics}
 \alias{custom_configure_matrix_question_qualtrics}
-\title{Configure a matrix question structure for Qualtrics}
+\title{Configure a matrix question for Qualtrics}
 \usage{
 custom_configure_matrix_question_qualtrics(
   questionConfig,
@@ -14,23 +14,39 @@ custom_configure_matrix_question_qualtrics(
 )
 }
 \arguments{
-\item{questionConfig}{List representing existing question configuration.}
+\item{questionConfig}{List. Existing question configuration object returned
+by the Qualtrics API.}
 
-\item{choices}{Character vector of choice labels.}
+\item{choices}{Character or list. Display texts for each choice.}
 
-\item{choicesDisplayLogics}{List of display logics per choice (may be empty).}
+\item{choicesDisplayLogics}{List of display logic objects corresponding to
+each choice. Use \code{list()} for no display logic.}
 
-\item{answers}{Character vector of answer labels.}
+\item{answers}{Character or list. Answer display texts.}
 
-\item{questionText}{Optional question text.}
+\item{questionText}{Character or NA. Optional question text to set.}
 
-\item{changeAnswer}{Logical whether to set Answers/AnswerOrder.}
+\item{changeAnswer}{Logical. If TRUE, \code{Answers} and \code{AnswerOrder} are set.}
 }
 \value{
-Modified \code{questionConfig} list.
+The modified \code{questionConfig} list.
 }
 \description{
-Helper that prepares the \code{Choices}, \code{ChoiceOrder}, \code{Answers}, and
-\code{AnswerOrder} elements of a matrix-style question configuration.
+Populate the \code{questionConfig} object with \code{Choices}, \code{ChoiceOrder},
+and optionally \code{Answers}/\code{AnswerOrder}. Display logic for individual
+choices can be attached when provided.
 }
+\examples{
+\dontrun{
+custom_configure_matrix_question_qualtrics(cfg, c("A","B"), list(), c("Yes","No"))
+}
+
+}
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}

@@ -2,28 +2,40 @@
 % Please edit documentation in R/Qualtrics_Helper_Secondary.R
 \name{create_and_add_contact_from_personnel_list}
 \alias{create_and_add_contact_from_personnel_list}
-\title{Create mailing list and add contacts from personnel list}
+\title{Create mailing list and add contacts from a personnel list}
 \usage{
 create_and_add_contact_from_personnel_list(
-  qualtricsKey,
+  qualtrics_api_key,
   directoryID,
   mailingListName,
   participantList
 )
 }
 \arguments{
-\item{qualtricsKey}{Character API token.}
+\item{qualtrics_api_key}{Character. API key or token for Qualtrics access.}
 
-\item{directoryID}{Character directory id.}
+\item{directoryID}{Character. Qualtrics directory ID where the mailing list will be created.}
 
-\item{mailingListName}{Character name for the new mailing list.}
+\item{mailingListName}{Character. Name for the new mailing list.}
 
-\item{participantList}{A tibble/data.frame with at least FirstName, LastName, Email.}
+\item{participantList}{A tibble/data.frame with at least columns \code{FirstName}, \code{LastName}, and \code{Email}.}
 }
 \value{
-The created mailing list id (character).
+The mailing list id returned by \code{create_mailing_list()}.
 }
 \description{
-Creates a new mailing list and adds each participant to it.
+Uses existing \code{create_mailing_list()} and \code{add_mailing_contact()} helpers to
+create a mailing list in Qualtrics and add the provided contacts. This is a
+thin wrapper and assumes those helper functions handle API authentication.
 }
+\details{
+The function performs a simple deduplication by \code{Email} before adding contacts.
+}
+\concept{addRoxygenComments:true}
+\concept{cleanupComments:true}
+\concept{cleanupDependenciesNamespace:true}
+\concept{cleanupParameters:true}
+\concept{removedDependencies:true}
+\concept{removedRawFunctionCalls:true}
+\concept{removedSensitiveInfo:true}
 \concept{role:helper}
